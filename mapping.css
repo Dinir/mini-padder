@@ -1,0 +1,92 @@
+body {
+  background-color: black;
+  color: white;
+  line-height: 1em;
+  margin: 0; }
+
+div[id^="gp"] {
+  font-family: monospace;
+  /*
+  Id:       Microsoft Controller (Vendor: 045e Product: 02d1)
+  Buttons:  0A 1B 2X 3Y 4LB 5RB 6Select 7Start 8Logo 9LThumb 10RThumb
+  Axes:     0LThumbX 1LThumbY 2LT 3RThumbX 4RThumbY 5RT 6DirX 7DirY
+  */ }
+  div[id^="gp"] div.buttons span.button {
+    position: fixed;
+    background: url(dot.png);
+    background-repeat: no-repeat;
+    background-size: 0% 0%;
+    background-position: 0% 0%;
+    -webkit-filter: hue-rotate(0deg);
+    -moz-filter: hue-rotate(0deg);
+    -ms-filter: hue-rotate(0deg);
+    -o-filter: hue-rotate(0deg);
+    filter: hue-rotate(0deg); }
+  div[id^="gp"] div.axes span.axis {
+    position: fixed;
+    display: block;
+    width: 3.4em;
+    height: 3.4em;
+    border: 1px solid white;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    -ms-border-radius: 100%;
+    border-radius: 100%; }
+    div[id^="gp"] div.axes span.axis span {
+      display: block;
+      position: relative;
+      background: white url(dot.png);
+      -webkit-border-radius: 100%;
+      -moz-border-radius: 100%;
+      -ms-border-radius: 100%;
+      border-radius: 100%; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(4) {
+    left: 11.525em;
+    top: 2.5em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(3) {
+    left: 10.275em;
+    top: 3.75em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(2) {
+    left: 12.775em;
+    top: 3.75em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(1) {
+    left: 11.525em;
+    top: 5em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(7) {
+    left: 1.25em;
+    top: 0em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(5) {
+    left: 1.25em;
+    top: 1.25em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(8) {
+    left: 11.25em;
+    top: 0em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(6) {
+    left: 11.25em;
+    top: 1.25em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(9) {
+    left: 5em;
+    top: 3.75em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(10) {
+    left: 7.5em;
+    top: 3.75em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(13) {
+    left: 4.025em;
+    top: 6.25em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(15) {
+    left: 2.775em;
+    top: 7.5em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(16) {
+    left: 5.275em;
+    top: 7.5em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(14) {
+    left: 4.025em;
+    top: 8.75em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.axes span.axis:nth-child(1) {
+    left: 0.05em;
+    top: 2.5em; }
+  div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.axes span.axis:nth-child(2) {
+    left: 7.55em;
+    top: 6.25em; }
+
+/*# sourceMappingURL=mapping.css.map */

@@ -99,6 +99,13 @@ div[id^="gp"] {
 					@include positionGrid(9, 1);
 				}
 				@include position3(4, 2, nth-child(9), nth-child(7), nth-child(8));
+				&:nth-child(12) {
+					@include positionGrid(1, 0);
+				}
+				&:nth-child(13) {
+					@include positionGrid(9, 0);
+				}
+				@include position4(2+$oneCharMargin, 5, nth-child(16), nth-child(14), nth-child(15), nth-child(17));
 			}
 		}
 		div.axes {

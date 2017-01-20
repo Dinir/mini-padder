@@ -126,12 +126,12 @@
 				,axes: [
 					{name:"L", type:"thumb"}
 					,{name:"L", type:"thumb"}
-					,{name:"LT", type:"button"}
+					,{name:"LT", type:"button shoulder"}
 					,{name:"R", type:"thumb"}
 					,{name:"R", type:"thumb"}
-					,{name:"RT", type:"button"}
-					,{name:"D", type:"button"}
-					,{name:"D", type:"button"}
+					,{name:"RT", type:"button shoulder"}
+					,{name:"D", type:"button polar"}
+					,{name:"D", type:"button polar"}
 				]
 			}
 			,"Xbox 360 Controller (XInput STANDARD GAMEPAD)": {
@@ -198,18 +198,33 @@
 				for(i=0; i<gp.axes.length; i++) {
 					if(gamepadMapping[gp.id]) {
 						var cur = gamepadMapping[gp.id].axes[i];
-						if(a.getElementsByClassName(`axis ${cur.name}`).length) {
-							c.style.top = `${gpConstants.thumbSize/2}%`;
-						} else {
+						if(cur.type === "thumb") {
+							if(a.getElementsByClassName(`axis ${cur.name}`).length) {
+								c.style.top = `${gpConstants.thumbSize/2}%`;
+							} else {
+								e = document.createElement("span");
+								e.setAttribute("class",`axis ${cur.name}`);
+								c = document.createElement("span");
+								c.style.width = `${gpConstants.thumbSize}%`;
+								c.style.height = `${gpConstants.thumbSize}%`;
+								c.style.left = `${gpConstants.thumbSize/2}%`;
+								e.appendChild(c);
+								a.appendChild(e);
+								gamepadTimestamps[gp.index].axisAdd(cur.name);
+							}
+						} else if(cur.type.match("button")) {
 							e = document.createElement("span");
-							e.setAttribute("class",`axis ${cur.name}`);
-							c = document.createElement("span");
-							c.style.width = `${gpConstants.thumbSize}%`;
-							c.style.height = `${gpConstants.thumbSize}%`;
-							c.style.left = `${gpConstants.thumbSize/2}%`;
-							e.appendChild(c);
-							a.appendChild(e);
-							gamepadTimestamps[gp.index].axisAdd(cur.name);
+							e.setAttribute("class",cur.type);
+							if(cur.type.match("shoulder")) {
+								e.innerHTML = cur.name;
+							} else if(cur.type.match("polar")) {
+								// Hardcode......
+								e.innerHTML = i===6?"R":"D";
+								var e2 = e.cloneNode(false);
+								e2.innerHTML = i===6?"L":"U";
+								b.appendChild(e2);
+							}
+							b.appendChild(e);
 						}
 					} else {
 						e = document.createElement("span");
@@ -268,9 +283,20 @@
 							if(cur.type === "thumb") {
 								a = d.getElementsByClassName(`axis ${cur.name}`)[0].children[0];
 								var thumbMargin = (100-gpConstants.thumbSize)/2;
+
+								var linuxXpadCalibration = gp.id="Microsoft Controller (Vendor: 045e Product: 02d1)" && (i===3||i===4);
+								if(linuxXpadCalibration) {
+									i===3?i=4:i=3;
+								} 
 								if(i%2) {
+									if(linuxXpadCalibration) {
+										i===3?i=4:i=3;
+									}
 									a.style.top = `${thumbMargin+thumbMargin*gp.axes[i]}%`;
 								} else {
+									if(linuxXpadCalibration) {
+										i===3?i=4:i=3;
+									}
 									a.style.left = `${thumbMargin+thumbMargin*gp.axes[i]}%`;
 								}
 								var val = 
@@ -279,6 +305,22 @@
 								+Math.pow(10,gpConstants.axisSensitivity-1)
 								*parseFloat(a.style.top).toFixed(gpConstants.axisSensitivity-1);
 								gamepadTimestamps[gp.index].axisUpdate(cur.name,val);
+							} else if(cur.type.match("button")) {
+								// use `b`.
+								if(cur.type.match("shoulder")) {
+									e = b.children[i===2?11:12];
+									val = 50+50*gp.axes[i];
+									cl(val);
+									if(val) {
+										e.style.color = gpConstants.pressedButtonColor;
+									} else {
+										e.style.color = "white";
+									}
+									gamepadTimestamps[gp.index].buttonUpdate(i, val);
+									e.style.backgroundSize = `100% ${val}%`;
+								} else if(cur.type.match("polar")) {
+									//6, 7
+								}
 							}
 						} else {
 							var a = d.getElementsByClassName("axis");

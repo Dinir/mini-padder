@@ -75,6 +75,24 @@ div[id^="gp"] {
     div[id^="gp"][class="Microsoft Controller (Vendor: 045e Product: 02d1)"] div.buttons span.button:nth-child(8) {
       left: 7.5em;
       top: 3.75em; }
+    div[id^="gp"][class="Microsoft Controller (Vendor: 045e Product: 02d1)"] div.buttons span.button:nth-child(12) {
+      left: 1.25em;
+      top: 0em; }
+    div[id^="gp"][class="Microsoft Controller (Vendor: 045e Product: 02d1)"] div.buttons span.button:nth-child(13) {
+      left: 11.25em;
+      top: 0em; }
+    div[id^="gp"][class="Microsoft Controller (Vendor: 045e Product: 02d1)"] div.buttons span.button:nth-child(16) {
+      left: 4.025em;
+      top: 6.25em; }
+    div[id^="gp"][class="Microsoft Controller (Vendor: 045e Product: 02d1)"] div.buttons span.button:nth-child(14) {
+      left: 2.775em;
+      top: 7.5em; }
+    div[id^="gp"][class="Microsoft Controller (Vendor: 045e Product: 02d1)"] div.buttons span.button:nth-child(15) {
+      left: 5.275em;
+      top: 7.5em; }
+    div[id^="gp"][class="Microsoft Controller (Vendor: 045e Product: 02d1)"] div.buttons span.button:nth-child(17) {
+      left: 4.025em;
+      top: 8.75em; }
     div[id^="gp"][class="Microsoft Controller (Vendor: 045e Product: 02d1)"] div.axes span.axis:nth-child(1) {
       left: 0.05em;
       top: 2.5em; }

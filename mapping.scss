@@ -4,6 +4,8 @@ $oneCharMargin: .22;
 $twoCharMargin: 0;
 $thumbMargin: .04;
 
+$shadowValue: 0px 0px 3px;
+
 @mixin filter($f) {
 	-webkit-filter: $f;
 	-moz-filter: $f;
@@ -22,46 +24,26 @@ $thumbMargin: .04;
 	left: $x * $cellSize;
 	top: $y * $cellSize;
 }
-
 @mixin position2v($x, $y, $itemU, $itemD) {
-	&:#{$itemU} {
-		@include positionGrid($x, $y);
-	}
-	&:#{$itemD} {
-		@include positionGrid($x, $y+1);
-	}
+	&:#{$itemU} { @include positionGrid($x, $y); }
+	&:#{$itemD} { @include positionGrid($x, $y+1); }
 }
-
 @mixin position2h($x, $y, $itemL, $itemR) {
-	&:#{$itemL} {
-		@include positionGrid($x, $y);
-	}
-	&:#{$itemR} {
-		@include positionGrid($x+2, $y);
-	}
+	&:#{$itemL} { @include positionGrid($x, $y); }
+	&:#{$itemR} { @include positionGrid($x+2, $y); }
 }
-
 @mixin position3($x, $y, $itemU, $itemL, $itemR) {
-	&:#{$itemU} {
-		@include positionGrid(($x+1), $y);
-	}
-	&:#{$itemL} {
-		@include positionGrid($x, ($y+1));
-	}
-	&:#{$itemR} {
-		@include positionGrid(($x+2), ($y+1));
-	}
+	&:#{$itemU} { @include positionGrid(($x+1), $y); }
+	&:#{$itemL} { @include positionGrid($x, ($y+1)); }
+	&:#{$itemR} { @include positionGrid(($x+2), ($y+1)); }
 }
-
 @mixin position4($x, $y, $itemU, $itemL, $itemR, $itemD) {
 	@include position3($x, $y, $itemU, $itemL, $itemR);
-	&:#{$itemD} {
-		@include positionGrid(($x+1), ($y+2));
-	}
+	&:#{$itemD} { @include positionGrid(($x+1), ($y+2)); }
 }
 
 body {
-	background-color: black;
+	background-color: rgba(0,0,0,0);
 	color: white;
 	line-height: 1em;
 	margin: 0;
@@ -69,15 +51,7 @@ body {
 
 div[id^="gp"] {
 	font-family: monospace;
-	/*
-	Id:       Microsoft Controller (Vendor: 045e Product: 02d1)
-	Buttons:  0A 1B 2X 3Y 4LB 5RB 6Select 7Start 8Logo 9LThumb 10RThumb
-	Axes:     0LThumbX 1LThumbY 2LT 3RThumbX 4RThumbY 5RT 6DirX 7DirY
-	*/
-
-	// border: 1px solid grey;
-	// margin: .5em .25em;
-	// padding: .5em .25em;
+	text-shadow: $shadowValue black;
 
 	div.buttons {
 		span.button {
@@ -87,12 +61,14 @@ div[id^="gp"] {
 			background-size: 0% 0%;
 			background-position: 0% 0%;
 			@include filter(hue-rotate(0deg));
+			@include border-radius(4px);
 		}
 	}
 	div.axes {
 		span.axis {
-			position: fixed;
 			display: block;
+			position: fixed;
+			box-shadow: $shadowValue black;
 			width: $thumbSize;
 			height: $thumbSize;
 			border: 1px solid white;
@@ -100,6 +76,7 @@ div[id^="gp"] {
 			span {
 				display: block;
 				position: relative;
+				box-shadow: $shadowValue #404040;
 				background: white url(dot.png);
 				@include border-radius(100%);
 			}
@@ -107,55 +84,41 @@ div[id^="gp"] {
 	}
 
 	&[class="Microsoft Controller (Vendor: 045e Product: 02d1)"] {
+		/*
+		Id:       Microsoft Controller (Vendor: 045e Product: 02d1)
+		Buttons:  0A 1B 2X 3Y 4LB 5RB 6Select 7Start 8Logo 9LThumb 10RThumb
+		Axes:     0LThumbX 1LThumbY 2LT 3RThumbX 4RThumbY 5RT 6DirX 7DirY
+		*/
 		div.buttons {
 			span.button {
-				&:nth-child(1) {
-				}
-				&:nth-child(2) {
-				}
-				&:nth-child(3) {
-				}
-				&:nth-child(4) {
-				}
+				@include position4(8+$oneCharMargin, 2, nth-child(4), nth-child(3), nth-child(2), nth-child(1));
 				&:nth-child(5) {
+					@include positionGrid(1, 1);
 				}
 				&:nth-child(6) {
+					@include positionGrid(9, 1);
 				}
-				&:nth-child(7) {
-				}
-				&:nth-child(8) {
-				}
-				&:nth-child(9) {
-				}
-				&:nth-child(10) {
-				}
-				&:nth-child(11) {
-				}
+				@include position3(4, 2, nth-child(9), nth-child(7), nth-child(8));
 			}
 		}
 		div.axes {
 			span.axis {
 				&:nth-child(1) {
+					@include positionGrid(0+$thumbMargin, 2);
 				}
 				&:nth-child(2) {
-				}
-				&:nth-child(3) {
-				}
-				&:nth-child(4) {
-				}
-				&:nth-child(5) {
-				}
-				&:nth-child(6) {
-				}
-				&:nth-child(7) {
-				}
-				&:nth-child(8) {
+					@include positionGrid(6+$thumbMargin, 5);
 				}
 			}
 		}
 	}
-
+	
 	&[class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] {
+		/*
+		Id:       Xbox 360 Controller (XInput STANDARD GAMEPAD)
+		Buttons:  0A 1B 2X 3Y 4LB 5RB 6LT 7RT 8Select 9Start 10LThumb 11RThumb 12DPadU 13DPadD 14DPadL 15DPadR
+		Axes:     0LThumbX 1LThumbY 2RThumbX 3RThumbY
+		*/
 		div.buttons {
 			span.button {
 				@include position4(8+$oneCharMargin, 2, nth-child(4), nth-child(3), nth-child(2), nth-child(1));
@@ -176,4 +139,5 @@ div[id^="gp"] {
 			}
 		}
 	}
+
 }

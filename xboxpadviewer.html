@@ -27,6 +27,7 @@
 
 		var positionValues = {
 			thumbSize: 60
+			,pressedButtonColor: "orange"
 		};
 
 		function cl(...t) {
@@ -205,6 +206,7 @@
 						} else {
 							e = b.children[i]; // each dom for buttons
 							e.style.backgroundSize = `100% ${val}%`;
+							e.style.color = val?positionValues.pressedButtonColor:"white";
 						}
 					}
 					

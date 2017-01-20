@@ -25,21 +25,60 @@
 			document.body.style.fontSize = "16px";
 		};
 
-		var positionValues = {
+		var gpConstants = {
 			thumbSize: 60
 			,pressedButtonColor: "orange"
+			,axisSensitivity: 2
 		};
 
 		function cl(...t) {
 			console.log(...t);
 		};
 
+		// for the 'in' keyword: I used the code below as a reference.
 		// https://github.com/luser/gamepadtest/blob/master/gamepadtest.js
 		var haveEvents = 'GamepadEvent' in window;
 		var haveWebkitEvents = 'WebKitGamepadEvent' in window;
 		var rAF = window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.requestAnimationFrame;
 
 		var gamepads = {};
+		var gamepadTimestamps = {};
+		function gamepadTimestamp() {
+			var buttons = [];
+			var axes = {};
+
+			this.buttonAdd = function() { buttons.push({t:0,v:0}); }
+			this.axisAdd = function(n) { axes[n] = {t:0,v:0}; }
+
+			this.age = function() {
+				for(var i=0; i<buttons.length; i++) {
+					buttons[i].t++;
+				}
+				for(a in axes) {
+					axes[a].t++;
+				}
+			};
+			this.buttonUpdate = function(n,v) {
+				if(buttons[n].v !== v) {
+					buttons[n].t = 0;
+					buttons[n].v = v;
+				}
+			};
+			this.axisUpdate = function(n,v) {
+				if(axes[n].v !== v) {
+					axes[n].t = 0; 
+					axes[n].v = v;
+				}
+			};
+
+			this.showAll = function() {
+				var txt = "";
+				for(var i=0;i<buttons.length;i++) { txt+= `${buttons[i].t}${buttons[i].v} `; }
+				cl(txt); txt="";
+				for(a in axes) { txt+= `${a}:${axes[a].t}${axes[a].v} `; }
+				cl(txt);
+			}
+		};
 
 		var gamepadHandler = {
 			connect: function(e) {
@@ -125,6 +164,8 @@
 
 		var gamepadDOMs = {
 			add: function(gp) {
+				// create a couple of arrays for tracking button's timestamp
+				gamepadTimestamps[gp.index] = new gamepadTimestamp();
 				// create dom for a gamepad
 				var d = document.createElement("div");
 				d.setAttribute("id",`gp${gp.index}`);
@@ -147,6 +188,7 @@
 						e.innerHTML = i;
 					}
 					b.appendChild(e);
+					gamepadTimestamps[gp.index].buttonAdd();
 				}
 				d.appendChild(b);
 				// create dom for axes
@@ -157,16 +199,17 @@
 					if(gamepadMapping[gp.id]) {
 						var cur = gamepadMapping[gp.id].axes[i];
 						if(a.getElementsByClassName(`axis ${cur.name}`).length) {
-							c.style.top = `${positionValues.thumbSize/2}%`;
+							c.style.top = `${gpConstants.thumbSize/2}%`;
 						} else {
 							e = document.createElement("span");
 							e.setAttribute("class",`axis ${cur.name}`);
 							c = document.createElement("span");
-							c.style.width = `${positionValues.thumbSize}%`;
-							c.style.height = `${positionValues.thumbSize}%`;
-							c.style.left = `${positionValues.thumbSize/2}%`;
+							c.style.width = `${gpConstants.thumbSize}%`;
+							c.style.height = `${gpConstants.thumbSize}%`;
+							c.style.left = `${gpConstants.thumbSize/2}%`;
 							e.appendChild(c);
 							a.appendChild(e);
+							gamepadTimestamps[gp.index].axisAdd(cur.name);
 						}
 					} else {
 						e = document.createElement("span");
@@ -183,11 +226,13 @@
 			remove: function(index) {
 				var d = document.getElementById(`gp${index}`);
 				document.body.removeChild(d);
+				delete gamepadTimestamps[gp.index];
 			},
 			update: function() {
 				gamepadHandler.scan();
 				for(j in gamepads) {
 					var gp = gamepads[j];
+					gamepadTimestamps[gp.index].age();
 					var d = document.getElementById(`gp${gp.index}`);
 
 					var b = d.getElementsByClassName("buttons")[0];
@@ -203,10 +248,16 @@
 							} else {
 								e.style.background = "white";
 							}
+							gamepadTimestamps[gp.index].buttonUpdate(i, val);
 						} else {
 							e = b.children[i]; // each dom for buttons
 							e.style.backgroundSize = `100% ${val}%`;
-							e.style.color = val?positionValues.pressedButtonColor:"white";
+							if(val) {
+								e.style.color = gpConstants.pressedButtonColor;
+							} else {
+								e.style.color = "white";
+							}
+							gamepadTimestamps[gp.index].buttonUpdate(i, val);
 						}
 					}
 					
@@ -216,12 +267,18 @@
 							var cur = gamepadMapping[gp.id].axes[i];
 							if(cur.type === "thumb") {
 								a = d.getElementsByClassName(`axis ${cur.name}`)[0].children[0];
-								var thumbMargin = (100-positionValues.thumbSize)/2;
+								var thumbMargin = (100-gpConstants.thumbSize)/2;
 								if(i%2) {
 									a.style.top = `${thumbMargin+thumbMargin*gp.axes[i]}%`;
 								} else {
 									a.style.left = `${thumbMargin+thumbMargin*gp.axes[i]}%`;
 								}
+								var val = 
+								Math.pow(10,2*gpConstants.axisSensitivity)
+								*parseFloat(a.style.left).toFixed(gpConstants.axisSensitivity-1)
+								+Math.pow(10,gpConstants.axisSensitivity-1)
+								*parseFloat(a.style.top).toFixed(gpConstants.axisSensitivity-1);
+								gamepadTimestamps[gp.index].axisUpdate(cur.name,val);
 							}
 						} else {
 							var a = d.getElementsByClassName("axis");
@@ -229,6 +286,7 @@
 							e.innerHTML = `${i}${gp.axes[i].toFixed(4)} `;
 						}
 					}
+
 				}
 				rAF(gamepadDOMs.update);
 			}

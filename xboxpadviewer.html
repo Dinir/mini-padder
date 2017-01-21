@@ -284,7 +284,7 @@
 								a = d.getElementsByClassName(`axis ${cur.name}`)[0].children[0];
 								var thumbMargin = (100-gpConstants.thumbSize)/2;
 
-								var linuxXpadCalibration = gp.id="Microsoft Controller (Vendor: 045e Product: 02d1)" && (i===3||i===4);
+								var linuxXpadCalibration = gp.id==="Microsoft Controller (Vendor: 045e Product: 02d1)" && (i===3||i===4);
 								if(linuxXpadCalibration) {
 									i===3?i=4:i=3;
 								} 

@@ -82,13 +82,20 @@ div[id^="gp"] {
 			}
 		}
 	}
+		
+	@for $ov from 0 through 10 {
+		.op#{$ov} {
+			opacity: .1 * $ov;
+		}
+	}
 
+	/*
+	Id:       Microsoft Controller (Vendor: 045e Product: 02d1)
+	Buttons:  0A 1B 2X 3Y 4LB 5RB 6Select 7Start 8Logo 9LThumb 10RThumb
+	Axes:     0LThumbX 1LThumbY 2LT 3RThumbX 4RThumbY 5RT 6DirX 7DirY
+	*/
 	&[class="Microsoft Controller (Vendor: 045e Product: 02d1)"] {
-		/*
-		Id:       Microsoft Controller (Vendor: 045e Product: 02d1)
-		Buttons:  0A 1B 2X 3Y 4LB 5RB 6Select 7Start 8Logo 9LThumb 10RThumb
-		Axes:     0LThumbX 1LThumbY 2LT 3RThumbX 4RThumbY 5RT 6DirX 7DirY
-		*/
+		
 		div.buttons {
 			span.button {
 				@include position4(8+$oneCharMargin, 2, nth-child(4), nth-child(3), nth-child(2), nth-child(1));
@@ -120,12 +127,12 @@ div[id^="gp"] {
 		}
 	}
 	
+	/*
+	Id:       Xbox 360 Controller (XInput STANDARD GAMEPAD)
+	Buttons:  0A 1B 2X 3Y 4LB 5RB 6LT 7RT 8Select 9Start 10LThumb 11RThumb 12DPadU 13DPadD 14DPadL 15DPadR
+	Axes:     0LThumbX 1LThumbY 2RThumbX 3RThumbY
+	*/
 	&[class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] {
-		/*
-		Id:       Xbox 360 Controller (XInput STANDARD GAMEPAD)
-		Buttons:  0A 1B 2X 3Y 4LB 5RB 6LT 7RT 8Select 9Start 10LThumb 11RThumb 12DPadU 13DPadD 14DPadL 15DPadR
-		Axes:     0LThumbX 1LThumbY 2RThumbX 3RThumbY
-		*/
 		div.buttons {
 			span.button {
 				@include position4(8+$oneCharMargin, 2, nth-child(4), nth-child(3), nth-child(2), nth-child(1));

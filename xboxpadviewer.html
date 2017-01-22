@@ -23,12 +23,30 @@
 	<script>
 		window.onload = function() {
 			document.body.style.fontSize = "16px";
+			timeValues.fpsCheck();
 		};
 
 		var gpConstants = {
 			thumbSize: 60
 			,pressedButtonColor: "orange"
-			,axisSensitivity: 2
+			,axisSensitivity: 0
+			,useFadeOut: true
+			,fadeOutDuration: 4
+			,fadeOutTime: [4, 12]
+			,fadeOutStrength: [.5, .9]
+		};
+		var timeValues = {
+			fps: 0
+			,fpsChecked: false
+			,fpsIncrease: function() {
+				timeValues.fps++;
+			}
+			,fpsCheck: function() {
+				var o = setTimeout(function() {
+					timeValues.fpsChecked = true;
+					clearTimeout(o);
+				}, 1000);
+			}
 		};
 
 		function cl(...t) {
@@ -49,25 +67,43 @@
 
 			this.buttonAdd = function() { buttons.push({t:0,v:0}); }
 			this.axisAdd = function(n) { axes[n] = {t:0,v:0}; }
+			this.getButtonTimestamp = function(n) {
+				return buttons[n].t;
+			}
+			this.getAxisTimestamp = function(n) {
+				return axes[n].t;
+			}
 
 			this.age = function() {
+				var max = timeValues.fps * gpConstants.fadeOutTime[gpConstants.fadeOutTime.length-1];
 				for(var i=0; i<buttons.length; i++) {
-					buttons[i].t++;
+					if(buttons[i].t<max) {
+						buttons[i].t++;
+					}
 				}
 				for(a in axes) {
-					axes[a].t++;
+					if(axes[a].t<max) {
+						axes[a].t++;
+					}
 				}
 			};
+
 			this.buttonUpdate = function(n,v) {
 				if(buttons[n].v !== v) {
 					buttons[n].t = 0;
 					buttons[n].v = v;
+					return true;
+				} else {
+					return false;
 				}
 			};
 			this.axisUpdate = function(n,v) {
 				if(axes[n].v !== v) {
-					axes[n].t = 0; 
+					axes[n].t = 0;
 					axes[n].v = v;
+					return true;
+				} else {
+					return false;
 				}
 			};
 
@@ -100,7 +136,7 @@
 						} else {
 							gamepadHandler.connect(gamepadsFromNavigator[i]);
 						}
-					} else if(gamepadsFromNavigator[i] === null
+					} else if((gamepadsFromNavigator[i] === null || gamepadsFromNavigator[i] === undefined)
 					&& document.getElementById(`gp${i}`)) {
 						gamepadHandler.disconnect(i);
 					}
@@ -164,8 +200,10 @@
 
 		var gamepadDOMs = {
 			add: function(gp) {
+				var isLinuxXpad = gp.id==="Microsoft Controller (Vendor: 045e Product: 02d1)";
 				// create a couple of arrays for tracking button's timestamp
 				gamepadTimestamps[gp.index] = new gamepadTimestamp();
+				var gt = gamepadTimestamps[gp.index];
 				// create dom for a gamepad
 				var d = document.createElement("div");
 				d.setAttribute("id",`gp${gp.index}`);
@@ -187,6 +225,7 @@
 						e.setAttribute("class","button");
 						e.innerHTML = i;
 					}
+					e.style.transition=`opacity ${gpConstants.fadeOutDuration}s`;
 					b.appendChild(e);
 					gamepadTimestamps[gp.index].buttonAdd();
 				}
@@ -209,22 +248,29 @@
 								c.style.height = `${gpConstants.thumbSize}%`;
 								c.style.left = `${gpConstants.thumbSize/2}%`;
 								e.appendChild(c);
+								e.style.transition=`opacity ${gpConstants.fadeOutDuration}s`;
 								a.appendChild(e);
 								gamepadTimestamps[gp.index].axisAdd(cur.name);
 							}
 						} else if(cur.type.match("button")) {
 							e = document.createElement("span");
 							e.setAttribute("class",cur.type);
-							if(cur.type.match("shoulder")) {
-								e.innerHTML = cur.name;
-							} else if(cur.type.match("polar")) {
-								// Hardcode......
-								e.innerHTML = i===6?"R":"D";
-								var e2 = e.cloneNode(false);
-								e2.innerHTML = i===6?"L":"U";
-								b.appendChild(e2);
+							if(isLinuxXpad) {
+								if(cur.type.match("shoulder")) {
+									e.innerHTML = cur.name;
+								} else if(cur.type.match("polar")) {
+									// Hardcode......
+									e.innerHTML = i===6?"R":"D";
+									var e2 = e.cloneNode(false);
+									e2.innerHTML = i===6?"L":"U";
+									e2.style.transition=`opacity ${gpConstants.fadeOutDuration}s`;
+									b.appendChild(e2);
+									gamepadTimestamps[gp.index].buttonAdd();
+								}
 							}
+							e.style.transition=`opacity ${gpConstants.fadeOutDuration}s`;
 							b.appendChild(e);
+							gamepadTimestamps[gp.index].buttonAdd();
 						}
 					} else {
 						e = document.createElement("span");
@@ -236,18 +282,24 @@
 				d.appendChild(a);
 				// attach gamepad dom to the document
 				document.body.appendChild(d);
+
 				rAF(gamepadDOMs.update);
 			},
 			remove: function(index) {
 				var d = document.getElementById(`gp${index}`);
 				document.body.removeChild(d);
-				delete gamepadTimestamps[gp.index];
+				delete gamepadTimestamps[index];
 			},
 			update: function() {
 				gamepadHandler.scan();
+				if(!timeValues.fpsChecked) {
+					timeValues.fpsIncrease();
+				}
 				for(j in gamepads) {
 					var gp = gamepads[j];
-					gamepadTimestamps[gp.index].age();
+					var gts = gamepadTimestamps[gp.index];
+					var isLinuxXpad = gp.id==="Microsoft Controller (Vendor: 045e Product: 02d1)";
+					gts.age();
 					var d = document.getElementById(`gp${gp.index}`);
 
 					var b = d.getElementsByClassName("buttons")[0];
@@ -263,7 +315,11 @@
 							} else {
 								e.style.background = "white";
 							}
-							gamepadTimestamps[gp.index].buttonUpdate(i, val);
+							// gamepadDOMs.opacityControl(
+							// 	gts.buttonUpdate(i, val), 
+							// 	gts.getButtonTimestamp(i), 
+							// 	e
+							// );
 						} else {
 							e = b.children[i]; // each dom for buttons
 							e.style.backgroundSize = `100% ${val}%`;
@@ -272,7 +328,11 @@
 							} else {
 								e.style.color = "white";
 							}
-							gamepadTimestamps[gp.index].buttonUpdate(i, val);
+							gamepadDOMs.opacityControl(
+								gts.buttonUpdate(i, val), 
+								gts.getButtonTimestamp(i),
+								e
+							);
 						}
 					}
 					
@@ -280,11 +340,12 @@
 					for(i=0; i<gp.axes.length; i++) {
 						if(gamepadMapping[gp.id]) {
 							var cur = gamepadMapping[gp.id].axes[i];
+							var val = gp.axes[i];
 							if(cur.type === "thumb") {
 								a = d.getElementsByClassName(`axis ${cur.name}`)[0].children[0];
 								var thumbMargin = (100-gpConstants.thumbSize)/2;
 
-								var linuxXpadCalibration = gp.id==="Microsoft Controller (Vendor: 045e Product: 02d1)" && (i===3||i===4);
+								var linuxXpadCalibration = isLinuxXpad && (i===3||i===4);
 								if(linuxXpadCalibration) {
 									i===3?i=4:i=3;
 								} 
@@ -292,34 +353,83 @@
 									if(linuxXpadCalibration) {
 										i===3?i=4:i=3;
 									}
-									a.style.top = `${thumbMargin+thumbMargin*gp.axes[i]}%`;
+									a.style.top = `${thumbMargin+thumbMargin*val}%`;
 								} else {
 									if(linuxXpadCalibration) {
 										i===3?i=4:i=3;
 									}
-									a.style.left = `${thumbMargin+thumbMargin*gp.axes[i]}%`;
+									a.style.left = `${thumbMargin+thumbMargin*val}%`;
 								}
-								var val = 
+								var valSerialized = 
 								Math.pow(10,2*gpConstants.axisSensitivity)
-								*parseFloat(a.style.left).toFixed(gpConstants.axisSensitivity-1)
-								+Math.pow(10,gpConstants.axisSensitivity-1)
-								*parseFloat(a.style.top).toFixed(gpConstants.axisSensitivity-1);
-								gamepadTimestamps[gp.index].axisUpdate(cur.name,val);
+								*parseFloat(a.style.left).toFixed(gpConstants.axisSensitivity)
+								+Math.pow(10,gpConstants.axisSensitivity)
+								*parseFloat(a.style.top).toFixed(gpConstants.axisSensitivity);
+								gamepadDOMs.opacityControl(
+									gts.axisUpdate(cur.name,valSerialized), 
+									gts.getAxisTimestamp(cur.name),
+									a.parentElement);
 							} else if(cur.type.match("button")) {
-								// use `b`.
-								if(cur.type.match("shoulder")) {
-									e = b.children[i===2?11:12];
-									val = 50+50*gp.axes[i];
-									cl(val);
-									if(val) {
-										e.style.color = gpConstants.pressedButtonColor;
-									} else {
-										e.style.color = "white";
+								if(isLinuxXpad) {
+									var buttonNumber;
+									if(cur.type.match("shoulder")) {
+										buttonNumber = i===2?11:12;
+										e = b.children[buttonNumber];
+										val = 50+Math.floor(50*val);
+										if(val) {
+											e.style.color = gpConstants.pressedButtonColor;
+										} else {
+											e.style.color = "white";
+										}
+										e.style.backgroundSize = `100% ${val}%`;
+										gamepadDOMs.opacityControl(
+											gts.buttonUpdate(buttonNumber, val), 
+											gts.getButtonTimestamp(buttonNumber),
+											e
+										);
+									} else if(cur.type.match("polar")) {
+										var dpadX = i===6;
+										var currentMinusPolarButton = dpadX?13:15;
+										var currentPlusPolarButton = dpadX?14:16;
+										buttonNumber
+										= val>0?
+												currentPlusPolarButton
+												:val<0?
+													currentMinusPolarButton
+													:0;
+										val = Math.abs(100*val);
+										if(buttonNumber) {
+											e = b.children[buttonNumber];
+											e.style.backgroundSize = `100% ${val}%`;
+											e.style.color = gpConstants.pressedButtonColor;
+										} else {
+											e = b.children[currentMinusPolarButton];
+											e.style.backgroundSize
+											= e.nextSibling.style.backgroundSize
+											= "100% 0%";
+											e.style.color
+											= e.nextSibling.style.color
+											= "white";
+										}
+										if(buttonNumber) {
+											gamepadDOMs.opacityControl(
+												gts.buttonUpdate(buttonNumber, val), 
+												gts.getButtonTimestamp(buttonNumber),
+												e
+											);
+										} else {
+											gamepadDOMs.opacityControl(
+												gts.buttonUpdate(currentMinusPolarButton, 0),
+												gts.getButtonTimestamp(currentMinusPolarButton),
+												b.children[currentMinusPolarButton]
+											);
+											gamepadDOMs.opacityControl(
+												gts.buttonUpdate(currentPlusPolarButton, 0),
+												gts.getButtonTimestamp(currentPlusPolarButton),
+												b.children[currentPlusPolarButton]
+											);
+										}
 									}
-									gamepadTimestamps[gp.index].buttonUpdate(i, val);
-									e.style.backgroundSize = `100% ${val}%`;
-								} else if(cur.type.match("polar")) {
-									//6, 7
 								}
 							}
 						} else {
@@ -331,6 +441,26 @@
 
 				}
 				rAF(gamepadDOMs.update);
+			}
+			,opacityControl: function(isChanged, timestamp, element) {
+				if(element) {
+					if(isChanged) {
+						element.style.transition=`opacity 0s`;
+						element.style.opacity=1;
+						var si = setInterval(function(){
+							element.style.transition=`opacity ${gpConstants.fadeOutDuration}s`;
+							clearInterval(si);
+						}, 1);
+					} else {
+						var ts = timestamp / timeValues.fps;
+						for(var k=gpConstants.fadeOutTime.length-1; k>=0; k--) {
+							if(ts>=gpConstants.fadeOutTime[k]) {
+								element.style.opacity = 1-gpConstants.fadeOutStrength[k];
+								break;
+							}
+						}
+					}
+				}
 			}
 		};
 

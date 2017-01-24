@@ -1,3 +1,15 @@
+<!--
+XBox Pad Viewer
+for use with OBS streaming.
+
+Keep the css and png file in the same place with this file.
+Add Browser Capture and set it to load this html file.
+Width and height for one gamepad to display is 220x156.
+Press any key on the gamepad and the viewer will show the buttons.
+
+ⓒ 2017 Dinir Nertan, @DinirNertan, DinirNertan@gmail.com
+   Use it freely, just don't delete my name on the code.
+-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,27 +18,15 @@
 		<meta content="utf-8" http-equiv="encoding">
 		<meta name="viewport"
 					content="width=device-width, initial-scale=1.0" />
-		<title></title>
-		<!--<link rel="shortcut icon" href="/favicon.ico">
-		<link rel="apple-touch-icon"
-					href="./appiconios.png" />
-		<link rel="apple-touch-icon-precomposed"
-					href="./appiconandroid.png" />
-		<link rel="stylesheet" href="./your.css">-->
-		<link href="mapping.css" rel="stylesheet">
-		<style>
-			
-		</style>
+		<title>XBox Pad Viewer</title>
+		<link rel="stylesheet" href="mapping.css">
 	</head>
 	
-	<!--<script src="./your.js"></script>-->
 	<script>
 		window.onload = function() {
 			document.body.style.fontSize = "16px";
 			if(gpConstants.useFadeOut) { timeValues.fpsCheck(); }
-		};
-
-		// one gamepad has 220×156 pixel in size in the document.
+		};	
 
 		var gpConstants = {
 			// how big the thumb sticks should be? (0~100)
@@ -34,7 +34,7 @@
 			// what color the backcground of the pressed button should turn to?
 			// this changes hue of the default color by degrees. (0~360)
 			// the color is red at 0 degree.
-			,pressedButtonBackgroundColorHue: "270"
+			,pressedButtonBackgroundColorHue: "0"
 			// what color the text of the pressed button should turn to?
 			// if you want to change the background color for pressed buttons, change the `dot.png` in the same folder.
 			,pressedButtonColor: "orange"

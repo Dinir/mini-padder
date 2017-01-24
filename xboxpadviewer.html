@@ -87,10 +87,6 @@ Press any key on the gamepad and the viewer will show the buttons.
 				this.buttonAdd = function() { buttons.push({t:0,v:0}); };
 				this.axisAdd = function(n) { axes[n] = {t:0,v:0}; };
 
-				// if everything's working, this one is a surplus.
-				// that's why I compressed the code.
-				this.showAll=function(){var txt="";for(var i=0;i<buttons.length;i++){txt+=`${buttons[i].t},${buttons[i].v} `;}for(i in axes){txt+=`${axes[i].t},${axes[i].v} `;}console.log(txt);}
-
 				this.getButtonStatus = function(n) {
 					return buttons[n];
 				};
@@ -154,7 +150,7 @@ Press any key on the gamepad and the viewer will show the buttons.
 							gamepadHandler.connect(gamepadsFromNavigator[i]);
 						}
 					} else if((gamepadsFromNavigator[i] === null || gamepadsFromNavigator[i] === undefined)
-					&& document.getElementById(`gp${i}`)) {
+					  && document.getElementById(`gp${i}`)) {
 						gamepadHandler.disconnect(i);
 					}
 				}
@@ -511,16 +507,16 @@ Press any key on the gamepad and the viewer will show the buttons.
 		rAF(gamepadDOMs.update);
 
 		if(haveEvents) {
-				window.addEventListener("gamepadconnected", function(e) {
-					gamepadHandler.connect(e.gamepad);
-				});
+			window.addEventListener("gamepadconnected", function(e) {
+				gamepadHandler.connect(e.gamepad);
+			});
 			window.addEventListener("gamepaddisconnected", function(e) {
 				gamepadHandler.disconnect(e.gamepad);
 			});
 		} else if(haveWebkitEvents) {
-				window.addEventListener("webkitgamepadconnected", function(e) {
-					gamepadHandler.connect(e.gamepad);
-				});
+			window.addEventListener("webkitgamepadconnected", function(e) {
+				gamepadHandler.connect(e.gamepad);
+			});
 			window.addEventListener("webkitgamepaddisconnected", function(e) {
 				gamepadHandler.disconnect(e.gamepad);
 			});

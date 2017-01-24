@@ -23,11 +23,6 @@ div[id^="gp"] {
     background-repeat: no-repeat;
     background-size: 0% 0%;
     background-position: 0% 0%;
-    -webkit-filter: hue-rotate(0deg);
-    -moz-filter: hue-rotate(0deg);
-    -ms-filter: hue-rotate(0deg);
-    -o-filter: hue-rotate(0deg);
-    filter: hue-rotate(0deg);
     -webkit-border-radius: 4px;
     -moz-border-radius: 4px;
     -ms-border-radius: 4px;

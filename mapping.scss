@@ -6,13 +6,6 @@ $thumbMargin: .04;
 
 $shadowValue: 0px 0px 3px;
 
-@mixin filter($f) {
-	-webkit-filter: $f;
-	-moz-filter: $f;
-	-ms-filter: $f;
-	-o-filter: $f;
-	filter: $f;
-}
 @mixin border-radius($r) {
 	-webkit-border-radius: $r;
 	-moz-border-radius: $r;
@@ -60,7 +53,6 @@ div[id^="gp"] {
 			background-repeat: no-repeat;
 			background-size: 0% 0%;
 			background-position: 0% 0%;
-			@include filter(hue-rotate(0deg));
 			@include border-radius(4px);
 		}
 	}

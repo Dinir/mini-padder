@@ -26,9 +26,15 @@
 			if(gpConstants.useFadeOut) { timeValues.fpsCheck(); }
 		};
 
+		// one gamepad has 220×156 pixel in size in the document.
+
 		var gpConstants = {
 			// how big the thumb sticks should be? (0~100)
 			thumbSize: 60
+			// what color the backcground of the pressed button should turn to?
+			// this changes hue of the default color by degrees. (0~360)
+			// the color is red at 0 degree.
+			,pressedButtonBackgroundColorHue: "270"
 			// what color the text of the pressed button should turn to?
 			// if you want to change the background color for pressed buttons, change the `dot.png` in the same folder.
 			,pressedButtonColor: "orange"
@@ -239,6 +245,7 @@
 						e.setAttribute("class","button");
 						e.innerHTML = i;
 					}
+					e.style.filter = `hue-rotate(${gpConstants.pressedButtonBackgroundColorHue}deg)`;
 					e.style.transition=`opacity ${gpConstants.fadeOutDuration}s`;
 					b.appendChild(e);
 					if(gpConstants.useFadeOut) { gts.buttonAdd(); }
@@ -262,6 +269,7 @@
 								c.style.width = `${gpConstants.thumbSize}%`;
 								c.style.height = `${gpConstants.thumbSize}%`;
 								c.style.left = `${gpConstants.thumbSize/2}%`;
+								c.style.filter = `hue-rotate(${gpConstants.pressedButtonBackgroundColorHue}deg)`;
 								e.appendChild(c);
 								e.style.transition=`opacity ${gpConstants.fadeOutDuration}s`;
 								a.appendChild(e);
@@ -279,11 +287,13 @@
 									e.innerHTML = i===6?"R":"D";
 									var e2 = e.cloneNode(false);
 									e2.innerHTML = i===6?"L":"U";
+									e2.style.filter = `hue-rotate(${gpConstants.pressedButtonBackgroundColorHue}deg)`;
 									e2.style.transition=`opacity ${gpConstants.fadeOutDuration}s`;
 									b.appendChild(e2);
 									if(gpConstants.useFadeOut) { gts.buttonAdd(); }
 								}
 							}
+							e.style.filter = `hue-rotate(${gpConstants.pressedButtonBackgroundColorHue}deg)`;
 							e.style.transition=`opacity ${gpConstants.fadeOutDuration}s`;
 							b.appendChild(e);
 							if(gpConstants.useFadeOut) { gts.buttonAdd(); }

@@ -2,11 +2,6 @@
 XBox Pad Viewer
 for use with OBS streaming.
 
-Keep the css and png file in the same place with this file.
-Add BrowserSource and set it to load this html file.
-Width and height for one gamepad to display is 220x156.
-Press any key on the gamepad and the viewer will show the buttons.
-
 ⓒ 2017 Dinir Nertan, @DinirNertan, DinirNertan@gmail.com
    Use it freely, just don't delete my name on the code.
 -->
@@ -22,36 +17,12 @@ Press any key on the gamepad and the viewer will show the buttons.
 		<link rel="stylesheet" href="mapping.css">
 	</head>
 	
+	<script src="options.js"></script>
 	<script>
 		window.onload = function() {
 			document.body.style.fontSize = "16px";
 			if(gpConstants.useFadeOut) { timeValues.fpsCheck(); }
 		};	
-
-		var gpConstants = {
-			// how big the thumb sticks should be? (0~100)
-			thumbSize: 60
-			// what color the backcground of the pressed button should turn to?
-			// this changes hue of the default color by degrees. (0~360)
-			// the color is red at 0 degree.
-			,pressedButtonBackgroundColorHue: "0"
-			// what color the text of the pressed button should turn to?
-			// if you want to change the background color for pressed buttons, change the `dot.png` in the same folder.
-			,pressedButtonColor: "orange"
-			// how responsive should thumb stick tracking be? (0~)
-			// it refers to this value when deciding if you moved the stick.
-			// eg) 3 -> will track the position of the stick DOM
-			// to 10^-3 below the decimal point.
-			,axisSensitivity: 1
-			// should unpressed buttons fade out? (true/false)
-			,useFadeOut: true
-			// set the seconds the fade-out starts in the array.
-			,fadeOutTime: [4, 12]
-			// set the strength of the fade-out for each timing above. (0~1)
-			,fadeOutStrength: [.5, .9]
-			// set the seconds the fade-out applies through.
-			,fadeOutDuration: 4
-		};
 
 		// these are things needed to count a tick of rAF per second.
 		// in `gamepadDOMs.update` which is called in every tick,
@@ -74,7 +45,7 @@ Press any key on the gamepad and the viewer will show the buttons.
 		// https://github.com/luser/gamepadtest/blob/master/gamepadtest.js
 		var haveEvents = 'GamepadEvent' in window;
 		var haveWebkitEvents = 'WebKitGamepadEvent' in window;
-		var rAF = window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.requestAnimationFrame;
+		var rAF = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame;
 
 		// this will contain gamepad objects.
 		var gamepads = {};

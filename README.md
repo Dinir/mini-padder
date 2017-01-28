@@ -2,8 +2,8 @@
 
 Simple XBox gamepad tracker for use with OBS streaming.
 
-Keep the css and png file in the same place with this file.  
-Add BrowserSource and set it to load this html file.  
+Keep these files in the same place: `mapping.css`, `options.js`, `dot.png`.  
+Add a browser source and set it to load this html file.  
 Width and height for one gamepad to display is 220x156.  
 Press any key on the gamepad and the viewer will show the buttons.
 

@@ -37,13 +37,12 @@ $shadowValue: 0px 0px 3px;
 
 body {
 	background-color: rgba(0,0,0,0);
-	color: white;
 	line-height: 1em;
 	margin: 0;
+	font-family: monospace;
 }
 
 div[id^="gp"] {
-	font-family: monospace;
 	text-shadow: $shadowValue black;
 
 	div.buttons {
@@ -63,13 +62,13 @@ div[id^="gp"] {
 			box-shadow: $shadowValue black;
 			width: $thumbSize;
 			height: $thumbSize;
-			border: 1px solid white;
+			border: 1px solid;
 			@include border-radius(100%);
 			span {
 				display: block;
 				position: relative;
 				box-shadow: $shadowValue #404040;
-				background: white url(dot.png);
+				background: url(dot.png);
 				@include border-radius(100%);
 			}
 		}
@@ -139,5 +138,58 @@ div[id^="gp"] {
 			}
 		}
 	}
+	
+	/*
+	Id:       Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)
+	Buttons:  0× 1○ 2□ 3△ 4LB 5B 6LT 7RT 8Share 9Option 10LThumb 11RThumb 12DPadU 13DPadD 14DPadL 15DPadR 16PS 17TouchClick
+	Axes:     0LThumbX 1LThumbY 2RThumbX 3RThumbY
+	*/
+	&[class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] {
+		div.buttons {
+			span.button {
+				@include position4(8+$oneCharMargin, 2, nth-child(4), nth-child(3), nth-child(2), nth-child(1));
+				@include position2v(1, 0, nth-child(7), nth-child(5));
+				@include position2v(9, 0, nth-child(8), nth-child(6));
+				&:nth-child(9) {
+					@include positionGrid(3, 2);
+				}
+				&:nth-child(10) {
+					@include positionGrid(7, 2);
+				}
+				@include position4(0+$oneCharMargin, 2, nth-child(13), nth-child(15), nth-child(16), nth-child(14));
+				&:nth-child(17) {
+					@include positionGrid(5, 7);
+				}
+				&:nth-child(18) {
+					@include positionGrid(5, 2);
+				}
+			}
+		}
+		div.axes {
+			span.axis {
+				&:nth-child(1) {
+					@include positionGrid(2+$thumbMargin, 5);
+				}
+				&:nth-child(2) {
+					@include positionGrid(6+$thumbMargin, 5);
+				}
+			}
+		}
+	}
+}
 
+div#popupButton {
+	position: absolute;
+	left: 22*$cellSize;
+	top: 8*$cellSize;
+	border: 0px solid black;
+	box-shadow: inset 0px 0px 4px grey;
+	@include border-radius(4px);
+	padding: 1em .6em;
+	background-color: rgba(0,0,0,0);
+	color: gray;
+	&:hover {
+		background-color: rgba(196,196,196,.5);
+		cursor: pointer;
+	}
 }

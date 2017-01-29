@@ -1,12 +1,16 @@
 var gpConstants = {
 	// how big the thumb sticks should be? (0~100)
 	thumbSize: 60
-	// what color the backcground of the pressed button should turn to?
-	// this changes hue of the default color by degrees. (0~360)
-	// the color is red at 0 degree.
-	,pressedButtonBackgroundColorHue: "0"
+	// what should be the color of buttons?
+	,defaultColor: "white"
 	// what color the text of the pressed button should turn to?
 	,pressedButtonColor: "orange"
+	// change the hue of colors of the buttons.
+	// this affects background color of pressed buttons as well as
+	// the text color of buttons.
+	// if you want to separately change the background color,
+	// modify the single pixel image file `dot.png`.
+	,pressedButtonBackgroundColorHue: "0"
 	// how responsive should thumb stick tracking be? (0~)
 	// it refers to this value when deciding if you moved the stick.
 	// eg) 3 -> will track the position of the stick DOM

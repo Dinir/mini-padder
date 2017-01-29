@@ -21,6 +21,11 @@ for use with OBS streaming.
 	<script>
 		window.onload = function() {
 			document.body.style.fontSize = "16px";
+			if(window.name==="popup") {
+				document.body.style.backgroundColor = "black";
+				document.body.style.overflow = "hidden";
+				document.title = "XBox Pad Viewer Popup";
+			}
 			if(gpConstants.useFadeOut) { timeValues.fpsCheck(); }
 		};	
 
@@ -129,6 +134,8 @@ for use with OBS streaming.
 		};
 
 		var gamepadMapping = {
+			// XBox Pad (One, 360)
+			// Linux
 			"Microsoft Controller (Vendor: 045e Product: 02d1)": {
 				buttons: [
 					{name:"A", type:"button"}
@@ -154,6 +161,7 @@ for use with OBS streaming.
 					,{name:"D", type:"button polar"}
 				]
 			}
+			// Windows
 			,"Xbox 360 Controller (XInput STANDARD GAMEPAD)": {
 				buttons: [
 					{name:"A", type:"button"}
@@ -172,6 +180,35 @@ for use with OBS streaming.
 					,{name:"D", type:"button"}
 					,{name:"L", type:"button"}
 					,{name:"R", type:"button"}
+				]
+				,axes: [
+					{name:"L", type:"thumb"}
+					,{name:"L", type:"thumb"}
+					,{name:"R", type:"thumb"}
+					,{name:"R", type:"thumb"}
+				]
+			}
+
+			// DualShock4
+			// Windows
+			,"Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)": {
+				buttons: [
+					{name:"×", type:"button"}
+					,{name:"◯", type:"button"}
+					,{name:"□", type:"button"}
+					,{name:"△", type:"button"}
+					,{name:"L1", type:"button"}
+					,{name:"R1", type:"button"}
+					,{name:"L2", type:"button"}
+					,{name:"R3", type:"button"}
+					,{name:"Sh", type:"button"}
+					,{name:"Op", type:"button"}
+					,{name:"L3", type:"button thumb"}
+					,{name:"R3", type:"button thumb"}
+					,{name:"↑", type:"button"}
+					,{name:"↓", type:"button"}
+					,{name:"←", type:"button"}
+					,{name:"→", type:"button"}
 				]
 				,axes: [
 					{name:"L", type:"thumb"}
@@ -205,7 +242,7 @@ for use with OBS streaming.
 						var e = document.createElement("span");
 						if(cur.type === "button thumb") {} else {
 							e.setAttribute("class",cur.type);
-							e.innerHTML = `${cur.name}`;
+							e.innerHTML = cur.name;
 						}
 					} else {
 						var e = document.createElement("span");
@@ -236,9 +273,10 @@ for use with OBS streaming.
 								c.style.width = `${gpConstants.thumbSize}%`;
 								c.style.height = `${gpConstants.thumbSize}%`;
 								c.style.left = `${gpConstants.thumbSize/2}%`;
-								c.style.filter = `hue-rotate(${gpConstants.pressedButtonBackgroundColorHue}deg)`;
-								e.appendChild(c);
+								e.style.borderColor = gpConstants.defaultColor;
+								e.style.filter = `hue-rotate(${gpConstants.pressedButtonBackgroundColorHue}deg)`;
 								e.style.transition=`opacity ${gpConstants.fadeOutDuration}s`;
+								e.appendChild(c);
 								a.appendChild(e);
 								if(gpConstants.useFadeOut) { gts.axisAdd(cur.name); }
 							}
@@ -307,7 +345,7 @@ for use with OBS streaming.
 							if(val===100) {
 								e.style.background = "url(dot.png)";
 							} else {
-								e.style.background = "white";
+								e.style.background = gpConstants.defaultColor;
 							}
 							// gamepadDOMs.opacityControl(
 							// 	gts.buttonUpdate(i, val), 
@@ -317,11 +355,9 @@ for use with OBS streaming.
 						} else {
 							e = b.children[i]; // each dom for buttons
 							e.style.backgroundSize = `100% ${val}%`;
-							if(val) {
-								e.style.color = gpConstants.pressedButtonColor;
-							} else {
-								e.style.color = "white";
-							}
+							e.style.color = val?
+								gpConstants.pressedButtonColor:
+								gpConstants.defaultColor;
 							if(gpConstants.useFadeOut) {
 								gamepadDOMs.opacityControl(
 									gts.buttonUpdate(i, val), 
@@ -379,7 +415,7 @@ for use with OBS streaming.
 										if(val) {
 											e.style.color = gpConstants.pressedButtonColor;
 										} else {
-											e.style.color = "white";
+											e.style.color = gpConstants.defaultColor;
 										}
 										e.style.backgroundSize = `100% ${val}%`;
 										if(gpConstants.useFadeOut) {
@@ -411,7 +447,7 @@ for use with OBS streaming.
 											= "100% 0%";
 											e.style.color
 											= e.nextSibling.style.color
-											= "white";
+											= gpConstants.defaultColor;
 										}
 										if(gpConstants.useFadeOut) {
 											if(buttonNumber) {
@@ -455,7 +491,7 @@ for use with OBS streaming.
 						status = {t:status, v:0};
 					}
 					if(isChanged || status.v) { 
-						element.style.transition=`opacity 0s`;
+						element.style.transition="opacity 0s";
 						element.style.opacity=1;
 						var si = setInterval(function(){
 							element.style.transition=`opacity ${gpConstants.fadeOutDuration}s`;
@@ -494,9 +530,17 @@ for use with OBS streaming.
 		} else {
 			var scanningWithNoEvents = setInterval(gamepadHandler.scan, 500);
 		}
+
+		var openPopup = function() {
+			var width = 220, height = 156;
+			var left = (screen.availWidth-width)/2;
+			var top = (screen.availHeight-height)/2;
+			window.open("xboxpadviewer.html","popup",`top=${top},left=${left},width=${width},height=${height}`);
+		}
 	</script>
 	
 	<body>
+		<div id="popupButton" onclick="openPopup()">&nbsp;Open in <br>new window</div>
 	</body>
 	
 </html>

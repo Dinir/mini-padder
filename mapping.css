@@ -1,11 +1,11 @@
+@charset "UTF-8";
 body {
   background-color: transparent;
-  color: white;
   line-height: 1em;
-  margin: 0; }
+  margin: 0;
+  font-family: monospace; }
 
 div[id^="gp"] {
-  font-family: monospace;
   text-shadow: 0px 0px 3px black;
   /*
   Id:       Microsoft Controller (Vendor: 045e Product: 02d1)
@@ -15,6 +15,11 @@ div[id^="gp"] {
   /*
   Id:       Xbox 360 Controller (XInput STANDARD GAMEPAD)
   Buttons:  0A 1B 2X 3Y 4LB 5RB 6LT 7RT 8Select 9Start 10LThumb 11RThumb 12DPadU 13DPadD 14DPadL 15DPadR
+  Axes:     0LThumbX 1LThumbY 2RThumbX 3RThumbY
+  */
+  /*
+  Id:       Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)
+  Buttons:  0× 1○ 2□ 3△ 4LB 5B 6LT 7RT 8Share 9Option 10LThumb 11RThumb 12DPadU 13DPadD 14DPadL 15DPadR 16PS 17TouchClick
   Axes:     0LThumbX 1LThumbY 2RThumbX 3RThumbY
   */ }
   div[id^="gp"] div.buttons span.button {
@@ -33,7 +38,7 @@ div[id^="gp"] {
     box-shadow: 0px 0px 3px black;
     width: 3.4em;
     height: 3.4em;
-    border: 1px solid white;
+    border: 1px solid;
     -webkit-border-radius: 100%;
     -moz-border-radius: 100%;
     -ms-border-radius: 100%;
@@ -42,7 +47,7 @@ div[id^="gp"] {
       display: block;
       position: relative;
       box-shadow: 0px 0px 3px #404040;
-      background: white url(dot.png);
+      background: url(dot.png);
       -webkit-border-radius: 100%;
       -moz-border-radius: 100%;
       -ms-border-radius: 100%;
@@ -146,5 +151,76 @@ div[id^="gp"] {
   div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.axes span.axis:nth-child(2) {
     left: 7.55em;
     top: 6.25em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(4) {
+    left: 11.525em;
+    top: 2.5em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(3) {
+    left: 10.275em;
+    top: 3.75em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(2) {
+    left: 12.775em;
+    top: 3.75em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(1) {
+    left: 11.525em;
+    top: 5em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(7) {
+    left: 1.25em;
+    top: 0em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(5) {
+    left: 1.25em;
+    top: 1.25em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(8) {
+    left: 11.25em;
+    top: 0em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(6) {
+    left: 11.25em;
+    top: 1.25em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(9) {
+    left: 3.75em;
+    top: 2.5em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(10) {
+    left: 8.75em;
+    top: 2.5em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(13) {
+    left: 1.525em;
+    top: 2.5em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(15) {
+    left: 0.275em;
+    top: 3.75em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(16) {
+    left: 2.775em;
+    top: 3.75em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(14) {
+    left: 1.525em;
+    top: 5em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(17) {
+    left: 6.25em;
+    top: 8.75em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(18) {
+    left: 6.25em;
+    top: 2.5em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.axes span.axis:nth-child(1) {
+    left: 2.55em;
+    top: 6.25em; }
+  div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.axes span.axis:nth-child(2) {
+    left: 7.55em;
+    top: 6.25em; }
+
+div#popupButton {
+  position: absolute;
+  left: 27.5em;
+  top: 10em;
+  border: 0px solid black;
+  box-shadow: inset 0px 0px 4px grey;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  border-radius: 4px;
+  padding: 1em .6em;
+  background-color: transparent;
+  color: gray; }
+  div#popupButton:hover {
+    background-color: rgba(196, 196, 196, 0.5);
+    cursor: pointer; }
 
 /*# sourceMappingURL=mapping.css.map */

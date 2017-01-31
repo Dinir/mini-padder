@@ -176,6 +176,10 @@ div[id^="gp"] {
 			}
 		}
 	}
+
+	&[class="Unknown Gamepad (Vendor: 0000 Product: 0000)"] {
+		display: none;
+	}
 }
 
 div#popupButton {

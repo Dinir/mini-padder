@@ -1,4 +1,3 @@
-@charset "UTF-8";
 body {
   background-color: transparent;
   line-height: 1em;
@@ -19,7 +18,7 @@ div[id^="gp"] {
   */
   /*
   Id:       Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)
-  Buttons:  0× 1○ 2□ 3△ 4LB 5B 6LT 7RT 8Share 9Option 10LThumb 11RThumb 12DPadU 13DPadD 14DPadL 15DPadR 16PS 17TouchClick
+  Buttons:  0X 1O 2[] 3/\ 4LB 5B 6LT 7RT 8Share 9Option 10LThumb 11RThumb 12DPadU 13DPadD 14DPadL 15DPadR 16PS 17TouchClick
   Axes:     0LThumbX 1LThumbY 2RThumbX 3RThumbY
   */ }
   div[id^="gp"] div.buttons span.button {
@@ -152,16 +151,16 @@ div[id^="gp"] {
     left: 7.55em;
     top: 6.25em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(4) {
-    left: 11.525em;
+    left: 11.25em;
     top: 2.5em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(3) {
-    left: 10.275em;
+    left: 10em;
     top: 3.75em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(2) {
-    left: 12.775em;
+    left: 12.5em;
     top: 3.75em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(1) {
-    left: 11.525em;
+    left: 11.25em;
     top: 5em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(7) {
     left: 1.25em;
@@ -182,20 +181,20 @@ div[id^="gp"] {
     left: 8.75em;
     top: 2.5em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(13) {
-    left: 1.525em;
+    left: 1.25em;
     top: 2.5em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(15) {
-    left: 0.275em;
+    left: 0em;
     top: 3.75em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(16) {
-    left: 2.775em;
+    left: 2.5em;
     top: 3.75em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(14) {
-    left: 1.525em;
+    left: 1.25em;
     top: 5em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(17) {
     left: 6.25em;
-    top: 8.75em; }
+    top: 6.25em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(18) {
     left: 6.25em;
     top: 2.5em; }

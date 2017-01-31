@@ -5,9 +5,9 @@ var gpConstants = {
 	,defaultColor: "white"
 	// what color the text of the pressed button should turn to?
 	,pressedButtonColor: "orange"
-	// change the hue of colors of the buttons.
+	// change the hue of buttons.
 	// this affects background color of pressed buttons as well as
-	// the text color of buttons.
+	// the default color of buttons.
 	// if you want to separately change the background color,
 	// modify the single pixel image file `dot.png`.
 	,pressedButtonBackgroundColorHue: "0"
@@ -22,6 +22,6 @@ var gpConstants = {
 	,fadeOutTime: [8, 16, 32]
 	// set the strength of the fade-out for each timing above. (0~1)
 	,fadeOutStrength: [.5, .9, 1]
-	// set the seconds the fade-out applies through.
+	// set the seconds each fade-out applies through.
 	,fadeOutDuration: 4
 };

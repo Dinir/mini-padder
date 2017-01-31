@@ -147,7 +147,7 @@ div[id^="gp"] {
 	&[class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] {
 		div.buttons {
 			span.button {
-				@include position4(8+$oneCharMargin, 2, nth-child(4), nth-child(3), nth-child(2), nth-child(1));
+				@include position4(8, 2, nth-child(4), nth-child(3), nth-child(2), nth-child(1));
 				@include position2v(1, 0, nth-child(7), nth-child(5));
 				@include position2v(9, 0, nth-child(8), nth-child(6));
 				&:nth-child(9) {
@@ -156,9 +156,9 @@ div[id^="gp"] {
 				&:nth-child(10) {
 					@include positionGrid(7, 2);
 				}
-				@include position4(0+$oneCharMargin, 2, nth-child(13), nth-child(15), nth-child(16), nth-child(14));
+				@include position4(0, 2, nth-child(13), nth-child(15), nth-child(16), nth-child(14));
 				&:nth-child(17) {
-					@include positionGrid(5, 7);
+					@include positionGrid(5, 5);
 				}
 				&:nth-child(18) {
 					@include positionGrid(5, 2);

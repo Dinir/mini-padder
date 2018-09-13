@@ -136,7 +136,7 @@ for use with OBS streaming.
 		var gamepadMapping = {
 			// XBox Pad (One, 360)
 			// Linux
-			"Microsoft Controller (Vendor: 045e Product: 02d1)": {
+			"Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02d1)": {
 				buttons: [
 					{name:"A", type:"button"}
 					,{name:"B", type:"button"}
@@ -144,21 +144,23 @@ for use with OBS streaming.
 					,{name:"Y", type:"button"}
 					,{name:"LB", type:"button"}
 					,{name:"RB", type:"button"}
+					,{name:"LT", type:"button shoulder"}
+					,{name:"RT", type:"button shoulder"}
 					,{name:"Se", type:"button"}
 					,{name:"St", type:"button"}
-					,{name:"ⓧ", type:"button"}
 					,{name:"L", type:"button thumb"}
 					,{name:"R", type:"button thumb"}
+					,{name:"↑", type:"button"}
+					,{name:"↓", type:"button"}
+					,{name:"←", type:"button"}
+					,{name:"→", type:"button"}
+					,{name:"ⓧ", type:"button"}
 				]
 				,axes: [
 					{name:"L", type:"thumb"}
 					,{name:"L", type:"thumb"}
-					,{name:"LT", type:"button shoulder"}
 					,{name:"R", type:"thumb"}
 					,{name:"R", type:"thumb"}
-					,{name:"RT", type:"button shoulder"}
-					,{name:"D", type:"button polar"}
-					,{name:"D", type:"button polar"}
 				]
 			}
 			// Windows
@@ -176,10 +178,36 @@ for use with OBS streaming.
 					,{name:"St", type:"button"}
 					,{name:"L", type:"button thumb"}
 					,{name:"R", type:"button thumb"}
-					,{name:"U", type:"button"}
-					,{name:"D", type:"button"}
-					,{name:"L", type:"button"}
-					,{name:"R", type:"button"}
+					,{name:"↑", type:"button"}
+					,{name:"↓", type:"button"}
+					,{name:"←", type:"button"}
+					,{name:"→", type:"button"}
+				]
+				,axes: [
+					{name:"L", type:"thumb"}
+					,{name:"L", type:"thumb"}
+					,{name:"R", type:"thumb"}
+					,{name:"R", type:"thumb"}
+				]
+			}
+			,"xinput": {
+				buttons: [
+					{name:"A", type:"button"}
+					,{name:"B", type:"button"}
+					,{name:"X", type:"button"}
+					,{name:"Y", type:"button"}
+					,{name:"LB", type:"button"}
+					,{name:"RB", type:"button"}
+					,{name:"LT", type:"button"}
+					,{name:"RT", type:"button"}
+					,{name:"Se", type:"button"}
+					,{name:"St", type:"button"}
+					,{name:"L", type:"button thumb"}
+					,{name:"R", type:"button thumb"}
+					,{name:"↑", type:"button"}
+					,{name:"↓", type:"button"}
+					,{name:"←", type:"button"}
+					,{name:"→", type:"button"}
 				]
 				,axes: [
 					{name:"L", type:"thumb"}
@@ -193,10 +221,66 @@ for use with OBS streaming.
 			// Windows
 			,"Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)": {
 				buttons: [
-					{name:"×", type:"button"}
+					{name:"X", type:"button"}
 					,{name:"◯", type:"button"}
 					,{name:"□", type:"button"}
-					,{name:"△", type:"button"}
+					,{name:"Δ", type:"button"}
+					,{name:"L1", type:"button"}
+					,{name:"R1", type:"button"}
+					,{name:"L2", type:"button"}
+					,{name:"R2", type:"button"}
+					,{name:"Sh", type:"button"}
+					,{name:"Op", type:"button"}
+					,{name:"L", type:"button thumb"}
+					,{name:"R", type:"button thumb"}
+					,{name:"↑", type:"button"}
+					,{name:"↓", type:"button"}
+					,{name:"←", type:"button"}
+					,{name:"→", type:"button"}
+					,{name:"PS", type:"button"}
+					,{name:"TP", type:"button"}
+				]
+				,axes: [
+					{name:"L", type:"thumb"}
+					,{name:"L", type:"thumb"}
+					,{name:"R", type:"thumb"}
+					,{name:"R", type:"thumb"}
+				]
+			}
+			,"Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 09cc)": {
+				buttons: [
+					{name:"X", type:"button"}
+					,{name:"◯", type:"button"}
+					,{name:"□", type:"button"}
+					,{name:"Δ", type:"button"}
+					,{name:"L1", type:"button"}
+					,{name:"R1", type:"button"}
+					,{name:"L2", type:"button"}
+					,{name:"R2", type:"button"}
+					,{name:"Sh", type:"button"}
+					,{name:"Op", type:"button"}
+					,{name:"L", type:"button thumb"}
+					,{name:"R", type:"button thumb"}
+					,{name:"↑", type:"button"}
+					,{name:"↓", type:"button"}
+					,{name:"←", type:"button"}
+					,{name:"→", type:"button"}
+					,{name:"PS", type:"button"}
+					,{name:"TP", type:"button"}
+				]
+				,axes: [
+					{name:"L", type:"thumb"}
+					,{name:"L", type:"thumb"}
+					,{name:"R", type:"thumb"}
+					,{name:"R", type:"thumb"}
+				]
+			}
+			,"Sony Interactive Entertainment Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 09cc)": {
+				buttons: [
+					{name:"X", type:"button"}
+					,{name:"◯", type:"button"}
+					,{name:"□", type:"button"}
+					,{name:"Δ", type:"button"}
 					,{name:"L1", type:"button"}
 					,{name:"R1", type:"button"}
 					,{name:"L2", type:"button"}
@@ -223,7 +307,8 @@ for use with OBS streaming.
 
 		var gamepadDOMs = {
 			add: function(gp) {
-				var isLinuxXpad = gp.id==="Microsoft Controller (Vendor: 045e Product: 02d1)";
+				if(gp.id.indexOf("Unknown Gamepad") !== -1) return;
+				var isLinuxXpad = gp.id==="Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02d1)";
 				if(gpConstants.useFadeOut) {
 					// create a couple of arrays for tracking button's timestamp
 					gamepadTimestamps[gp.index] = new gamepadTimestamp();
@@ -242,9 +327,11 @@ for use with OBS streaming.
 					if(gamepadMapping[gp.id]) {
 						var cur = gamepadMapping[gp.id].buttons[i];
 						var e = document.createElement("span");
-						if(cur.type === "button thumb") {} else {
-							e.setAttribute("class",cur.type);
-							e.innerHTML = cur.name;
+						if(cur) {
+							if(cur.type === "button thumb") {} else {
+								e.setAttribute("class",cur.type);
+								e.innerHTML = cur.name;
+							}
 						}
 					} else {
 						var e = document.createElement("span");
@@ -329,6 +416,7 @@ for use with OBS streaming.
 				}
 				for(j in gamepads) {
 					var gp = gamepads[j];
+					if(gp.id.indexOf("Unknown Gamepad") !== -1) continue;
 					var isLinuxXpad = gp.id==="Microsoft Controller (Vendor: 045e Product: 02d1)";
 					if(gpConstants.useFadeOut) {
 						var gts = gamepadTimestamps[gp.index];
@@ -338,11 +426,13 @@ for use with OBS streaming.
 
 					var b = d.getElementsByClassName("buttons")[0];
 					for(var i=0; i<gp.buttons.length; i++) {
-						var cur = gamepadMapping[gp.id].buttons[i];
 						var e;
 						var es = gp.buttons[i]; // each status of buttons
 						var val = 100*es.value;
-						if(cur.type === "button thumb") {
+						if(gamepadMapping[gp.id]) {
+							var cur = gamepadMapping[gp.id].buttons[i];
+						}
+						if(cur && cur.type === "button thumb") {
 							e = d.getElementsByClassName(`axis ${cur.name}`)[0].children[0];
 							if(val===100) {
 								e.style.background = "url(dot.png)";
@@ -534,7 +624,7 @@ for use with OBS streaming.
 		}
 
 		var openPopup = function() {
-			var width = 220, height = 156;
+			var width = 178, height = 77;
 			var left = (screen.availWidth-width)/2;
 			var top = (screen.availHeight-height)/2;
 			window.open("xboxpadviewer.html","popup",`top=${top},left=${left},width=${width},height=${height}`);

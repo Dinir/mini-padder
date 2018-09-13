@@ -1,5 +1,10 @@
 # Xbox Pad viewer
-![(2.7MB) The viewer in action. Taken from my Caromble! play video.](images/XboxPadViewer.gif)
+![](./images/XB-Layout.png)
+![](./images/DS4-Layout.png)
+
+![(1.27MB) Xbox One Pad Thumbsticks.](./images/XB-Thumbsticks.gif)
+![(411KB) DualShock4 Buttons.](./images/DS4-Buttons.gif)
+![(1.27MB) DualShock4 Thumbsticks.](./images/DS4-Thumbsticks.gif)
 
 Simple Xbox gamepad tracker for use with [OBS](https://obsproject.com) streaming.
 

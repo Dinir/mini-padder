@@ -15,7 +15,7 @@ var gpConstants = {
 	// it refers to this value when deciding if you moved the stick.
 	// eg) 3 -> will track the position of the stick DOM
 	// to 10^-3 below the decimal point.
-	,axisSensitivity: 1
+	,axisSensitivity: 0
 	// should unpressed buttons fade out? (true/false)
 	,useFadeOut: true
 	// set the seconds the fade-out starts in the array.

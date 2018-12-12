@@ -20,7 +20,7 @@ div[id^="gp"] {
 	*/ }
   div[id^="gp"] div.buttons span.button {
     position: fixed;
-    background: url(dot.png);
+    background: url(../dot.png);
     background-repeat: no-repeat;
     background-size: 0% 0%;
     background-position: 0% 0%;
@@ -43,7 +43,7 @@ div[id^="gp"] {
       display: block;
       position: relative;
       box-shadow: 0px 0px 3px #404040;
-      background: url(dot.png);
+      background: url(../dot.png);
       -webkit-border-radius: 100%;
       -moz-border-radius: 100%;
       -ms-border-radius: 100%;

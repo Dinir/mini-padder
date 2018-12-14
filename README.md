@@ -1,4 +1,6 @@
 # Xbox Pad viewer
+[![JavaScript Style Guide](https://cdn.rawgit.com/standard/standard/master/badge.svg)](https://github.com/standard/standard)
+
 ![](./images/XB-Layout.png)
 ![](./images/DS4-Layout.png)
 

@@ -474,14 +474,20 @@ Use it freely, just don't delete my name on the code.
               // simply swapping i values just before
               // converting gamepad's value to the top and left value.
               var linuxXpadCalibration = isLinuxXpad && (i === 3 || i === 4)
-              if (linuxXpadCalibration) { i === 3 ? i = 4 : i = 3 }
-              if (i % 2) {
-                if (linuxXpadCalibration) { i === 3 ? i = 4 : i = 3 }
-                a.style.top = `${thumbMargin + thumbMargin * val}%`
-              } else {
-                if (linuxXpadCalibration) { i === 3 ? i = 4 : i = 3 }
-                a.style.left = `${thumbMargin + thumbMargin * val}%`
-              }
+                if (linuxXpadCalibration) {
+                    i === 3 ? i = 4 : i = 3
+                }
+                if (i % 2) {
+                    if (linuxXpadCalibration) {
+                        i === 3 ? i = 4 : i = 3
+                    }
+                    a.style.top = `${thumbMargin + thumbMargin * val}%`
+                } else {
+                    if (linuxXpadCalibration) {
+                        i === 3 ? i = 4 : i = 3
+                    }
+                    a.style.left = `${thumbMargin + thumbMargin * val}%`
+                }
               var valSerialized =
                 Math.pow(10, 2 * gpConstants.axisSensitivity + 2)
                 * parseFloat(a.style.left).toFixed(gpConstants.axisSensitivity)

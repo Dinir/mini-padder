@@ -54,7 +54,7 @@ class GamepadWatcher {
   }
 
   /**
-   * get an ID of a gamepad
+   * Unless it's recognized as a general XInput controller, which has no explicit ID, get an ID of a gamepad.
    *
    * ID format is different for two browsers:
    * `/([0-9a-f]{1,4})-/g` in Firefox,
@@ -66,9 +66,14 @@ class GamepadWatcher {
    *
    * @param {GamePad} gamepadObj The gamepad object to find the ID of.
    *
-   * @return {(String|boolean)} the hex part of the ID concatenated in a string, if not found then 'false'
+   * @return {(String|boolean)} the hex part of the ID concatenated in a string, if not found then `false`. If it's a general XInput controller it's simply `XInput`.
    */
   static getGamepadID (gamepadObj) {
+    const isGeneralXInput = gamepadObj.id.match(/xinput/i)
+    if (isGeneralXInput) {
+      return isGeneralXInput[0]
+    }
+
     const idPattern = /([0-9a-f]{4})/g
 
     const matches = gamepadObj.id.match(idPattern)
@@ -163,7 +168,9 @@ class GamepadWatcher {
 
     if (!rawGamepads) {
       for (let index in this.gamepadID) {
-        this.unregister(parseInt(index))
+        if (this.gamepadID.hasOwnProperty(index)) {
+          this.unregister(parseInt(index))
+        }
       }
       this.pollGamepads()
       return

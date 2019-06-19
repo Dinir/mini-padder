@@ -17,11 +17,6 @@ Use it freely, just don't delete my name on the code.
 <script>
   window.onload = function () {
     document.body.style.fontSize = '16px'
-    if (window.name === 'popup') {
-      document.body.style.backgroundColor = 'black'
-      document.body.style.overflow = 'hidden'
-      document.title = 'XBox Pad Viewer Popup'
-    }
     if (gpConstants.useFadeOut) { timeValues.fpsCheck() }
   }
 
@@ -617,10 +612,8 @@ Use it freely, just don't delete my name on the code.
   }
 
 </script>
-<script src="./js/popupOption.js"></script>
 
 <body>
-<div id="popupButton" onclick="openPopup()">&nbsp;Open in <br>new window</div>
 </body>
 
 </html>

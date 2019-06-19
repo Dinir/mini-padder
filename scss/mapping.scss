@@ -100,8 +100,8 @@ div[id^="gp"] {
     div.buttons {
       span.button {
         @include position4(6+$oneCharMargin, 1, nth-child(4), nth-child(3), nth-child(2), nth-child(1));
-        @include position2h-narrow(0, 0, nth-child(5), nth-child(7));
-        @include position2h-narrow(6, 0, nth-child(8), nth-child(6));
+        @include position2h-narrow(0, 0, nth-child(7), nth-child(5));
+        @include position2h-narrow(6, 0, nth-child(6), nth-child(8));
         @include position3(3, 1, nth-child(17), nth-child(9), nth-child(10));
         @include position4-wide-vertical-arrows(0+$oneCharMargin, 1, nth-child(13), nth-child(15), nth-child(16), nth-child(14));
       }
@@ -129,8 +129,8 @@ div[id^="gp"] {
     div.buttons {
       span.button {
         @include position4(6+$oneCharMargin, 1, nth-child(4), nth-child(3), nth-child(2), nth-child(1));
-        @include position2h-narrow(0, 0, nth-child(5), nth-child(7));
-        @include position2h-narrow(6, 0, nth-child(8), nth-child(6));
+        @include position2h-narrow(0, 0, nth-child(7), nth-child(5));
+        @include position2h-narrow(6, 0, nth-child(6), nth-child(8));
         &:nth-child(9) {
           @include positionGrid(3, 2);
         }

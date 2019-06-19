@@ -82,16 +82,16 @@ div[id^="gp"] {
     left: 6.20313em;
     top: 2.5em; }
   div[id^="gp"][class="Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02d1)"] div.buttons span.button:nth-child(13), div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(13), div[id^="gp"][class="xinput"] div.buttons span.button:nth-child(13) {
-    left: 1.525em;
+    left: 1.3375em;
     top: 1.25em; }
   div[id^="gp"][class="Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02d1)"] div.buttons span.button:nth-child(15), div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(15), div[id^="gp"][class="xinput"] div.buttons span.button:nth-child(15) {
-    left: 0.275em;
+    left: 0.0875em;
     top: 2.5em; }
   div[id^="gp"][class="Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02d1)"] div.buttons span.button:nth-child(16), div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(16), div[id^="gp"][class="xinput"] div.buttons span.button:nth-child(16) {
-    left: 2.72813em;
+    left: 2.5875em;
     top: 2.5em; }
   div[id^="gp"][class="Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02d1)"] div.buttons span.button:nth-child(14), div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(14), div[id^="gp"][class="xinput"] div.buttons span.button:nth-child(14) {
-    left: 1.525em;
+    left: 1.3375em;
     top: 3.75em; }
   div[id^="gp"][class="Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02d1)"] div.axes span.axis:nth-child(1), div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.axes span.axis:nth-child(1), div[id^="gp"][class="xinput"] div.axes span.axis:nth-child(1) {
     left: 0.05em;
@@ -130,16 +130,16 @@ div[id^="gp"] {
     left: 6.25em;
     top: 2.5em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(13), div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 09cc)"] div.buttons span.button:nth-child(13), div[id^="gp"][class="Sony Interactive Entertainment Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 09cc)"] div.buttons span.button:nth-child(13) {
-    left: 1.525em;
+    left: 1.3375em;
     top: 1.25em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(15), div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 09cc)"] div.buttons span.button:nth-child(15), div[id^="gp"][class="Sony Interactive Entertainment Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 09cc)"] div.buttons span.button:nth-child(15) {
-    left: 0.275em;
+    left: 0.0875em;
     top: 2.5em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(16), div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 09cc)"] div.buttons span.button:nth-child(16), div[id^="gp"][class="Sony Interactive Entertainment Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 09cc)"] div.buttons span.button:nth-child(16) {
-    left: 2.72813em;
+    left: 2.5875em;
     top: 2.5em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(14), div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 09cc)"] div.buttons span.button:nth-child(14), div[id^="gp"][class="Sony Interactive Entertainment Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 09cc)"] div.buttons span.button:nth-child(14) {
-    left: 1.525em;
+    left: 1.3375em;
     top: 3.75em; }
   div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 05c4)"] div.buttons span.button:nth-child(17), div[id^="gp"][class="Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 09cc)"] div.buttons span.button:nth-child(17), div[id^="gp"][class="Sony Interactive Entertainment Wireless Controller (STANDARD GAMEPAD Vendor: 054c Product: 09cc)"] div.buttons span.button:nth-child(17) {
     left: 5em;

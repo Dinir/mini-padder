@@ -11,11 +11,10 @@ var gpConstants = {
 	// if you want to separately change the background color,
 	// modify the single pixel image file `dot.png`.
 	,pressedButtonBackgroundColorHue: "0"
-	// how responsive should thumb stick tracking be? (0~)
-	// it refers to this value when deciding if you moved the stick.
-	// eg) 3 -> will track the position of the stick DOM
-	// to 10^-3 below the decimal point.
-	,axisSensitivity: 0
+	// how far should the stick have moved
+	// to be considered as an intentional movement? (0~1)
+	// 0 is the center, 1 is the border.
+	,axisDeadzone: 0.05
 	// should unpressed buttons fade out? (true/false)
 	,useFadeOut: true
 	// set the seconds the fade-out starts in the array.

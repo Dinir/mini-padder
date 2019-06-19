@@ -83,6 +83,7 @@ Use it freely, just don't delete my name on the code.
         }
       }
 
+      // these 'update' functions tell if an input method is considered as 'touched'.
       this.buttonUpdate = function (n, v) {
         if (buttons[n].v !== v) {
           buttons[n].t = 0
@@ -93,9 +94,12 @@ Use it freely, just don't delete my name on the code.
         }
       }
       this.axisUpdate = function (n, v) {
-        if (axes[n].v !== v) {
+        // update the value always
+        axes[n].v = v
+        // check if the position is away enough from the center
+        // that the axis values is bigger than the deadzone
+        if (Math.abs(v) > gpConstants.axisDeadzone) {
           axes[n].t = 0
-          axes[n].v = v
           return true
         } else {
           return false
@@ -482,14 +486,9 @@ Use it freely, just don't delete my name on the code.
                 if (linuxXpadCalibration) { i === 3 ? i = 4 : i = 3 }
                 a.style.left = `${thumbMargin + thumbMargin * val}%`
               }
-              var valSerialized =
-                Math.pow(10, 2 * gpConstants.axisSensitivity + 2)
-                * parseFloat(a.style.left).toFixed(gpConstants.axisSensitivity)
-                + Math.pow(10, gpConstants.axisSensitivity)
-                * parseFloat(a.style.top).toFixed(gpConstants.axisSensitivity)
               if (gpConstants.useFadeOut) {
                 gamepadDOMs.opacityControl(
-                  gts.axisUpdate(cur.name, valSerialized),
+                  gts.axisUpdate(cur.name, val),
                   gts.getAxisTimestamp(cur.name),
                   a.parentElement
                 )
@@ -586,6 +585,7 @@ Use it freely, just don't delete my name on the code.
           }, 1)
         } else {
           var ts = status.t / timeValues.fps
+          // this for loop breaks after checking the last condition fitting, don't need to put a condition to prevent it from keep running.
           for (var k = gpConstants.fadeOutTime.length - 1; k >= 0; k--) {
             if (ts >= gpConstants.fadeOutTime[k]) {
               element.style.opacity = 1 - gpConstants.fadeOutStrength[k]

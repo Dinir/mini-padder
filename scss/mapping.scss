@@ -3,6 +3,8 @@ $thumbSize: 3.4em;
 $oneCharMargin: 0.22;
 $twoCharMargin: 0;
 $twoCharHoriMargin: 0.0375;
+$wideHorizontalArrowsMargin: 0.15;
+$wideVerticalArrowsMargin: 0.15;
 $thumbMargin: 0.04;
 
 $shadowValue: 0px 0px 3px;
@@ -38,6 +40,12 @@ $shadowValue: 0px 0px 3px;
 @mixin position4($x, $y, $itemU, $itemL, $itemR, $itemD) {
 	@include position3($x, $y, $itemU, $itemL, $itemR);
 	&:#{$itemD} { @include positionGrid(($x+1), ($y+2)); }
+}
+@mixin position4-wide-vertical-arrows($x, $y, $itemU, $itemL, $itemR, $itemD) {
+	&:#{$itemU} { @include positionGrid(($x+1-$wideVerticalArrowsMargin), $y); }
+	&:#{$itemL} { @include positionGrid(($x - $wideHorizontalArrowsMargin), ($y+1)); }
+	&:#{$itemR} { @include positionGrid(($x+2-$wideHorizontalArrowsMargin), ($y+1)); }
+	&:#{$itemD} { @include positionGrid(($x+1-$wideVerticalArrowsMargin), ($y+2)); }
 }
 
 body {
@@ -95,7 +103,7 @@ div[id^="gp"] {
 				@include position2h-narrow(0, 0, nth-child(5), nth-child(7));
 				@include position2h-narrow(6, 0, nth-child(8), nth-child(6));
 				@include position3(3, 1, nth-child(17), nth-child(9), nth-child(10));
-				@include position4(0+$oneCharMargin, 1, nth-child(13), nth-child(15), nth-child(16), nth-child(14));
+				@include position4-wide-vertical-arrows(0+$oneCharMargin, 1, nth-child(13), nth-child(15), nth-child(16), nth-child(14));
 			}
 		}
 		div.axes {
@@ -129,7 +137,7 @@ div[id^="gp"] {
 				&:nth-child(10) {
 					@include positionGrid(5, 2);
 				}
-				@include position4(0+$oneCharMargin, 1, nth-child(13), nth-child(15), nth-child(16), nth-child(14));
+				@include position4-wide-vertical-arrows(0+$oneCharMargin, 1, nth-child(13), nth-child(15), nth-child(16), nth-child(14));
 				&:nth-child(17) {
 					@include positionGrid(4, 3);
 				}
@@ -148,9 +156,6 @@ div[id^="gp"] {
 				}
 			}
 		}
-	}
-
-	&[class="8Bitdo NES30 Pro (Vendor: 2002 Product: 9000)"] {
 	}
 
 	&[class="Unknown Gamepad (Vendor: 0000 Product: 0000)"] {

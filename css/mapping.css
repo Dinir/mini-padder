@@ -1,5 +1,5 @@
 body {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: black;
   line-height: 1em;
   margin: 0;
   font-family: "Fira Code"; }
@@ -155,20 +155,3 @@ div[id^="gp"] {
     top: 1.25em; }
   div[id^="gp"][class="Unknown Gamepad (Vendor: 0000 Product: 0000)"] {
     display: none; }
-
-div#popupButton {
-  position: absolute;
-  left: 27.5em;
-  top: 10em;
-  border: 0px solid black;
-  box-shadow: inset 0px 0px 4px grey;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  -ms-border-radius: 4px;
-  border-radius: 4px;
-  padding: 1em .6em;
-  background-color: rgba(0, 0, 0, 0);
-  color: gray; }
-  div#popupButton:hover {
-    background-color: rgba(196, 196, 196, 0.5);
-    cursor: pointer; }

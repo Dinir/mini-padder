@@ -14,7 +14,9 @@ var gpConstants = {
   // how far should the stick have moved 
   // to be considered as an intentional movement? (0~1)
   // 0 is the center, 1 is the border.
-  axisDeadzone: 0.05,
+  // currently it tracks the position of individual axes, 
+  // so the deadzone is shaped like a square.
+  axisDeadzone: 0.08,
   // should unpressed buttons fade out? (true/false)
   useFadeOut: true,
   // set the seconds the fade-out starts in the array.

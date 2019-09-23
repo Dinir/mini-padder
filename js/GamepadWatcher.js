@@ -36,17 +36,21 @@ class GamepadWatcher {
    * create a watcher.
    *
    * @param {function} updateCallback Callback to execute for every frame or updates.
-   * @param {boolean} [loopCheck=false] emits to console for every loop event.
+   * @param {boolean} [logMessage=false] emits to console for every loop event.
    * @param {number} [pollInterval=2000] Interval to check the gamepads when none was found before.
    */
-  constructor (updateCallback, loopCheck = false, pollInterval = 2000) {
+  constructor (updateCallback, logMessage = false, pollInterval = 2000) {
     this.gamepadID = {}
     this.pollInterval = pollInterval
-    this.updateID = {
-      animation: 0,
-      poll: 0
+    this.updateAtEveryFrame = false
+    this.updateID = 0
+    this.flushUpdateID = function () {
+      if (this.updateID) {
+        clearInterval(this.updateID)
+      }
+      this.updateID = 0
     }
-    this.loopCheck = loopCheck
+    this.logMessage = logMessage
     if (updateCallback) {
       this.update = updateCallback
     }
@@ -71,7 +75,7 @@ class GamepadWatcher {
   static getGamepadID (gamepadObj) {
     const isGeneralXInput = gamepadObj.id.match(/xinput/i)
     if (isGeneralXInput) {
-      return isGeneralXInput[0]
+      return 'XInput'
     }
 
     const idPattern = /([0-9a-f]{4})/g
@@ -86,6 +90,21 @@ class GamepadWatcher {
       (pv, cv) => pv + (cv.replace(/[^0-9a-f]/, '')).padStart(4, '0'),
       ''
     )
+  }
+  
+  /**
+   * tell if any gamepads exist.
+   *
+   * @returns {boolean}
+   */
+  static gamepadsExist () {
+    return Object.values(navigator.getGamepads())
+      .filter(v => v !== null)
+     .length !== 0
+  }
+  
+  static getGamepads () {
+    return navigator.getGamepads()
   }
 
   /**
@@ -109,31 +128,29 @@ class GamepadWatcher {
    * Repeats until a gamepad is found, at which it stops the poll loop and initiates animation loop (repeats inside `refresh`).
    */
   pollGamepads () {
-    if (this.loopCheck) {
-      if (this.updateID.poll !== 0) console.log('do poll loop')
-    }
-    const foundGamepads = GamepadWatcher.getGamepadsIfFound()
-    if (foundGamepads) {
+    if (GamepadWatcher.gamepadsExist()) {
       // stop the poll loop, initiate refresh loop
       // this will start the animation loop at the end of `refresh`
-      clearInterval(this.updateID.poll)
-      this.updateID.poll = 0
-      if (this.loopCheck) { console.log('to ani loop') }
+      this.flushUpdateID()
+      this.updateAtEveryFrame = true
+      if (this.logMessage) { console.log('to ani loop') }
       this.refresh()
     } else {
-      if (this.updateID.animation) {
+      if (this.updateAtEveryFrame) {
         // stop animation loop if there's any
-        window.cancelAnimationFrame(this.updateID.animation)
-        this.updateID.animation = 0
-        if (this.loopCheck) { console.log('stop ani loop') }
+        window.cancelAnimationFrame(this.updateID)
+        this.flushUpdateID()
+        this.updateAtEveryFrame = false
+        if (this.logMessage) { console.log('stop ani loop') }
       }
-      if (this.updateID.poll === 0) {
-        if (this.loopCheck) { console.log('to poll loop') }
-        // start the poll loop if there's no any already
-        this.updateID.poll = setInterval(
+      // start the poll loop if there's no any already
+      if (!this.updateID) {
+        this.updateID = setInterval(
           this.pollGamepads.bind(this), this.pollInterval
         )
+        if (this.logMessage) { console.log('start poll loop') }
       }
+      if (this.logMessage) { console.log('doing poll loop') }
     }
   }
 
@@ -145,7 +162,7 @@ class GamepadWatcher {
   register (gamepadObj) {
     this.gamepadID[gamepadObj.index] =
       GamepadWatcher.getGamepadID(gamepadObj)
-    if (this.loopCheck) { console.info('gamepad found:', gamepadObj.index) }
+    if (this.logMessage) { console.info('gamepad found:', gamepadObj.index) }
   }
 
   /**
@@ -155,7 +172,7 @@ class GamepadWatcher {
    */
   unregister (gamepadIndex) {
     delete this.gamepadID[gamepadIndex]
-    if (this.loopCheck) { console.info('gamepad lost:', gamepadIndex) }
+    if (this.logMessage) { console.info('gamepad lost:', gamepadIndex) }
   }
 
   /**

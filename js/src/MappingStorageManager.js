@@ -14,7 +14,7 @@
  * @typedef {string} gamepadId 8-digit hexadecimal string
  */
 
-class MappingStorageManager {
+export default class MappingStorageManager {
   /**
    * @param {?gamepadMapping[]} newMappings all mappings to store on the computer
    */

@@ -1,0 +1,19 @@
+{
+  "name": "xbox-pad-viewer",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rm -rf ./js/dist && webpack --mode development ./js/main.js -o ./js/dist/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dinir/xbox-pad-viewer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Dinir/xbox-pad-viewer/issues"
+  },
+  "homepage": "https://github.com/Dinir/xbox-pad-viewer#readme",
+  "devDependencies": {
+    "webpack": "^4.41.0",
+    "webpack-cli": "^3.3.9"
+  }
+}

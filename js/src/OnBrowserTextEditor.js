@@ -16,7 +16,7 @@
  * Create a textarea and a set of buttons to give access to the text
  * @class
  */
-class OnBrowserTextEditor {
+export default class OnBrowserTextEditor {
   /** @param {TextEditorCallbacks} callbacks */
   constructor (callbacks) {
     this.textarea = document.createElement('textarea')

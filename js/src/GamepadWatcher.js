@@ -31,7 +31,7 @@
  * adjust updating interval in relation to the present of connected gamepads,
  * execute a callback for every frame or update moments
  */
-class GamepadWatcher {
+export default class GamepadWatcher {
   /**
    * create a watcher.
    *

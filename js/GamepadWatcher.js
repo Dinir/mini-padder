@@ -40,6 +40,7 @@ class GamepadWatcher {
    * @param {number} [pollInterval=2000] Interval to check the gamepads when none was found before.
    */
   constructor (updateCallback, logMessage = false, pollInterval = 2000) {
+    // `gamepadID` only contains the obtained ID of each gamepads.
     this.gamepadID = {}
     this.pollInterval = pollInterval
     this.updateAtEveryFrame = false

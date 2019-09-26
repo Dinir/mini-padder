@@ -37,7 +37,11 @@ class OnBrowserTextEditor {
      *
      * @example
      * callbacks.save = (text, notify) => {
-     *   window.localStorage.setItem('text', text)
+     *   try {
+     *     textarea.value = window.localStorage.setItem('text')
+     *   } catch (e) {
+     *     notify({text: "There's an error.", isError: true})
+     *   }
      * }
      */
     this.save = () =>
@@ -48,7 +52,11 @@ class OnBrowserTextEditor {
      *
      * @example
      * callbacks.load = (textarea, notify) => {
-     *   textarea.value = window.localStorage.getItem('text')
+     *   try {
+     *     textarea.value = window.localStorage.getItem('text')
+     *   } catch (e) {
+     *     notify({text: "There's an error.", isError: true})
+     *   }
      * }
      */
     this.load = () =>

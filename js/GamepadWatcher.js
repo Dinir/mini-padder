@@ -94,17 +94,14 @@ class GamepadWatcher {
   
   /**
    * tell if any gamepads exist.
+   * @param {GamepadList} list if GamepadList is already retrieved, you can manually put it as the parameter here.
    *
    * @returns {boolean}
    */
-  static gamepadsExist () {
-    return Object.values(navigator.getGamepads())
+  static gamepadsExist (list = navigator.getGamepads()) {
+    return Object.values(list)
       .filter(v => v !== null)
      .length !== 0
-  }
-  
-  static getGamepads () {
-    return navigator.getGamepads()
   }
 
   /**
@@ -114,11 +111,8 @@ class GamepadWatcher {
    */
   static getGamepadsIfFound () {
     const rawGamepads = navigator.getGamepads()
-    const areFound = Object.values(rawGamepads)
-      .filter(v => v !== null)
-      .length !== 0
 
-    return areFound ? rawGamepads : false
+    return this.gamepadsExist(rawGamepads) ? rawGamepads : false
   }
 
   /**
@@ -133,7 +127,7 @@ class GamepadWatcher {
       // this will start the animation loop at the end of `refresh`
       this.flushUpdateID()
       this.updateAtEveryFrame = true
-      if (this.logMessage) { console.log('to ani loop') }
+      if (this.logMessage) { console.info('Gamepad is found. Now updating in every frame.') }
       this.refresh()
     } else {
       if (this.updateAtEveryFrame) {
@@ -141,16 +135,16 @@ class GamepadWatcher {
         window.cancelAnimationFrame(this.updateID)
         this.flushUpdateID()
         this.updateAtEveryFrame = false
-        if (this.logMessage) { console.log('stop ani loop') }
+        if (this.logMessage) { console.info('No gamepads left. Now polling.') }
       }
       // start the poll loop if there's no any already
       if (!this.updateID) {
         this.updateID = setInterval(
           this.pollGamepads.bind(this), this.pollInterval
         )
-        if (this.logMessage) { console.log('start poll loop') }
+        if (this.logMessage) { console.info('Started polling.') }
       }
-      if (this.logMessage) { console.log('doing poll loop') }
+      if (this.logMessage) { console.info('Waiting for a gamepad.') }
     }
   }
 
@@ -183,6 +177,7 @@ class GamepadWatcher {
   refresh () {
     let rawGamepads = GamepadWatcher.getGamepadsIfFound()
 
+    // no gamepads found, start poll loop.
     if (!rawGamepads) {
       for (let index in this.gamepadID) {
         if (this.gamepadID.hasOwnProperty(index)) {

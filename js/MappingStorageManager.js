@@ -3,10 +3,12 @@
 /**
  * @typedef {Object} gamepadMapping
  * @property {String} identifier human readable string to tell what this mapping is for
- * @property {?Object} Windows set of buttons and axes used in Windows, should exist if the mapping is used on Windows.
- * @Property {?Object} Linux set of buttons and axes used in Linux, should exist if the mapping is used on Linux.]
- * @property {{label: String, type: String}[]} buttons
- * @property {{label: String, type: String}[]} axes
+ * @property {?Object} windows set of buttons and axes used in Windows, should exist if the mapping is used on Windows.
+ * @property {{label: String, type: String}[]} windows.buttons
+ * @property {{label: String, type: String}[]} windows.axes
+ * @Property {?Object} linux set of buttons and axes used in Linux, should exist if the mapping is used on Linux.
+ * @property {{label: String, type: String}[]} linux.buttons
+ * @property {{label: String, type: String}[]} linux.axes
  */
 /**
  * @typedef {string} gamepadId 8-digit hexadecimal string
@@ -17,6 +19,7 @@ class MappingStorageManager {
    * @param {?gamepadMapping[]} newMappings all mappings to store on the computer
    */
   constructor (newMappings) {
+    this.platform = undefined
     this.decidePlatform()
     if (newMappings && typeof newMappings === 'object') {
       this.mappings = newMappings
@@ -33,6 +36,14 @@ class MappingStorageManager {
     this.platform =
       navigator.platform.match(/^Win/) ? 'Windows' : 'Linux'
   }
+  
+  add (gamepadId, mappingObj) {
+    this.mappings[gamepadId] = mappingObj
+  }
+  
+  remove (gamepadId) {
+    delete this.mappings[gamepadId]
+  }
 
   store () {
     if (
@@ -47,13 +58,5 @@ class MappingStorageManager {
   load () {
     this.mappings = window.localStorage.getItem('mappings') || {}
     console.info(`Mapping loaded: ${this.mappings}`)
-  }
-
-  add (gamepadId, mappingObj) {
-    this.mappings[gamepadId] = mappingObj
-  }
-  
-  remove (gamepadId) {
-    delete this.mappings[gamepadId]
   }
 }

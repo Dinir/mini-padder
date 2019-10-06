@@ -21,6 +21,7 @@ class MappingStorageManager {
   constructor (newMappings) {
     this.platform = undefined
     this.decidePlatform()
+    this.mappings = {}
     if (newMappings && typeof newMappings === 'object') {
       this.mappings = newMappings
       this.store()
@@ -51,12 +52,206 @@ class MappingStorageManager {
       this.mappings.constructor === Object
     ) {} else {
       window.localStorage.setItem('mappings', this.mappings)
-      console.info(`Mapping stored: ${window.localStorage.getItem('mappings')}`)
+      console.info(
+        window.localStorage.getItem('mappings'),
+        'mappings stored.'
+      )
     }
   }
 
   load () {
     this.mappings = window.localStorage.getItem('mappings') || {}
-    console.info(`Mapping loaded: ${this.mappings}`)
+    console.info(
+      Object.keys(this.mappings).length,
+      'mappings found.'
+    )
+  }
+  
+  /**
+   * force store default mappings to localStorage,
+   * then load that to the instance.
+   */
+  initiate () {
+    const defaultMappings = {
+      "XInput": {
+        "identifier": "XInput",
+        "Windows": {
+          "buttons": [
+            { "label": "A", "type": "button" },
+            { "label": "B", "type": "button" },
+            { "label": "X", "type": "button" },
+            { "label": "Y", "type": "button" },
+            { "label": "LB", "type": "button" },
+            { "label": "RB", "type": "button" },
+            { "label": "LT", "type": "button" },
+            { "label": "RT", "type": "button" },
+            { "label": "Se", "type": "button" },
+            { "label": "St", "type": "button" },
+            { "label": "L", "type": "button thumb" },
+            { "label": "R", "type": "button thumb" },
+            { "label": "⏶", "type": "button" },
+            { "label": "⏷", "type": "button" },
+            { "label": "⏴", "type": "button" },
+            { "label": "⏵", "type": "button" }
+          ],
+          "axes": [
+            { "label": "L", "type": "thumb" },
+            { "label": "L", "type": "thumb" },
+            { "label": "R", "type": "thumb" },
+            { "label": "R", "type": "thumb" }
+          ]
+        }
+      },
+      "045e02d1": {
+        "identifier": "Xbox Pad",
+        "Linux": {
+          "buttons": [
+            { "label": "A", "type": "button" },
+            { "label": "B", "type": "button" },
+            { "label": "X", "type": "button" },
+            { "label": "Y", "type": "button" },
+            { "label": "LB", "type": "button" },
+            { "label": "RB", "type": "button" },
+            { "label": "LT", "type": "button shoulder" },
+            { "label": "RT", "type": "button shoulder" },
+            { "label": "Se", "type": "button" },
+            { "label": "St", "type": "button" },
+            { "label": "L", "type": "button thumb" },
+            { "label": "R", "type": "button thumb" },
+            { "label": "⏶", "type": "button" },
+            { "label": "⏷", "type": "button" },
+            { "label": "⏴", "type": "button" },
+            { "label": "⏵", "type": "button" },
+            { "label": "ⓧ", "type": "button" }
+          ],
+          "axes": [
+            { "label": "L", "type": "thumb" },
+            { "label": "L", "type": "thumb" },
+            { "label": "R", "type": "thumb" },
+            { "label": "R", "type": "thumb" }
+          ]
+        }
+      },
+      "054c05c4": {
+        "identifier": "DualShock 4 (CUH-ZCT1x)",
+        "Windows": {
+          "buttons": [
+            { "label": "X", "type": "button" },
+            { "label": "◯", "type": "button" },
+            { "label": "□", "type": "button" },
+            { "label": "Δ", "type": "button" },
+            { "label": "L1", "type": "button" },
+            { "label": "R1", "type": "button" },
+            { "label": "L2", "type": "button" },
+            { "label": "R2", "type": "button" },
+            { "label": "Sh", "type": "button" },
+            { "label": "Op", "type": "button" },
+            { "label": "L", "type": "button thumb" },
+            { "label": "R", "type": "button thumb" },
+            { "label": "⏶", "type": "button" },
+            { "label": "⏷", "type": "button" },
+            { "label": "⏴", "type": "button" },
+            { "label": "⏵", "type": "button" },
+            { "label": "PS", "type": "button" },
+            { "label": "TP", "type": "button" }
+          ],
+          "axes": [
+            { "label": "L", "type": "thumb" },
+            { "label": "L", "type": "thumb" },
+            { "label": "R", "type": "thumb" },
+            { "label": "R", "type": "thumb" }
+          ]
+        },
+        "Linux": {
+          "buttons": [
+            { "label": "X", "type": "button" },
+            { "label": "◯", "type": "button" },
+            { "label": "□", "type": "button" },
+            { "label": "Δ", "type": "button" },
+            { "label": "L1", "type": "button" },
+            { "label": "R1", "type": "button" },
+            { "label": "L2", "type": "button" },
+            { "label": "R2", "type": "button" },
+            { "label": "Sh", "type": "button" },
+            { "label": "Op", "type": "button" },
+            { "label": "L", "type": "button thumb" },
+            { "label": "R", "type": "button thumb" },
+            { "label": "⏶", "type": "button" },
+            { "label": "⏷", "type": "button" },
+            { "label": "⏴", "type": "button" },
+            { "label": "⏵", "type": "button" },
+            { "label": "PS", "type": "button" },
+            { "label": "TP", "type": "button" }
+          ],
+          "axes": [
+            { "label": "L", "type": "thumb" },
+            { "label": "L", "type": "thumb" },
+            { "label": "R", "type": "thumb" },
+            { "label": "R", "type": "thumb" }
+          ]
+        }
+      },
+      "054c09cc": {
+        "identifier": "DualShock 4 (CUH-ZCT2x)",
+        "Windows": {
+          "buttons": [
+            { "label": "X", "type": "button" },
+            { "label": "◯", "type": "button" },
+            { "label": "□", "type": "button" },
+            { "label": "Δ", "type": "button" },
+            { "label": "L1", "type": "button" },
+            { "label": "R1", "type": "button" },
+            { "label": "L2", "type": "button" },
+            { "label": "R2", "type": "button" },
+            { "label": "Sh", "type": "button" },
+            { "label": "Op", "type": "button" },
+            { "label": "L", "type": "button thumb" },
+            { "label": "R", "type": "button thumb" },
+            { "label": "⏶", "type": "button" },
+            { "label": "⏷", "type": "button" },
+            { "label": "⏴", "type": "button" },
+            { "label": "⏵", "type": "button" },
+            { "label": "PS", "type": "button" },
+            { "label": "TP", "type": "button" }
+          ],
+          "axes": [
+            { "label": "L", "type": "thumb" },
+            { "label": "L", "type": "thumb" },
+            { "label": "R", "type": "thumb" },
+            { "label": "R", "type": "thumb" }
+          ]
+        },
+        "Linux": {
+          "buttons": [
+            { "label": "X", "type": "button" },
+            { "label": "◯", "type": "button" },
+            { "label": "□", "type": "button" },
+            { "label": "Δ", "type": "button" },
+            { "label": "L1", "type": "button" },
+            { "label": "R1", "type": "button" },
+            { "label": "L2", "type": "button" },
+            { "label": "R2", "type": "button" },
+            { "label": "Sh", "type": "button" },
+            { "label": "Op", "type": "button" },
+            { "label": "L", "type": "button thumb" },
+            { "label": "R", "type": "button thumb" },
+            { "label": "⏶", "type": "button" },
+            { "label": "⏷", "type": "button" },
+            { "label": "⏴", "type": "button" },
+            { "label": "⏵", "type": "button" },
+            { "label": "PS", "type": "button" },
+            { "label": "TP", "type": "button" }
+          ],
+          "axes": [
+            { "label": "L", "type": "thumb" },
+            { "label": "L", "type": "thumb" },
+            { "label": "R", "type": "thumb" },
+            { "label": "R", "type": "thumb" }
+          ]
+        }
+      }
+    }
+  
+    window.localStorage.setItem('mappings', JSON.stringify(defaultMappings))
   }
 }

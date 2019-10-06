@@ -50,20 +50,24 @@ class MappingStorageManager {
     if (
       Object.keys(this.mappings).length === 0 &&
       this.mappings.constructor === Object
-    ) {} else {
-      window.localStorage.setItem('mappings', this.mappings)
+    ) {
+      console.info('No mappings to store.')
+    } else {
+      const mappingsJSON = JSON.stringify(this.mappings)
+      window.localStorage.setItem('mappings', mappingsJSON)
       console.info(
-        window.localStorage.getItem('mappings'),
-        'mappings stored.'
+        Object.keys(JSON.parse(mappingsJSON)).length +
+        ' mappings stored.'
       )
     }
   }
 
   load () {
-    this.mappings = window.localStorage.getItem('mappings') || {}
+    const mappingsObj = JSON.parse(window.localStorage.getItem('mappings'))
+    this.mappings = mappingsObj || {}
     console.info(
-      Object.keys(this.mappings).length,
-      'mappings found.'
+      Object.keys(this.mappings).length +
+      ' mappings found.'
     )
   }
   
@@ -252,6 +256,7 @@ class MappingStorageManager {
       }
     }
   
-    window.localStorage.setItem('mappings', JSON.stringify(defaultMappings))
+    this.mappings = defaultMappings
+    this.store()
   }
 }

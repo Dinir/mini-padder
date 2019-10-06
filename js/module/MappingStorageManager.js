@@ -38,7 +38,7 @@ class MappingStorageManager {
       navigator.platform.match(/^Win/) ? 'Windows' : 'Linux'
   }
   
-  add (gamepadId, mappingObj) {
+  addOrUpdate (gamepadId, mappingObj) {
     this.mappings[gamepadId] = mappingObj
   }
   
@@ -48,27 +48,30 @@ class MappingStorageManager {
 
   store () {
     if (
-      Object.keys(this.mappings).length === 0 &&
-      this.mappings.constructor === Object
+      this.mappings.constructor === Object &&
+      Object.keys(this.mappings).length > 0
     ) {
-      console.info('No mappings to store.')
-    } else {
       const mappingsJSON = JSON.stringify(this.mappings)
       window.localStorage.setItem('mappings', mappingsJSON)
-      console.info(
+    
+      const message =
         Object.keys(JSON.parse(mappingsJSON)).length +
         ' mappings stored.'
-      )
+      return message
     }
+    
+    const message = 'No mappings to store.'
+    return message
   }
 
   load () {
     const mappingsObj = JSON.parse(window.localStorage.getItem('mappings'))
     this.mappings = mappingsObj || {}
-    console.info(
+    
+    const message =
       Object.keys(this.mappings).length +
       ' mappings found.'
-    )
+    return message
   }
   
   /**

@@ -70,16 +70,12 @@ div[id^="gp"] {
     @include border-radius(100%);
   }
 
-  div.buttons {
-    span.button {
-      position: fixed;
-      background: url(../dot.png);
-      background-repeat: no-repeat;
-      background-size: 0% 0%;
-      background-position: 0% 0%;
-      @include border-radius(4px);
+  div.bg-circles {
+    span.bg-circle {
+      border-color: transparent;
     }
   }
+  
   div.axes {
     span.axis {
       box-shadow: $shadowValue black;
@@ -91,13 +87,27 @@ div[id^="gp"] {
         background: url(../dot.png);
         @include border-radius(100%);
       }
+    }
+  }
 
-      &:nth-child(1) {
-        @include positionGrid(0+$thumbMargin, 1);
-      }
-      &:nth-child(2) {
-        @include positionGrid(6+$thumbMargin, 1);
-      }
+  div.bg-circles span.bg-circle,
+  div.axes span.axis {
+    &:nth-child(1) {
+      @include positionGrid(0+$thumbMargin, 1);
+    }
+    &:nth-child(2) {
+      @include positionGrid(6+$thumbMargin, 1);
+    }
+  }
+
+  div.buttons {
+    span.button {
+      position: fixed;
+      background: url(../dot.png);
+      background-repeat: no-repeat;
+      background-size: 0% 0%;
+      background-position: 0% 0%;
+      @include border-radius(4px);
     }
   }
 

@@ -316,6 +316,18 @@ Use it freely, just don't delete my name on the code.
       d.setAttribute('id', `gp${gp.index}`)
       d.setAttribute('class', gp.id)
 
+      // create dom for background circles
+      var bgCircles = document.createElement('div')
+      bgCircles.setAttribute('class', 'bg-circles')
+      var bgCircleL = document.createElement('span')
+      bgCircleL.setAttribute('class', 'bg-circle L')
+      bgCircleL.style.backgroundColor = gpConstants.axesBgColor
+      var bgCircleR = bgCircleL.cloneNode()
+      bgCircleR.setAttribute('class', 'bg-circle R')
+      bgCircles.appendChild(bgCircleL)
+      bgCircles.appendChild(bgCircleR)
+      d.appendChild(bgCircles)
+
       // create dom for buttons
       var b = document.createElement('div')
       b.setAttribute('class', 'buttons')
@@ -484,6 +496,11 @@ Use it freely, just don't delete my name on the code.
                   gts.axisUpdate(cur.name, val),
                   gts.getAxisTimestamp(cur.name),
                   a.parentElement
+                )
+                gamepadDOMs.opacityControl(
+                  gts.axisUpdate(cur.name, val),
+                  gts.getAxisTimestamp(cur.name),
+                  d.getElementsByClassName(`bg-circle ${cur.name}`)[0]
                 )
               }
             } else if (cur.type.match('button')) {

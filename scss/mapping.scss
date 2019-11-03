@@ -105,10 +105,10 @@ div[id^="gp"] {
 
       &:nth-child(1) {
         @include positionGrid(0+$thumbMargin, 1);
-    }
+      }
       &:nth-child(2) {
         @include positionGrid(6+$thumbMargin, 1);
-  }
+      }
     }
   }
 

@@ -3,6 +3,8 @@ var gpConstants = {
   thumbSize: 60,
   // what should be the color of buttons?
   defaultColor: "white",
+  // what should be the background color for axes?
+  axesBgColor: "rgba(0, 0, 0, 0.8)",
   // what color the text of the pressed button should turn to?
   pressedButtonColor: "orange",
   // change the hue of buttons.

@@ -1,6 +1,8 @@
 var gpConstants = {
   // how big the thumb sticks should be? (0~100)
   thumbSize: 60,
+  // if not monospace, what fonts should be used?
+  defaultFont: 'Fira Code',
   // what should be the color of buttons?
   defaultColor: '#65849f',
   // what color the text of the pressed button should turn to?

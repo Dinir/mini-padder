@@ -2,7 +2,7 @@ body {
   background-color: black;
   line-height: 1em;
   margin: 0;
-  font-family: "Fira Code"; }
+  font-family: monospace; }
 
 div[id^="gp"] {
   text-shadow: 0px 0px 3px black;

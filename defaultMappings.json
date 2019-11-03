@@ -63,7 +63,7 @@
     "Windows": {
       "buttons": [
         { "label": "X", "type": "button" },
-        { "label": "◯", "type": "button" },
+        { "label": "o", "type": "button" },
         { "label": "□", "type": "button" },
         { "label": "Δ", "type": "button" },
         { "label": "L1", "type": "button" },
@@ -91,7 +91,7 @@
     "Linux": {
       "buttons": [
         { "label": "X", "type": "button" },
-        { "label": "◯", "type": "button" },
+        { "label": "o", "type": "button" },
         { "label": "□", "type": "button" },
         { "label": "Δ", "type": "button" },
         { "label": "L1", "type": "button" },
@@ -122,7 +122,7 @@
     "Windows": {
       "buttons": [
         { "label": "X", "type": "button" },
-        { "label": "◯", "type": "button" },
+        { "label": "o", "type": "button" },
         { "label": "□", "type": "button" },
         { "label": "Δ", "type": "button" },
         { "label": "L1", "type": "button" },
@@ -150,7 +150,7 @@
     "Linux": {
       "buttons": [
         { "label": "X", "type": "button" },
-        { "label": "◯", "type": "button" },
+        { "label": "o", "type": "button" },
         { "label": "□", "type": "button" },
         { "label": "Δ", "type": "button" },
         { "label": "L1", "type": "button" },

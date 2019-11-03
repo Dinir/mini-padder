@@ -8,7 +8,7 @@
 ![(411KB) DualShock4 Buttons.](./images/DS4-Buttons.gif)
 ![(1.27MB) DualShock4 Thumbsticks.](./images/DS4-Thumbsticks.gif)
 
-Simple gamepad input overlay for streaming.
+Simple gamepad input overlay for streaming, with a good readability even in tough encoding situations.  
 
 Width and height for the viewer is 178x77.  
 Press any key on the gamepad after plugging it in and the viewer will start showing the buttons.

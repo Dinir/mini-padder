@@ -19,6 +19,7 @@
 class OnBrowserTextEditor {
   /** @param {TextEditorCallbacks} callbacks */
   constructor (callbacks) {
+    this.callback = callbacks
     this.textarea = document.createElement('textarea')
     this.notifyArea = document.createElement('div')
     this.notifyArea.setAttribute('id', 'notify-area')
@@ -30,60 +31,9 @@ class OnBrowserTextEditor {
     this.loadButton.setAttribute('class', 'load-button')
     this.loadButton.textContent =
       'Load Current Configuration'
-    
-    /**
-     * gives the text in the textarea for the callback in the parameter to do the job.
-     * In cases where the user should be notified, `notify` can accept messages.
-     *
-     * @example
-     * callbacks.save = (text, notify) => {
-     *   try {
-     *     textarea.value = window.localStorage.setItem('text')
-     *   } catch (e) {
-     *     notify({text: "There's an error.", isError: true})
-     *   }
-     * }
-     */
-    this.save = () =>
-      callbacks.save(this.textarea.value, this.notify)
-    /**
-     * gives the textarea for the callback in the parameter to do the job.
-     * In cases where the user should be notified, `notify` can accept messages.
-     *
-     * @example
-     * callbacks.load = (textarea, notify) => {
-     *   try {
-     *     textarea.value = window.localStorage.getItem('text')
-     *   } catch (e) {
-     *     notify({text: "There's an error.", isError: true})
-     *   }
-     * }
-     */
-    this.load = () =>
-      callbacks.load(this.textarea, this.notify)
-    
+  
     this.saveButton.onclick = this.save.bind(this)
     this.loadButton.onclick = this.load.bind(this)
-    
-    this.notifyID = 0
-    /**
-     * accepts the message info and change the notification area class name for a brief time.
-     *
-     * @param {{text: String, isError: boolean}} message
-     */
-    this.notify = message => {
-      const classNames =
-        `visible${message.isError ? ' error' : ''}`
-      this.notifyArea.setAttribute('class', classNames)
-      this.notifyArea.innerText = message.text
-      if (this.notifyID) {
-        clearTimeout(this.notifyID)
-      }
-      this.notifyID = setTimeout(area => {
-        area.setAttribute('class', 'hidden')
-        area.innerText = ''
-      }, 4000, this.notifyArea)
-    }
   
     this.wrapper = document.createElement('div')
     this.wrapper.setAttribute('id', 'text-editor-wrapper')
@@ -91,12 +41,42 @@ class OnBrowserTextEditor {
     this.wrapper.appendChild(this.notifyArea)
     this.wrapper.appendChild(this.saveButton)
     this.wrapper.appendChild(this.loadButton)
+    
+    this.notifyID = 0
+  }
+  
+  /**
+   * gives the text in the textarea for the callback in the parameter to do the job.
+   */
+  save () { this.callback.save(this.textarea.value) }
+  /**
+   * gives the textarea for the callback in the parameter to do the job.
+   */
+  load () { this.callback.load(this.textarea) }
+    
+  /**
+   * accepts the message info and change the notification area class name for a brief time.
+   *
+   * @param {{text: String, isError: boolean}} message
+   */
+  notify (message) {
+    const classNames =
+      `visible${message.isError ? ' error' : ''}`
+    this.notifyArea.setAttribute('class', classNames)
+    this.notifyArea.innerText = message.text
+    if (this.notifyID) {
+      clearTimeout(this.notifyID)
+    }
+    this.notifyID = setTimeout(area => {
+      area.setAttribute('class', 'hidden')
+      area.innerText = ''
+    }, 4000, this.notifyArea)
   }
   
   /**
    * @returns {TextEditorDOM} the page then can use these elements
    */
-  getDOM () {
+  get dom () {
     return {
       wrapper: this.wrapper,
       textarea: this.textarea,

@@ -1,36 +1,48 @@
-const MappingInterface = new MappingStorageManager()
-
-/*
+class MappingInterface extends MappingStorageManager {
+  constructor (newMappings) {
+    super(newMappings)
+  }
+  
+  /*
   Direction of save/load
   
   [ Editor ]<-Load[  HTML  ]      [  Local  ]
   [        ]Save->[ Active ]      [ Storage ]
   [        ]      [Mappings]Save->[         ]
  */
-
-MappingInterface.editorCallbacks = {
-  save: function (text) {
+  
+  saveFromEditor (text) {
     try {
       // check if it's a valid json
       const parsedText = JSON.parse(text)
       // should be valid. save it as the active mappings
       // then save it to the localstorage
-      MappingInterface.mappings = parsedText
+      this.mappings = parsedText
     } catch (e) {
       window.dispatchEvent(new CustomEvent('mappingManagerError', {
         detail: {name: e.name, message: e.message}
       }))
     }
-  },
-  load: function (textarea) {
+  }
+  loadToEditor (textarea) {
     // stringify current active mappings
-    const stringifiedMappings = JSON.stringify(MappingInterface.mappings)
+    const stringifiedMappings = JSON.stringify(this.mappings)
     textarea.value = stringifiedMappings
     window.dispatchEvent(new CustomEvent('mappingManagerMessage', {
       detail: 'Loaded current mappings.'
     }))
   }
+  
+  
+  get editorCallbacks () {
+    return {
+      save: this.saveFromEditor,
+      load: this.loadToEditor
+    }
+  }
 }
-const obte = new OnBrowserTextEditor(MappingInterface.editorCallbacks)
+
+const mapper = new MappingInterface()
+const obte = new OnBrowserTextEditor(mapper.editorCallbacks)
 
 // TODO: proper callbacks are made, now need to make it pop up and go away.

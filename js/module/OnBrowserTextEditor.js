@@ -20,6 +20,13 @@ class OnBrowserTextEditor {
   /** @param {TextEditorCallbacks} callbacks */
   constructor (callbacks) {
     this.callback = callbacks
+    this.wrapper = null
+    this.makeDomStructure()
+    
+    this.notifyID = 0
+  }
+  
+  makeDomStructure () {
     this.textarea = document.createElement('textarea')
     this.notifyArea = document.createElement('div')
     this.notifyArea.setAttribute('id', 'notify-area')
@@ -41,8 +48,10 @@ class OnBrowserTextEditor {
     this.wrapper.appendChild(this.notifyArea)
     this.wrapper.appendChild(this.saveButton)
     this.wrapper.appendChild(this.loadButton)
-    
-    this.notifyID = 0
+  }
+  
+  appendToParent (parentDom) {
+    parentDom.appendChild(this.wrapper)
   }
   
   /**

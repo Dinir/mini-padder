@@ -36,7 +36,7 @@ class GamepadWatcher {
    * create a watcher.
    *
    * @param {function} updateCallback Callback to execute for every frame or updates.
-   * @param {boolean} [logMessage=false] emits to console for every loop event.
+   * @param {boolean} [logMessage=false] emits a `watcherMessage` event containing a log for every loop event.
    * @param {number} [pollInterval=2000] Interval to check the gamepads when none was found before.
    */
   constructor (updateCallback, logMessage = false, pollInterval = 2000) {
@@ -128,7 +128,11 @@ class GamepadWatcher {
       // this will start the animation loop at the end of `refresh`
       this.flushUpdateID()
       this.updateAtEveryFrame = true
-      if (this.logMessage) { console.info('Gamepad is found. Now updating in every frame.') }
+      if (this.logMessage) {
+        window.dispatchEvent(new CustomEvent('watcherMessage', {
+          detail: 'Gamepad is found. Now updating in every frame.'
+        }))
+      }
       this.refresh()
     } else {
       if (this.updateAtEveryFrame) {
@@ -136,16 +140,28 @@ class GamepadWatcher {
         window.cancelAnimationFrame(this.updateID)
         this.flushUpdateID()
         this.updateAtEveryFrame = false
-        if (this.logMessage) { console.info('No gamepads left. Now polling.') }
+        if (this.logMessage) {
+          window.dispatchEvent(new CustomEvent('watcherMessage', {
+            detail: 'No gamepads left. Now polling.'
+          }))
+        }
       }
       // start the poll loop if there's no any already
       if (!this.updateID) {
         this.updateID = setInterval(
           this.pollGamepads.bind(this), this.pollInterval
         )
-        if (this.logMessage) { console.info('Started polling.') }
+        if (this.logMessage) {
+          window.dispatchEvent(new CustomEvent('watcherMessage', {
+            detail: 'Started polling.'
+          }))
+        }
       }
-      if (this.logMessage) { console.info('Waiting for a gamepad.') }
+      if (this.logMessage) {
+        window.dispatchEvent(new CustomEvent('watcherMessage', {
+          detail: 'Waiting for a gamepad.'
+        }))
+      }
     }
   }
 
@@ -157,7 +173,11 @@ class GamepadWatcher {
   register (gamepadObj) {
     this.gamepadID[gamepadObj.index] =
       GamepadWatcher.getGamepadID(gamepadObj)
-    if (this.logMessage) { console.info('gamepad found:', gamepadObj.index) }
+    if (this.logMessage) {
+      window.dispatchEvent(new CustomEvent('watcherMessage', {
+        detail: `gamepad found: ${gamepadObj.index}`
+      }))
+    }
   }
 
   /**
@@ -167,7 +187,11 @@ class GamepadWatcher {
    */
   unregister (gamepadIndex) {
     delete this.gamepadID[gamepadIndex]
-    if (this.logMessage) { console.info('gamepad lost:', gamepadIndex) }
+    if (this.logMessage) {
+      window.dispatchEvent(new CustomEvent('watcherMessage', {
+        detail: `gamepad lost: ${gamepadIndex}`
+      }))
+    }
   }
 
   /**

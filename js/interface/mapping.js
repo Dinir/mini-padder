@@ -9,37 +9,26 @@ const MappingInterface = new MappingStorageManager()
  */
 
 MappingInterface.editorCallbacks = {
-  save: function (text, notify) {
-    let parsedText = ''
+  save: function (text) {
     try {
       // check if it's a valid json
       const parsedText = JSON.parse(text)
       // should be valid. save it as the active mappings
       // then save it to the localstorage
       MappingInterface.mappings = parsedText
-      const message = MappingInterface.store()
-      // tell the editor the storing is done
-      notify({
-        text: message,
-        isError: false
-      })
     } catch (e) {
-      const message =
-          `${e.name}: ${e.message}`
-      notify({
-        text: message,
-        isError: true
-      })
+      window.dispatchEvent(new CustomEvent('mappingManagerError', {
+        detail: {name: e.name, message: e.message}
+      }))
     }
   },
-  load: function (textarea, notify) {
+  load: function (textarea) {
     // stringify current active mappings
     const stringifiedMappings = JSON.stringify(MappingInterface.mappings)
     textarea.value = stringifiedMappings
-    notify({
-      text: 'Loaded current mappings.',
-      isError: false
-    })
+    window.dispatchEvent(new CustomEvent('mappingManagerMessage', {
+      detail: 'Loaded current mappings.'
+    }))
   }
 }
 const obte = new OnBrowserTextEditor(MappingInterface.editorCallbacks)

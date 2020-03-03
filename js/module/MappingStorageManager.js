@@ -53,25 +53,26 @@ class MappingStorageManager {
     ) {
       const mappingsJSON = JSON.stringify(this.mappings)
       window.localStorage.setItem('mappings', mappingsJSON)
-    
-      const message =
-        Object.keys(JSON.parse(mappingsJSON)).length +
-        ' mappings stored.'
-      return message
+  
+      window.dispatchEvent(new CustomEvent('mappingManagerMessage', {
+        detail: Object.keys(JSON.parse(mappingsJSON)).length +
+                ' mappings stored.'
+      }))
     }
-    
-    const message = 'No mappings to store.'
-    return message
+  
+    window.dispatchEvent(new CustomEvent('mappingManagerMessage', {
+      detail: 'No mappings to store.'
+    }))
   }
 
   load () {
     const mappingsObj = JSON.parse(window.localStorage.getItem('mappings'))
     this.mappings = mappingsObj || {}
-    
-    const message =
-      Object.keys(this.mappings).length +
-      ' mappings found.'
-    return message
+  
+    window.dispatchEvent(new CustomEvent('mappingManagerMessage', {
+      detail: Object.keys(this.mappings).length +
+              ' mappings found.'
+    }))
   }
   
   /**

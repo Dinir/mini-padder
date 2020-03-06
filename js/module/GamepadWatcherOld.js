@@ -31,7 +31,7 @@
  * adjust updating interval in relation to the present of connected gamepads,
  * execute a callback for every frame or update moments
  */
-class GamepadWatcher {
+class GamepadWatcherOld {
   /**
    * create a watcher.
    *
@@ -123,7 +123,7 @@ class GamepadWatcher {
    * Repeats until a gamepad is found, at which it stops the poll loop and initiates animation loop (repeats inside `refresh`).
    */
   pollGamepads () {
-    if (GamepadWatcher.gamepadsExist()) {
+    if (GamepadWatcherOld.gamepadsExist()) {
       // stop the poll loop, initiate refresh loop
       // this will start the animation loop at the end of `refresh`
       this.flushUpdateID()
@@ -172,7 +172,7 @@ class GamepadWatcher {
    */
   register (gamepadObj) {
     this.gamepadID[gamepadObj.index] =
-      GamepadWatcher.getGamepadID(gamepadObj)
+      GamepadWatcherOld.getGamepadID(gamepadObj)
     if (this.logMessage) {
       window.dispatchEvent(new CustomEvent('watcherMessage', {
         detail: `gamepad found: ${gamepadObj.index}`
@@ -200,7 +200,7 @@ class GamepadWatcher {
    * if no gamepad is found, stop the animation frame loop and initiate poll loop.
    */
   refresh () {
-    let rawGamepads = GamepadWatcher.getGamepadsIfFound()
+    let rawGamepads = GamepadWatcherOld.getGamepadsIfFound()
 
     // no gamepads found, start poll loop.
     if (!rawGamepads) {

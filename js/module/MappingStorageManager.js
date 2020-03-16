@@ -29,6 +29,19 @@ class MappingStorageManager {
       this.load()
     }
   }
+  
+  static announceMessage(message, type) {
+    const messageType = {
+      log: 'log',
+      error: 'error'
+    }
+    window.dispatchEvent(new CustomEvent('mappingManagerMessage', {
+      detail: {
+        type: messageType[type] || messageType.log,
+        message: message
+      }
+    }))
+  }
 
   /* I assume OBS is used on either Windows or Linux,
   and since `navigator.platform` values for Windows are in a common pattern,
@@ -54,25 +67,23 @@ class MappingStorageManager {
       const mappingsJSON = JSON.stringify(this.mappings)
       window.localStorage.setItem('mappings', mappingsJSON)
   
-      window.dispatchEvent(new CustomEvent('mappingManagerMessage', {
-        detail: Object.keys(JSON.parse(mappingsJSON)).length +
-                ' mappings stored.'
-      }))
+      MappingStorageManager.announceMessage(
+        Object.keys(JSON.parse(mappingsJSON)).length + ' mappings stored.'
+      )
     }
   
-    window.dispatchEvent(new CustomEvent('mappingManagerMessage', {
-      detail: 'No mappings to store.'
-    }))
+    MappingStorageManager.announceMessage(
+      'No mappings to store.'
+    )
   }
 
   load () {
     const mappingsObj = JSON.parse(window.localStorage.getItem('mappings'))
     this.mappings = mappingsObj || {}
   
-    window.dispatchEvent(new CustomEvent('mappingManagerMessage', {
-      detail: Object.keys(this.mappings).length +
-              ' mappings found.'
-    }))
+    MappingStorageManager.announceMessage(
+      Object.keys(this.mappings).length + ' mappings found.'
+    )
   }
   
   /**

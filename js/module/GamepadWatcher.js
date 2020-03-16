@@ -1,7 +1,3 @@
-// watch gamepad states using rAF,
-// send changes when different timestamp is found
-// also send changes on connection state of gamepads
-
 /**
  * @typedef Gamepad
  * @type {Object}
@@ -164,10 +160,6 @@ class GamepadWatcher {
      * If a gamepad is not registered on the navigator, the corresponding property won't exist.
      */
     const lastChange = {}
-  
-    // compare timestamps of pads where newStates[i] !== null
-    // if timestamp is different, loop through the pad to get differences
-    // arrange the differences, and somehow send it outside
 
     // check each gamepad for changes
     for (let i = 0; i < newStates.length; i++) {

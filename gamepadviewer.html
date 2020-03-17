@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta content="text/html" http-equiv="content-type">
+  <meta charset="utf-8">
+  <title>Game Pad Viewer</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/test.css">
+</head>
+
+<script src="js/module/GamepadWatcher.js"></script>
+<script src="js/module/MappingStorageManager.js"></script>
+<script src="js/interface/mapper.js"></script>
+<script src="js/module/OnBrowserTextEditor.js"></script>
+
+<body>
+
+</body>
+
+<script>
+  const gpwatcher = new GamepadWatcher()
+
+  // get mapping manager messages on console
+  window.addEventListener('mappingManagerMessage', e => {
+    if (e.detail.type === 'error') {
+      console.error('Mapping Manager:', e.detail.message)
+    } else {
+      console.log('Mapping Manager:', e.detail.message)
+    }
+  })
+
+  const mapper = new MappingInterface()
+  const obte = new OnBrowserTextEditor(mapper.editorCallbacks)
+
+  // gamepad viewer test - see change data
+  const changeViewDom = {
+    wrapper: document.createElement('div'),
+    axisView: document.createElement('pre'),
+    buttonView: document.createElement('pre'),
+    axis9View: document.createElement('pre')
+  }
+  changeViewDom.wrapper.id = 'change-viewer'
+  changeViewDom.wrapper.appendChild(changeViewDom.axisView)
+  changeViewDom.wrapper.appendChild(changeViewDom.buttonView)
+  changeViewDom.wrapper.appendChild(changeViewDom.axis9View)
+  document.body.appendChild(changeViewDom.wrapper)
+  const changeViewer = document.getElementById('change-viewer')
+  window.addEventListener('gamepadChange', e => {
+    changeViewer.children[0].innerHTML = JSON.stringify(e.detail[0].axes, null, 2)
+    changeViewer.children[1].innerHTML = JSON.stringify(e.detail[0].buttons, null, 2)
+    /*let directionText = ''
+    for (let d = 0; d < 8; d++) {
+      const number = Math.floor(10*((-7 + 2 * d) / 7))/10
+      directionText +=
+        (Math.abs(e.detail[0].axes[9].value - number) < 0.1) +
+        `: ${e.detail[0].axes[9].value} - ${number} < 0.1` +
+        '<br>'
+    }
+    changeViewer.children[2].innerHTML = directionText*/
+  })
+</script>
+
+</html>

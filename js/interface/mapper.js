@@ -42,7 +42,4 @@ class MappingInterface extends MappingStorageManager {
   }
 }
 
-const mapper = new MappingInterface()
-const obte = new OnBrowserTextEditor(mapper.editorCallbacks)
-
 // TODO: proper callbacks are made, now need to make it pop up and go away.

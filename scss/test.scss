@@ -1,0 +1,8 @@
+// for immediate watch of raw gamepad changes
+div#change-viewer {
+  color: gray;
+  display: flex;
+  pre {
+    width: 250px;
+  }
+}

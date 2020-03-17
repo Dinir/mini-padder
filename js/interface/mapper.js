@@ -26,7 +26,7 @@ class MappingInterface extends MappingStorageManager {
   }
   loadToEditor (textarea) {
     // stringify current active mappings
-    const stringifiedMappings = JSON.stringify(this.mappings)
+    const stringifiedMappings = JSON.stringify(this.mappings, null, 2)
     textarea.value = stringifiedMappings
     window.dispatchEvent(new CustomEvent('mappingManagerMessage', {
       detail: 'Loaded current mappings.'

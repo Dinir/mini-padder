@@ -1,179 +1,108 @@
 {
-  "XInput": {
-    "identifier": "XInput",
-    "Windows": {
-      "buttons": [
-        { "label": "A", "type": "button" },
-        { "label": "B", "type": "button" },
-        { "label": "X", "type": "button" },
-        { "label": "Y", "type": "button" },
-        { "label": "LB", "type": "button" },
-        { "label": "RB", "type": "button" },
-        { "label": "LT", "type": "button" },
-        { "label": "RT", "type": "button" },
-        { "label": "Se", "type": "button" },
-        { "label": "St", "type": "button" },
-        { "label": "L", "type": "button thumb" },
-        { "label": "R", "type": "button thumb" },
-        { "label": "⏶", "type": "button" },
-        { "label": "⏷", "type": "button" },
-        { "label": "⏴", "type": "button" },
-        { "label": "⏵", "type": "button" }
-      ],
-      "axes": [
-        { "label": "L", "type": "thumb" },
-        { "label": "L", "type": "thumb" },
-        { "label": "R", "type": "thumb" },
-        { "label": "R", "type": "thumb" }
-      ]
-    }
-  },
-  "045e02d1": {
-    "identifier": "Xbox Pad",
-    "Linux": {
-      "buttons": [
-        { "label": "A", "type": "button" },
-        { "label": "B", "type": "button" },
-        { "label": "X", "type": "button" },
-        { "label": "Y", "type": "button" },
-        { "label": "LB", "type": "button" },
-        { "label": "RB", "type": "button" },
-        { "label": "LT", "type": "button shoulder" },
-        { "label": "RT", "type": "button shoulder" },
-        { "label": "Se", "type": "button" },
-        { "label": "St", "type": "button" },
-        { "label": "L", "type": "button thumb" },
-        { "label": "R", "type": "button thumb" },
-        { "label": "⏶", "type": "button" },
-        { "label": "⏷", "type": "button" },
-        { "label": "⏴", "type": "button" },
-        { "label": "⏵", "type": "button" },
-        { "label": "ⓧ", "type": "button" }
-      ],
-      "axes": [
-        { "label": "L", "type": "thumb" },
-        { "label": "L", "type": "thumb" },
-        { "label": "R", "type": "thumb" },
-        { "label": "R", "type": "thumb" }
-      ]
-    }
-  },
-  "054c05c4": {
-    "identifier": "DualShock 4 (CUH-ZCT1x)",
-    "Windows": {
-      "buttons": [
-        { "label": "X", "type": "button" },
-        { "label": "o", "type": "button" },
-        { "label": "□", "type": "button" },
-        { "label": "Δ", "type": "button" },
-        { "label": "L1", "type": "button" },
-        { "label": "R1", "type": "button" },
-        { "label": "L2", "type": "button" },
-        { "label": "R2", "type": "button" },
-        { "label": "Sh", "type": "button" },
-        { "label": "Op", "type": "button" },
-        { "label": "L", "type": "button thumb" },
-        { "label": "R", "type": "button thumb" },
-        { "label": "⏶", "type": "button" },
-        { "label": "⏷", "type": "button" },
-        { "label": "⏴", "type": "button" },
-        { "label": "⏵", "type": "button" },
-        { "label": "PS", "type": "button" },
-        { "label": "TP", "type": "button" }
-      ],
-      "axes": [
-        { "label": "L", "type": "thumb" },
-        { "label": "L", "type": "thumb" },
-        { "label": "R", "type": "thumb" },
-        { "label": "R", "type": "thumb" }
-      ]
-    },
-    "Linux": {
-      "buttons": [
-        { "label": "X", "type": "button" },
-        { "label": "o", "type": "button" },
-        { "label": "□", "type": "button" },
-        { "label": "Δ", "type": "button" },
-        { "label": "L1", "type": "button" },
-        { "label": "R1", "type": "button" },
-        { "label": "L2", "type": "button" },
-        { "label": "R2", "type": "button" },
-        { "label": "Sh", "type": "button" },
-        { "label": "Op", "type": "button" },
-        { "label": "L", "type": "button thumb" },
-        { "label": "R", "type": "button thumb" },
-        { "label": "⏶", "type": "button" },
-        { "label": "⏷", "type": "button" },
-        { "label": "⏴", "type": "button" },
-        { "label": "⏵", "type": "button" },
-        { "label": "PS", "type": "button" },
-        { "label": "TP", "type": "button" }
-      ],
-      "axes": [
-        { "label": "L", "type": "thumb" },
-        { "label": "L", "type": "thumb" },
-        { "label": "R", "type": "thumb" },
-        { "label": "R", "type": "thumb" }
-      ]
-    }
-  },
-  "054c09cc": {
-    "identifier": "DualShock 4 (CUH-ZCT2x)",
-    "Windows": {
-      "buttons": [
-        { "label": "X", "type": "button" },
-        { "label": "o", "type": "button" },
-        { "label": "□", "type": "button" },
-        { "label": "Δ", "type": "button" },
-        { "label": "L1", "type": "button" },
-        { "label": "R1", "type": "button" },
-        { "label": "L2", "type": "button" },
-        { "label": "R2", "type": "button" },
-        { "label": "Sh", "type": "button" },
-        { "label": "Op", "type": "button" },
-        { "label": "L", "type": "button thumb" },
-        { "label": "R", "type": "button thumb" },
-        { "label": "⏶", "type": "button" },
-        { "label": "⏷", "type": "button" },
-        { "label": "⏴", "type": "button" },
-        { "label": "⏵", "type": "button" },
-        { "label": "PS", "type": "button" },
-        { "label": "TP", "type": "button" }
-      ],
-      "axes": [
-        { "label": "L", "type": "thumb" },
-        { "label": "L", "type": "thumb" },
-        { "label": "R", "type": "thumb" },
-        { "label": "R", "type": "thumb" }
-      ]
-    },
-    "Linux": {
-      "buttons": [
-        { "label": "X", "type": "button" },
-        { "label": "o", "type": "button" },
-        { "label": "□", "type": "button" },
-        { "label": "Δ", "type": "button" },
-        { "label": "L1", "type": "button" },
-        { "label": "R1", "type": "button" },
-        { "label": "L2", "type": "button" },
-        { "label": "R2", "type": "button" },
-        { "label": "Sh", "type": "button" },
-        { "label": "Op", "type": "button" },
-        { "label": "L", "type": "button thumb" },
-        { "label": "R", "type": "button thumb" },
-        { "label": "⏶", "type": "button" },
-        { "label": "⏷", "type": "button" },
-        { "label": "⏴", "type": "button" },
-        { "label": "⏵", "type": "button" },
-        { "label": "PS", "type": "button" },
-        { "label": "TP", "type": "button" }
-      ],
-      "axes": [
-        { "label": "L", "type": "thumb" },
-        { "label": "L", "type": "thumb" },
-        { "label": "R", "type": "thumb" },
-        { "label": "R", "type": "thumb" }
-      ]
-    }
-  }
+	"XInput": {
+		"name": "XInput Generic Controller",
+		"properties": [],
+		"axes": {
+			"deadzone": 0.08,
+			"left": {
+				"x": 0, "y": 1, "button": 10
+			},
+			"right": {
+				"x": 2, "y": 3, "button": 11
+			}
+		},
+		"buttons": {
+			"dpad": {
+				"up": 12, "down": 13, "left": 14, "right": 15
+			},
+			"face": {
+				"down": 0, "right": 1, "left": 2, "up": 3,
+				"select": 8, "start": 9
+			},
+			"shoulder": {
+				"l1": 4, "r1": 5, "l2": 6, "r2": 7
+			}
+		}
+	},
+	"054c05c4": {
+		"name": "DualShock4 (ZCT1x)",
+		"properties": [],
+		"axes": {
+			"deadzone": 0.08,
+			"left": {
+				"x": 0, "y": 1, "button": 10
+			},
+			"right": {
+				"x": 2, "y": 3, "button": 11
+			}
+		},
+		"buttons": {
+			"dpad": {
+				"up": 12, "down": 13, "left": 14, "right": 15
+			},
+			"face": {
+				"down": 0, "right": 1, "left": 2, "up": 3,
+				"select": 8, "start": 9,
+				"PS": 16, "Touchpad": 17
+			},
+			"shoulder": {
+				"l1": 4, "r1": 5, "l2": 6, "r2": 7
+			}
+		}
+	},
+	"054c09cc": {
+		"name": "DualShock4 (ZCT2x)",
+		"properties": [],
+		"axes": {
+			"deadzone": 0.08,
+			"left": {
+				"x": 0, "y": 1, "button": 10
+			},
+			"right": {
+				"x": 2, "y": 3, "button": 11
+			}
+		},
+		"buttons": {
+			"dpad": {
+				"up": 12, "down": 13, "left": 14, "right": 15
+			},
+			"face": {
+				"down": 0, "right": 1, "left": 2, "up": 3,
+				"select": 8, "start": 9,
+				"home": 16, "Touchpad": 17
+			},
+			"shoulder": {
+				"l1": 4, "r1": 5, "l2": 6, "r2": 7
+			}
+		}
+	},
+	"2dc86101": {
+		"name": "8BitDo SN30 Pro (Dinput)",
+		"properties": ["axisdpad"],
+		"axes": {
+			"deadzone": 0.02,
+			"left": {
+				"x": 0, "y": 1, "button": 13
+			},
+			"right": {
+				"x": 2, "y": 5, "button": 14
+			}
+		},
+		"buttons": {
+			"dpad": {
+				"axis": 9,
+				"precision": 0.1,
+				"up": -1, "upright": -0.8, "right": -0.5, "downright": -0.2,
+				"down": 0.1, "downleft": 0.4, "left": 0.7, "upleft": 1
+			},
+			"face": {
+				"right": 0, "down": 1, "up": 3, "left": 4,
+				"select": 10, "start": 11,
+				"home": 2
+			},
+			"shoulder": {
+				"l1": 6, "r1": 7, "l2": 8, "r2": 9
+			}
+		}
+	}
 }

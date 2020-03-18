@@ -53,8 +53,6 @@ class MappingStorageManager {
    * @param {?gamepadMapping[]} newMappings all mappings to store on the computer
    */
   constructor (newMappings) {
-    this.platform = undefined
-    this.decidePlatform()
     this.mappings = {}
     if (newMappings && typeof newMappings === 'object') {
       this.mappings = newMappings
@@ -75,14 +73,6 @@ class MappingStorageManager {
         message: message
       }
     }))
-  }
-
-  /* I assume OBS is used on either Windows or Linux,
-  and since `navigator.platform` values for Windows are in a common pattern,
-  I will check if it's Windows or not. */
-  decidePlatform () {
-    this.platform =
-      navigator.platform.match(/^Win/) ? 'Windows' : 'Linux'
   }
   
   addOrUpdate (gamepadId, mappingObj) {

@@ -54,12 +54,18 @@ class MappingStorageManager {
    */
   constructor (newMappings) {
     this.mappings = {}
-    if (newMappings && typeof newMappings === 'object') {
+    if (MappingStorageManager.validateMappings(newMappings)) {
       this.mappings = newMappings
       this.store()
     } else {
       this.load()
     }
+  }
+  
+  static validateMappings (mappings) {
+    return mappings &&
+           typeof mappings === 'object' &&
+           Object.keys(mappings).length > 0
   }
   
   static announceMessage(message, type) {
@@ -84,10 +90,7 @@ class MappingStorageManager {
   }
 
   store () {
-    if (
-      this.mappings.constructor === Object &&
-      Object.keys(this.mappings).length > 0
-    ) {
+    if (MappingStorageManager.validateMappings(this.mappings)) {
       const mappingsJSON = JSON.stringify(this.mappings)
       window.localStorage.setItem('mappings', mappingsJSON)
   

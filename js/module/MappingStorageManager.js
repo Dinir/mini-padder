@@ -50,7 +50,7 @@
 
 class MappingStorageManager {
   /**
-   * @param {?gamepadMapping[]} newMappings all mappings to store on the computer
+   * @param {?gamepadMapping[]} newMappings all mappings to store on the computer. Key should be the gamepadId value.
    */
   constructor (newMappings) {
     this.mappings = {}
@@ -68,7 +68,7 @@ class MappingStorageManager {
            Object.keys(mappings).length > 0
   }
   
-  static announceMessage(message, type) {
+  static announceMessage (message, type) {
     const messageType = {
       log: 'log',
       error: 'error'

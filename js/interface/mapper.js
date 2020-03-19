@@ -29,7 +29,6 @@ class MappingInterface extends MappingStorageManager {
     MappingInterface.announceMessage('Loaded current mappings.')
   }
   
-  
   get editorCallbacks () {
     return {
       save: this.saveFromEditor,
@@ -121,7 +120,7 @@ class MappingInterface extends MappingStorageManager {
         }
       },
       "2dc86101": {
-        "name": "8BitDo SN30 Pro (Dinput)",
+        "name": "8BitDo SN30 Pro (DInput)",
         "properties": ["axisdpad"],
         "axes": {
           "deadzone": 0.02,

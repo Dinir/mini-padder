@@ -148,6 +148,32 @@ class MappingInterface extends MappingStorageManager {
             "l1": 6, "r1": 7, "l2": 8, "r2": 9
           }
         }
+      },
+      "0f301012": {
+        "name": "Q4RAF (DInput - PS3.PC)",
+        "properties": ["axisdpad", "dpadleftstick"],
+        "axes": {
+          "deadzone": 0,
+          "left": {
+            "x": 0, "y": 1, "button": null
+          },
+          "right": null
+        },
+        "buttons": {
+          "dpad": {
+            "axis": 9,
+            "precision": 0.1,
+            "up": -1, "upright": -0.8, "right": -0.5, "downright": -0.2,
+            "down": 0.1, "downleft": 0.4, "left": 0.7, "upleft": 1
+          },
+          "face": {
+            "down": 0, "right": 1, "left": 2, "up": 3,
+            "select": 8, "start": 9
+          },
+          "shoulder": {
+            "r1": 4, "l1": 5, "r2": 6, "l2": 7
+          }
+        }
       }
     }
     this.store()

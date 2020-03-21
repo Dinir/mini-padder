@@ -56,10 +56,10 @@ class GamepadWatcher {
     if (GamepadWatcher.hasEvents) {
       window.addEventListener('gamepadconnected', e => {
         this.updateConnection(e, true)
-      }, false)
+      })
       window.addEventListener('gamepaddisconnected', e => {
         this.updateConnection(e, false)
-      }, false)
+      })
     } else {
       this.pollID = setInterval(this.scanConnection, 1000)
     }

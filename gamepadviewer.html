@@ -6,54 +6,56 @@
   <meta charset="utf-8">
   <title>Game Pad Viewer</title>
   <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/controlPanel.css">
   <link rel="stylesheet" href="./css/test.css">
 </head>
 
-<script src="js/module/GamepadWatcher.js"></script>
-<script src="js/module/MappingStorageManager.js"></script>
-<script src="js/interface/mapper.js"></script>
-<script src="js/module/OnBrowserTextEditor.js"></script>
+<script src="./js/module/GamepadWatcher.js"></script>
+<script src="./js/module/MappingStorageManager.js"></script>
+<script src="./js/module/OnBrowserTextEditor.js"></script>
+<script src="./js/interface/mapper.js"></script>
+<script src="./js/interface/controlPanel.js"></script>
 
 <body>
 <div id="canvas-container">
-  <canvas id="gamepad-0" width="256" height="144"></canvas>
-  <canvas id="gamepad-1" width="256" height="144"></canvas>
-  <canvas id="gamepad-2" width="256" height="144"></canvas>
-  <canvas id="gamepad-3" width="256" height="144"></canvas>
+  <canvas width="256" height="144"></canvas>
+  <canvas width="256" height="144"></canvas>
+  <canvas width="256" height="144"></canvas>
+  <canvas width="256" height="144"></canvas>
 </div>
 
 <div id="control-panel">
-  <div class="option">
+  <div class="option" data-name="assignment">
     <h1>Button Assignment</h1>
-    <button class="eachGamepad" name="gamepad-0">Gamepad Name</button>
-    <button class="eachGamepad" name="gamepad-1">Gamepad Name</button>
-    <button class="eachGamepad" name="gamepad-2">Gamepad Name</button>
-    <button class="eachGamepad" name="gamepad-3">Gamepad Name</button>
+    <button class="eachGamepad inactive">Gamepad Name</button>
+    <button class="eachGamepad inactive">Gamepad Name</button>
+    <button class="eachGamepad inactive">Gamepad Name</button>
+    <button class="eachGamepad inactive">Gamepad Name</button>
   </div>
-  <div class="option" data-layout-0 data-layout-1 data-layout-2 data-layout-3>
+  <div class="option" data-name="layout" data-layout-0 data-layout-1 data-layout-2 data-layout-3>
     <h1>Gamepad Layout</h1>
-    <label class="after-margin">
+    <label class="allGamepad after-margin">
       Every Gamepad is
-      <select name="layout-all"></select>
+      <select ></select>
     </label><br>
-    <label class="eachGamepad">
+    <label class="eachGamepad full-width inactive">
       <span>Gamepad Name</span> is
-      <select name="gamepad-0"></select>
-    </label><br>
-    <label class="eachGamepad">
+      <select></select><br>
+    </label>
+    <label class="eachGamepad full-width inactive">
       <span>Gamepad Name</span> is
-      <select name="gamepad-1"></select>
-    </label><br>
-    <label class="eachGamepad">
+      <select></select><br>
+    </label>
+    <label class="eachGamepad full-width inactive">
       <span>Gamepad Name</span> is
-      <select name="gamepad-2"></select>
-    </label><br>
-    <label class="eachGamepad">
+      <select></select><br>
+    </label>
+    <label class="eachGamepad full-width inactive">
       <span>Gamepad Name</span> is
-      <select name="gamepad-3"></select>
+      <select></select>
     </label>
   </div>
-  <div class="option half-width no-divider va-top" data-display-width>
+  <div class="option half-width no-divider va-top" data-name="displayWidth">
     <h1><label for="display-width-input">Display Width</label></h1>
     <div style="width: 10em;">
       <datalist class="hashmark" id="display-width-options">
@@ -61,10 +63,10 @@
         <option value="2" label="2"></option>
         <option value="3" label="4"></option>
       </datalist>
-      <input name="gamepad-all" class="with-hashmark" id="display-width-input" type="range" list="display-width-options" min="1" max="3" step="1">
+      <input class="allGamepad with-hashmark" id="display-width-input" type="range" list="display-width-options" min="1" max="3" step="1">
     </div>
   </div>
-  <div class="option half-width no-divider">
+  <div class="option half-width no-divider" data-name="fadeOut">
     <h1>Fade Out</h1>
     <label>
       <span>Time: </span>
@@ -82,7 +84,7 @@
     </label>
     <span class="description">transition time of fade out</span>
   </div>
-  <div class="option top-divider">
+  <div class="option top-divider" data-name="mappingManagement">
     <h1>Mapping Export & Import</h1>
     <button>Show Current Mappings</button>
     <br>
@@ -107,7 +109,24 @@
 
   const mapper = new MappingInterface()
   const obte = new OnBrowserTextEditor(mapper.editorCallbacks)
-
+  
+  const cp = new ControlPanel({
+    assignment: 'buttons',
+    layout: 'onelistforeach',
+    displayWidth: 'slider',
+    fadeOut: 'textarrays',
+    mappingManagement: 'button'
+  }, [
+    'gamepadconnected', 'gamepaddisconnected'
+  ]).panel
+  
+  cp.assignment.assign(
+    document.querySelectorAll(
+      '#control-panel div[data-name="assignment"] button'
+    ), e => {
+      console.log('mapper mapping function goes here', e)
+    }
+  )
 </script>
 <!-- test codes -->
 <script>

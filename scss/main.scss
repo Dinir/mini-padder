@@ -1,7 +1,4 @@
-$default-font-size: 16px;
-$canvas-width: 256px;
-$canvas-height: $canvas-width * 9 / 16;
-$canvas-gap: 8px;
+@import 'common';
 
 body {
   margin: 0;

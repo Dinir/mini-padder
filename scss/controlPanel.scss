@@ -30,6 +30,9 @@
     .after-margin {
       margin-bottom: 0.25em;
     }
+    .full-width {
+      display: block;
+    }
     .inactive {
       display: none;
     }
@@ -42,6 +45,12 @@
       margin-block-start: 0;
       margin-block-end: 0;
       margin-bottom: 0.5em;
+    }
+    button {
+      text-align: right;
+      span {
+        font-size: 0.7em;
+      }
     }
     label {
       display: inline-block;

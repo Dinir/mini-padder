@@ -203,9 +203,3 @@ class MappingInterface extends MappingStorageManager {
     this.store()
   }
 }
-
-// TODO: proper callbacks are made, now need to make it pop up and go away.
-/*
-web page has 'show current mappings'
-the editor can have 'save current mappings', 'undo all changes & reload from storage'.
- */

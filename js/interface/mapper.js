@@ -18,6 +18,7 @@ class MappingInterface extends MappingStorageManager {
       // should be valid. save it as the active mappings
       // then save it to the localstorage
       this.mappings = parsedText
+      this.store()
     } catch (e) {
       MappingInterface.announceMessage({name: e.name, message: e.message}, 'error')
     }
@@ -31,8 +32,8 @@ class MappingInterface extends MappingStorageManager {
   
   get editorCallbacks () {
     return {
-      save: this.saveFromEditor,
-      load: this.loadToEditor
+      save: this.saveFromEditor.bind(this),
+      load: this.loadToEditor.bind(this)
     }
   }
   

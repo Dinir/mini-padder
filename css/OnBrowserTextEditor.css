@@ -1,0 +1,31 @@
+#text-editor-wrapper {
+  background: rgba(127, 127, 127, 0.8);
+  overflow: hidden;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.2s; }
+  #text-editor-wrapper.active {
+    opacity: 1;
+    z-index: auto; }
+  #text-editor-wrapper h1.title:before {
+    content: 'Current Item: '; }
+  #text-editor-wrapper button.close {
+    position: absolute;
+    top: 0.3em;
+    right: 0.6em; }
+  #text-editor-wrapper textarea {
+    width: 98.83%;
+    height: 80%;
+    resize: none; }
+  #text-editor-wrapper div#notify-area {
+    background: rgba(127, 127, 127, 0.8);
+    position: absolute;
+    bottom: 12%;
+    width: 97%;
+    padding: 0.25em 0;
+    opacity: 0;
+    transition: opacity 0.5s; }
+    #text-editor-wrapper div#notify-area.visible {
+      opacity: 1; }
+
+/*# sourceMappingURL=OnBrowserTextEditor.css.map */

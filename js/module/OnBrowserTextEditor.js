@@ -1,97 +1,140 @@
 /**
  * @typedef {Object} TextEditorCallbacks
+ * @property {string} title short description of what user is seeing and editing
  * @property {callback} save function to call when user tries to save
- * @property {callback} load function to clal when user tries to load
+ * @property {callback} load function to call when user tries to load
  */
 /**
  * @typedef {Object} TextEditorDOM
  * @property {HTMLElement} wrapper a div wrapping all the elements
+ * @property {HTMLHeadingElement} title
  * @property {HTMLTextAreaElement} textarea
  * @property {HTMLElement} notifyArea
  * @property {HTMLButtonElement} saveButton
  * @property {HTMLButtonElement} loadButton
  */
 
+/*
+Direction of save/load
+
+[ Editor ]<-Load[  HTML  ]      [  Local  ]
+[        ]Save->[ Active ]      [ Storage ]
+[        ]      [ Config ]Save->[         ]
+*/
+
 /**
  * Create a textarea and a set of buttons to give access to the text
  * @class
  */
 class OnBrowserTextEditor {
-  /** @param {TextEditorCallbacks} callbacks */
-  constructor (callbacks) {
-    this.callback = callbacks
-    this.wrapper = null
+  constructor () {
+    this.callbacks = {}
     this.makeDomStructure()
     
     this.notifyID = 0
   }
   
   makeDomStructure () {
-    this.textarea = document.createElement('textarea')
-    this.notifyArea = document.createElement('div')
-    this.notifyArea.setAttribute('id', 'notify-area')
-    this.saveButton = document.createElement('button')
-    this.saveButton.setAttribute('class', 'save-button')
-    this.saveButton.textContent =
+    const title = document.createElement('h1')
+    title.setAttribute('class', 'title')
+    const closeButton = document.createElement('button')
+    closeButton.classList.add('close')
+    closeButton.textContent = '　　Ｘ　　'
+    const textarea = document.createElement('textarea')
+    textarea.setAttribute('class', 'after-margin')
+    const notifyArea = document.createElement('div')
+    notifyArea.setAttribute('id', 'notify-area')
+    notifyArea.setAttribute('class', 'no-divider')
+    const buttonDiv = document.createElement('div')
+    const saveButton = document.createElement('button')
+    saveButton.textContent =
       'Save Current Text as Configuration'
-    this.loadButton = document.createElement('button')
-    this.loadButton.setAttribute('class', 'load-button')
-    this.loadButton.textContent =
+    const loadButton = document.createElement('button')
+    loadButton.textContent =
       'Load Current Configuration'
+    const oneEmptySpaceLetter = document.createElement('span')
+    oneEmptySpaceLetter.innerText = ' '
+    buttonDiv.appendChild(saveButton)
+    buttonDiv.appendChild(oneEmptySpaceLetter)
+    buttonDiv.appendChild(loadButton)
   
-    this.saveButton.onclick = this.save.bind(this)
-    this.loadButton.onclick = this.load.bind(this)
+    closeButton.addEventListener('click', () => {this.visibility = false})
+    saveButton.addEventListener('click', this.save.bind(this))
+    loadButton.addEventListener('click', this.load.bind(this))
   
-    this.wrapper = document.createElement('div')
-    this.wrapper.setAttribute('id', 'text-editor-wrapper')
-    this.wrapper.appendChild(this.textarea)
-    this.wrapper.appendChild(this.notifyArea)
-    this.wrapper.appendChild(this.saveButton)
-    this.wrapper.appendChild(this.loadButton)
+    const wrapper = document.createElement('div')
+    wrapper.setAttribute('id', 'text-editor-wrapper')
+    wrapper.appendChild(title)
+    wrapper.appendChild(closeButton)
+    wrapper.appendChild(textarea)
+    wrapper.appendChild(notifyArea)
+    wrapper.appendChild(buttonDiv)
+    
+    this.dom = {
+      wrapper, title, textarea, notifyArea, saveButton, loadButton
+    }
   }
   
   appendToParent (parentDom) {
-    parentDom.appendChild(this.wrapper)
+    parentDom.appendChild(this.dom.wrapper)
+  }
+  
+  set visibility (state) {
+    if (typeof state === 'boolean') {
+      if (state) this.dom.wrapper.classList.add('active')
+      else this.dom.wrapper.classList.remove('active')
+    } else {
+      this.dom.wrapper.classList.toggle('active')
+    }
+  }
+  
+  /** @param {TextEditorCallbacks} callbacks */
+  changeFocus (callbacks) {
+    this.callbacks = callbacks
+    this.dom.title.innerText = this.callbacks.title
+    this.load()
   }
   
   /**
    * gives the text in the textarea for the callback in the parameter to do the job.
    */
-  save () { this.callback.save(this.textarea.value) }
+  save () {
+    if (!this.callbacks.save) {
+      this.notify('There\'s no save function assigned!', true)
+      return false
+    }
+    this.callbacks.save(this.dom.textarea.value, this.notify.bind(this))
+  }
   /**
    * gives the textarea for the callback in the parameter to do the job.
    */
-  load () { this.callback.load(this.textarea) }
-    
+  load () {
+    if (!this.callbacks.load) {
+      this.notify('There\'s no load function assigned!', true)
+      return false
+    }
+    this.dom.textarea.value = ''
+    this.callbacks.load(this.dom.textarea, this.notify.bind(this))
+  }
+  
   /**
    * accepts the message info and change the notification area class name for a brief time.
    *
-   * @param {{text: String, isError: boolean}} message
+   * @param {string} message
+   * @param {boolean} isError
    */
-  notify (message) {
-    const classNames =
-      `visible${message.isError ? ' error' : ''}`
-    this.notifyArea.setAttribute('class', classNames)
-    this.notifyArea.innerText = message.text
+  notify (message, isError) {
+    this.dom.notifyArea.classList.add('visible')
+    if (isError) {
+      this.dom.notifyArea.classList.add('error')
+    }
+    this.dom.notifyArea.innerText = message
     if (this.notifyID) {
       clearTimeout(this.notifyID)
     }
     this.notifyID = setTimeout(area => {
-      area.setAttribute('class', 'hidden')
-      area.innerText = ''
-    }, 4000, this.notifyArea)
-  }
-  
-  /**
-   * @returns {TextEditorDOM} the page then can use these elements
-   */
-  get dom () {
-    return {
-      wrapper: this.wrapper,
-      textarea: this.textarea,
-      notifyArea: this.notifyArea,
-      saveButton: this.saveButton,
-      loadButton: this.loadButton
-    }
+      area.classList.remove('visible')
+      area.classList.remove('error')
+    }, 4000, this.dom.notifyArea)
   }
 }

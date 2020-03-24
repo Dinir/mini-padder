@@ -7,6 +7,7 @@
   <title>Game Pad Viewer</title>
   <link rel="stylesheet" href="./css/main.css">
   <link rel="stylesheet" href="./css/controlPanel.css">
+  <link rel="stylesheet" href="./css/OnBrowserTextEditor.css">
   <link rel="stylesheet" href="./css/test.css">
 </head>
 
@@ -84,12 +85,13 @@
     </label>
     <span class="description">transition time of fade out</span>
   </div>
-  <div class="option top-divider" data-name="mappingManagement">
-    <h1>Mapping Export & Import</h1>
-    <button>Show Current Mappings</button>
+  <div class="option top-divider" data-name="management">
+    <h1>Export & Import</h1>
+    <button data-name="mappings">Show Current Mappings</button>
+    <button data-name="generalSettings">Show General Settings</button>
     <br>
     <span class="description">
-      You can copy JSON of all mappings stored to save in a text file, or paste from such text file and store them to local storage for this web page.
+      You can copy JSON of the data to save in a text file, or paste from such text file and store them in the local storage of this web page.
     </span>
   </div>
 </div>
@@ -108,14 +110,16 @@
   })
 
   const mapper = new MappingInterface()
-  const obte = new OnBrowserTextEditor(mapper.editorCallbacks)
+  const obte = new OnBrowserTextEditor()
+  obte.dom.wrapper.classList.add('control-panel')
+  obte.appendToParent(document.body)
   
   const cp = new ControlPanel({
     assignment: 'buttons',
     layout: 'onelistforeach',
     displayWidth: 'slider',
     fadeOut: 'textarrays',
-    mappingManagement: 'button'
+    management: 'buttons'
   }, [
     'gamepadconnected', 'gamepaddisconnected'
   ]).panel
@@ -125,6 +129,28 @@
       '#control-panel div[data-name="assignment"] button'
     ), e => {
       console.log('mapper mapping function goes here', e)
+    }
+  )
+
+  let temporarycallbacks = {
+    title: 'dummy title',
+    save: v => {console.log('dummy save function')},
+    load: v => {console.log('dummy load function')}
+  }
+  cp.management.assign(
+    document.querySelectorAll(
+      '#control-panel div[data-name="management"] button'
+    ), e => {
+      switch (e.target.dataset.name) {
+        case 'mappings':
+          obte.changeFocus(mapper.editorCallbacks)
+          obte.visibility = true
+          break;
+        case 'generalSettings':
+          obte.changeFocus(temporarycallbacks)
+          obte.visibility = true
+          break;
+      }
     }
   )
 </script>

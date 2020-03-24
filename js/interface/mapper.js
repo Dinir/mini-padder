@@ -3,14 +3,6 @@ class MappingInterface extends MappingStorageManager {
     super(newMappings)
   }
   
-  /*
-  Direction of save/load
-  
-  [ Editor ]<-Load[  HTML  ]      [  Local  ]
-  [        ]Save->[ Active ]      [ Storage ]
-  [        ]      [Mappings]Save->[         ]
- */
-  
   saveFromEditor (text) {
     try {
       // check if it's a valid json
@@ -32,6 +24,7 @@ class MappingInterface extends MappingStorageManager {
   
   get editorCallbacks () {
     return {
+      title: 'Gamepad Mappings',
       save: this.saveFromEditor.bind(this),
       load: this.loadToEditor.bind(this)
     }

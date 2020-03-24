@@ -9,9 +9,14 @@ class MappingInterface extends MappingStorageManager {
       const parsedText = JSON.parse(text)
       // should be valid. save it as the active mappings
       // then save it to the localstorage
+      const oldMappings = this.mappings
       this.mappings = parsedText
       
       const isSaved = this.store()
+      if (!isSaved) {
+        // something has gone wrong. revert back to the old mappings.
+        this.mappings = oldMappings
+      }
       if (notifier) {
         let message = ''
         if (isSaved) {

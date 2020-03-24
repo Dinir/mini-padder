@@ -63,9 +63,9 @@ class MappingStorageManager {
   }
   
   static validateMappings (mappings) {
-    return mappings &&
-           typeof mappings === 'object' &&
-           Object.keys(mappings).length > 0
+    return (mappings &&
+            typeof mappings === 'object' &&
+            Object.keys(mappings).length > 0) || false
   }
   
   static announceMessage (message, type) {

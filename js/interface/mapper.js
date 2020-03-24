@@ -3,23 +3,49 @@ class MappingInterface extends MappingStorageManager {
     super(newMappings)
   }
   
-  saveFromEditor (text) {
+  saveFromEditor (text, notifier) {
     try {
       // check if it's a valid json
       const parsedText = JSON.parse(text)
       // should be valid. save it as the active mappings
       // then save it to the localstorage
       this.mappings = parsedText
-      this.store()
+      
+      const isSaved = this.store()
+      if (notifier) {
+        let message = ''
+        if (isSaved) {
+          message = 'Mappings are saved.'
+        } else {
+          message = 'Mappings are not saved. '
+          if (Object.keys(this.mappings).length === 0) {
+            message += 'There\'s nothing to save.'
+          }
+        }
+        notifier(message)
+      }
     } catch (e) {
+      if (notifier) {
+        notifier('Mappings can\'t be saved.', true)
+      }
       MappingInterface.announceMessage({name: e.name, message: e.message}, 'error')
     }
   }
-  loadToEditor (textarea) {
-    // stringify current active mappings
-    const stringifiedMappings = JSON.stringify(this.mappings, null, 2)
-    textarea.value = stringifiedMappings
-    MappingInterface.announceMessage('Loaded current mappings.')
+  loadToEditor (textarea, notifier) {
+    try {
+      // stringify current active mappings
+      const stringifiedMappings = JSON.stringify(this.mappings, null, 2)
+      textarea.value = stringifiedMappings
+      MappingInterface.announceMessage('Loaded current mappings.')
+      if (notifier) {
+        notifier('Current mappings are loaded.')
+      }
+    } catch (e) {
+      if (notifier) {
+        notifier('Mappings can\'t be loaded.', true)
+      }
+      MappingInterface.announceMessage({name: e.name, message: e.message}, 'error')
+    }
   }
   
   get editorCallbacks () {

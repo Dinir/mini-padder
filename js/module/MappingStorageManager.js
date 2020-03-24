@@ -97,10 +97,12 @@ class MappingStorageManager {
       MappingStorageManager.announceMessage(
         Object.keys(JSON.parse(mappingsJSON)).length + ' mappings stored.'
       )
+      return true
     } else {
       MappingStorageManager.announceMessage(
         'No mappings to store.'
       )
+      return false
     }
   }
 
@@ -111,5 +113,7 @@ class MappingStorageManager {
     MappingStorageManager.announceMessage(
       Object.keys(this.mappings).length + ' mappings found.'
     )
+    
+    return true
   }
 }

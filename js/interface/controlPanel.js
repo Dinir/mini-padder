@@ -24,6 +24,7 @@ class ControlPanel {
         typeListingObject[item], item
       )
     }
+    
     this.globalEvents = globalEventsToListen
     this.globalEvents.forEach(eventType => {
       window.addEventListener(eventType, e => {
@@ -81,13 +82,17 @@ class ControlPanel {
     if (ControlPanel.recognizedTypes.indexOf(typeName) === -1) {
       return null
     }
+    
     const TypeName = typeName.charAt(0).toUpperCase() +
                      typeName.slice(1)
+    
     if (this[`getControlFor${TypeName}`]) {
       const control = this[`getControlFor${TypeName}`](name)
       
       if (control.hasOwnProperty('globalEventCallback')) {
-        this.globalEventCallbacks.push(control.globalEventCallback.bind(control))
+        this.globalEventCallbacks.push(
+          control.globalEventCallback.bind(control)
+        )
       }
     
       if (control.hasOwnProperty('panelValue')) {

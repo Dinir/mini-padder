@@ -97,7 +97,7 @@
 </div>
 </body>
 
-<!-- load base things -->
+<!-- gamepad watcher -->
 <script>
   const gpwatcher = new GamepadWatcher()
 
@@ -109,12 +109,16 @@
       console.log('Mapping Manager:', e.detail.message)
     }
   })
+</script>
 
+<!-- control panel -->
+<script>
   const mapper = new MappingInterface()
   const obte = new OnBrowserTextEditor()
   obte.dom.wrapper.classList.add('control-panel')
   obte.appendToParent(document.body)
-  
+
+  const cpDom = document.getElementById('control-panel')
   const cp = new ControlPanel({
     assignment: 'buttons',
     layout: 'onelistforeach',
@@ -126,8 +130,8 @@
   ]).panel
   
   cp.assignment.assign(
-    document.querySelectorAll(
-      '#control-panel div[data-name="assignment"] button'
+    cpDom.querySelectorAll(
+      'div[data-name="assignment"] button'
     ), e => {
       console.log('mapper mapping function goes here', e)
     }
@@ -139,8 +143,8 @@
     load: v => {console.log('dummy load function')}
   }
   cp.management.assign(
-    document.querySelectorAll(
-      '#control-panel div[data-name="management"] button'
+    cpDom.querySelectorAll(
+      'div[data-name="management"] button'
     ), e => {
       switch (e.target.dataset.name) {
         case 'mappings':

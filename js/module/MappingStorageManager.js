@@ -73,8 +73,9 @@ class MappingStorageManager {
       log: 'log',
       error: 'error'
     }
-    window.dispatchEvent(new CustomEvent('mappingManagerMessage', {
+    window.dispatchEvent(new CustomEvent('GPVMessage', {
       detail: {
+        from: 'Mapping Manager',
         type: messageType[type] || messageType.log,
         message: message
       }

@@ -106,11 +106,11 @@
   const gpwatcher = new GamepadWatcher()
 
   // get mapping manager messages on console
-  window.addEventListener('mappingManagerMessage', e => {
+  window.addEventListener('GPVMessage', e => {
     if (e.detail.type === 'error') {
-      console.error('Mapping Manager:', e.detail.message)
+      console.error(e.detail.from + ':', e.detail.message)
     } else {
-      console.log('Mapping Manager:', e.detail.message)
+      console.log(e.detail.from + ':', e.detail.message)
     }
   })
 </script>

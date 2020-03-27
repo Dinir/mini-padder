@@ -20,12 +20,13 @@
   #text-editor-wrapper div#notify-area {
     background: rgba(127, 127, 127, 0.8);
     position: absolute;
-    bottom: 12%;
+    bottom: -12%;
     width: 97%;
     padding: 0.25em 0;
     opacity: 0;
-    transition: opacity 0.5s; }
+    transition: opacity 0.5s, bottom 0.5s; }
     #text-editor-wrapper div#notify-area.visible {
-      opacity: 1; }
+      opacity: 1;
+      bottom: 12%; }
 
 /*# sourceMappingURL=OnBrowserTextEditor.css.map */

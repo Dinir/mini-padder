@@ -15,9 +15,14 @@ class ControlPanel {
   constructor (typeListingObject, globalEventsToListen) {
     this.panel = {}
     this.globalEventCallbacks = []
+    this.panelValue = {}
+    this.loadPanelValues()
+    
     for (const item in typeListingObject) {
       if (!typeListingObject.hasOwnProperty(item)) continue
-      this.panel[item] = this.getControlForType(typeListingObject[item])
+      this.panel[item] = this.getControlForType(
+        typeListingObject[item], item
+      )
     }
     this.globalEvents = globalEventsToListen
     this.globalEvents.forEach(eventType => {
@@ -54,17 +59,45 @@ class ControlPanel {
     }
   }
   
-  getControlForType (typeName) {
+  setPanelValue (key, value) {
+    this.panelValue[key] = value
+    this.savePanelValues()
+  }
+  removePanelValue (key) {
+    delete this.panelValue[key]
+  }
+  savePanelValues () {
+    const converted = JSON.stringify(this.panelValue)
+    window.localStorage.setItem('controlPanelValues', converted)
+  }
+  loadPanelValues () {
+    const converted = JSON.parse(
+      window.localStorage.getItem('controlPanelValues')
+    )
+    this.panelValue = converted || {}
+  }
+  
+  getControlForType (typeName, name) {
     if (ControlPanel.recognizedTypes.indexOf(typeName) === -1) {
       return null
     }
     const TypeName = typeName.charAt(0).toUpperCase() +
                      typeName.slice(1)
     if (this[`getControlFor${TypeName}`]) {
-      const control = this[`getControlFor${TypeName}`]()
+      const control = this[`getControlFor${TypeName}`](name)
+      
       if (control.hasOwnProperty('globalEventCallback')) {
         this.globalEventCallbacks.push(control.globalEventCallback.bind(control))
       }
+    
+      if (control.hasOwnProperty('panelValue')) {
+        if (this.panelValue.hasOwnProperty(name)) {
+          control.receivePanelValue(
+            this.panelValue[name]
+          )
+        }
+      }
+    
       return control
       // `this` in the returning method points that method,
       // which is assigned to `this.panel.item` of this instance.
@@ -73,8 +106,9 @@ class ControlPanel {
     }
   }
   
-  getControlForButtons () {
+  getControlForButtons (name) {
     return {
+      name: name,
       assign: function (buttonDomArray, callbackOnClick) {
         this.buttons = buttonDomArray
         this.buttons.forEach((v, i) => {
@@ -117,17 +151,3 @@ class ControlPanel {
     }
   }
 }
-
-
-
-
-
-/*
-cp.assignment.click(0)
-cp.layout.set(0).to(5)
-cp.displayWidth.set(4)
-cp.fadeout.time.set(8,16,32)
-cp.fadeout.opacity.set(0.5,0.9,1)
-cp.fadeout.duration.set(4)
-cp.mappingmanagement.click()
- */

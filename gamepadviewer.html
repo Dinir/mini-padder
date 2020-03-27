@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="./css/main.css">
   <link rel="stylesheet" href="./css/controlPanel.css">
   <link rel="stylesheet" href="./css/OnBrowserTextEditor.css">
-  <link rel="stylesheet" href="./css/test.css">
 </head>
 
 <script src="./js/module/GamepadWatcher.js"></script>
@@ -183,7 +182,7 @@
 <!-- test codes -->
 <script>
   // gamepad viewer test - see change data
-  const changeViewDom = {
+  /*const changeViewDom = {
     wrapper: document.createElement('div'),
     axisView: document.createElement('pre'),
     buttonView: document.createElement('pre'),
@@ -198,7 +197,7 @@
   window.addEventListener('gamepadChange', e => {
     changeViewer.children[0].innerHTML = JSON.stringify(e.detail[0].axes, null, 2)
     changeViewer.children[1].innerHTML = JSON.stringify(e.detail[0].buttons, null, 2)
-    /*let directionText = ''
+    let directionText = ''
     for (let d = 0; d < 8; d++) {
       const number = Math.floor(10*((-7 + 2 * d) / 7))/10
       directionText +=
@@ -206,8 +205,8 @@
         `: ${e.detail[0].axes[9].value} - ${number} < 0.1` +
         '<br>'
     }
-    changeViewer.children[2].innerHTML = directionText*/
-  })
+    changeViewer.children[2].innerHTML = directionText
+  })*/
 </script>
 
 </html>

@@ -105,7 +105,7 @@
 <script>
   const gpwatcher = new GamepadWatcher()
 
-  // get mapping manager messages on console
+  // get gamepad viewer messages on console
   window.addEventListener('GPVMessage', e => {
     if (e.detail.type === 'error') {
       console.error(e.detail.from + ':', e.detail.message)
@@ -125,9 +125,9 @@
   const cpDom = document.getElementById('control-panel')
   const cp = new ControlPanel({
     assignment: 'dynamicButtons',
-    layout: 'onelistforeach',
+    layout: 'selectFromList',
     displayWidth: 'slider',
-    fadeOut: 'textarrays',
+    fadeOut: 'textArrays',
     management: 'buttons'
   }, [
     'gamepadconnected', 'gamepaddisconnected'

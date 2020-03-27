@@ -16,10 +16,12 @@
   width: 256px;
   height: 144px; }
   #canvas-container > div div, #canvas-container > div canvas {
-    position: absolute;
+    position: absolute; }
+  #canvas-container > div div {
     top: 0;
     left: 0;
     width: 256px;
-    height: 144px; }
+    height: 144px;
+    background-repeat: no-repeat; }
 
 /*# sourceMappingURL=canvasContainer.css.map */

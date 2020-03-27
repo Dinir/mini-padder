@@ -6,6 +6,7 @@
   <meta charset="utf-8">
   <title>Game Pad Viewer</title>
   <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/canvasContainer.css">
   <link rel="stylesheet" href="./css/controlPanel.css">
   <link rel="stylesheet" href="./css/OnBrowserTextEditor.css">
 </head>
@@ -14,14 +15,19 @@
 <script src="./js/module/MappingStorageManager.js"></script>
 <script src="./js/module/OnBrowserTextEditor.js"></script>
 <script src="./js/interface/mapper.js"></script>
+<script src="./js/interface/GamepadRenderer.js"></script>
 <script src="./js/interface/controlPanel.js"></script>
 
 <body>
 <div id="canvas-container">
-  <canvas width="256" height="144"></canvas>
-  <canvas width="256" height="144"></canvas>
-  <canvas width="256" height="144"></canvas>
-  <canvas width="256" height="144"></canvas>
+  <div>
+  </div>
+  <div>
+  </div>
+  <div>
+  </div>
+  <div>
+  </div>
 </div>
 
 <div id="control-panel" class="control-panel">
@@ -179,6 +185,15 @@
     }
   )
 </script>
+
+<!-- renderer -->
+<script>
+  const canvas = Array.from(
+    document.querySelectorAll('#canvas-container > div')
+  )
+  const gr = new GamepadRenderer(canvas)
+</script>
+
 <!-- test codes -->
 <script>
   // gamepad viewer test - see change data

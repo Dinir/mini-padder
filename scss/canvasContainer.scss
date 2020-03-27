@@ -19,10 +19,13 @@
     height: $canvas-height;
     div, canvas {
       position: absolute;
+    }
+    div {
       top: 0;
       left: 0;
       width: $canvas-width;
       height: $canvas-height;
+      background-repeat: no-repeat;
     }
   }
 }

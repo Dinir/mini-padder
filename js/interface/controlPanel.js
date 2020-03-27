@@ -35,7 +35,7 @@ class ControlPanel {
   
   static get recognizedTypes () {
     return [
-      'buttons', 'selectFromList', 'slider', 'textArrays', 'button'
+      'dynamicButtons', 'selectFromList', 'slider', 'textArrays', 'buttons'
     ]
   }
   
@@ -111,7 +111,7 @@ class ControlPanel {
     }
   }
   
-  getControlForButtons (name) {
+  getControlForDynamicButtons (name) {
     return {
       name: name,
       assign: function (buttonDomArray, callbackOnClick) {
@@ -152,6 +152,19 @@ class ControlPanel {
         ) {
           this.buttons[index].innerHTML = newText
         }
+      }
+    }
+  }
+  
+  getControlForButtons (name) {
+    return {
+      name: name,
+      assign: function (buttonDomArray, callbackOnClick) {
+        this.buttons = buttonDomArray
+        this.buttons.forEach((v, i) => {
+          v.dataset.index = i
+          v.addEventListener('click', callbackOnClick)
+        })
       }
     }
   }

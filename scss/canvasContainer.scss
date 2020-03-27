@@ -1,0 +1,18 @@
+@import 'common';
+
+#canvas-container {
+  @each $slider-value, $width in (1: 1, 2: 2, 3: 4) {
+    &[data-width='#{$slider-value}'] {
+      width:
+        $width * $canvas-width +
+        ( $width - 1 ) * $canvas-gap;
+      height:
+        ( 4 / $width ) * $canvas-height +
+        ( 4 / $width - 1) * $canvas-gap;
+    }
+  }
+  
+  & > div {
+    display: inline-block;
+  }
+}

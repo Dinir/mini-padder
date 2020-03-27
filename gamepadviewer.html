@@ -66,6 +66,11 @@
       </datalist>
       <input class="allGamepad with-hashmark" id="display-width-input" type="range" list="display-width-options" min="1" max="3" step="1">
     </div>
+    <span class="description">
+      <b>Display Size</b><br>
+      <span>&nbsp;256x144</span> (one gamepad)<br>
+      <span></span> (all gamepads)
+    </span>
   </div>
   <div class="option half-width no-divider" data-name="fadeOut">
     <h1>Fade Out</h1>
@@ -134,6 +139,22 @@
       'div[data-name="assignment"] button'
     ), e => {
       console.log('mapper mapping function goes here', e)
+    }
+  )
+
+  const canvasContainer = document.getElementById('canvas-container')
+  cp.displayWidth.assign(
+    cpDom.querySelector(
+      'div[data-name="displayWidth"] input'
+    ), e => {
+      const sizeDescriptor = cpDom.querySelector(
+        'div[data-name="displayWidth"] .description'
+      )
+      canvasContainer.dataset.width = e.target.value
+      sizeDescriptor.children[4].innerHTML =
+        (canvasContainer.offsetWidth < 1000 ? '&nbsp;' : '') +
+        canvasContainer.offsetWidth +
+        '×' + canvasContainer.offsetHeight
     }
   )
 

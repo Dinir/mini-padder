@@ -155,4 +155,37 @@ class ControlPanel {
       }
     }
   }
+  
+  getControlForSlider (name) {
+    const nameOnPanel = name
+    const updatePanelValue = value => {
+      this.setPanelValue(nameOnPanel, value)
+    }
+    return {
+      name: name,
+      panelValue: null,
+      assign: function (input, customCallback) {
+        this.slider = input
+        this.callback = customCallback
+        if (this.panelValue) {
+          this.updateSlider()
+        }
+        this.slider.addEventListener('change', e => {
+          this.panelValue = e.target.value
+          updatePanelValue(this.panelValue)
+          this.callback(e)
+        })
+      },
+      receivePanelValue: function (value) {
+        this.panelValue = value
+        this.updateSlider()
+      },
+      updateSlider () {
+        if (this.slider && this.callback) {
+          this.slider.value = this.panelValue
+          this.callback({target: {value: this.panelValue}})
+        }
+      }
+    }
+  }
 }

@@ -1,0 +1,16 @@
+#canvas-container[data-width='1'] {
+  width: 256px;
+  height: 600px; }
+
+#canvas-container[data-width='2'] {
+  width: 520px;
+  height: 296px; }
+
+#canvas-container[data-width='3'] {
+  width: 1048px;
+  height: 144px; }
+
+#canvas-container > div {
+  display: inline-block; }
+
+/*# sourceMappingURL=canvasContainer.css.map */

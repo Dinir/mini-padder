@@ -31,7 +31,8 @@ class OnBrowserTextEditor {
     this.callbacks = {}
     this.makeDomStructure()
     
-    this.notifyID = 0
+    this.visibilityTimerID = 0
+    this.buttonProtectionTimerID = 0
   }
   
   makeDomStructure () {
@@ -71,7 +72,7 @@ class OnBrowserTextEditor {
     wrapper.appendChild(buttonDiv)
     
     this.dom = {
-      wrapper, title, textarea, notifyArea, saveButton, loadButton
+      wrapper, title, textarea, notifyArea, buttonDiv, saveButton, loadButton
     }
   }
   
@@ -85,6 +86,28 @@ class OnBrowserTextEditor {
       else this.dom.wrapper.classList.remove('active')
     } else {
       this.dom.wrapper.classList.toggle('active')
+    }
+    /*
+     this prevents accidental double clicks
+     where the second one actually reaching a button
+     before the user recognize the button appearing.
+     */
+    if (this.dom.wrapper.classList.contains('active')) {
+      const buttons = Array.from(
+        this.dom.buttonDiv.getElementsByTagName('button')
+      )
+      if (this.buttonProtectionTimerID) {
+        clearTimeout(this.buttonProtectionTimerID)
+      }
+      buttons.forEach(b => {
+        b.setAttribute('disabled', '')
+      })
+      this.buttonProtectionTimerID =
+        setTimeout(buttons => {
+          buttons.forEach(b => {
+            b.removeAttribute('disabled')
+          })
+        }, 500, buttons)
     }
   }
   
@@ -129,10 +152,10 @@ class OnBrowserTextEditor {
       this.dom.notifyArea.classList.add('error')
     }
     this.dom.notifyArea.innerText = message
-    if (this.notifyID) {
-      clearTimeout(this.notifyID)
+    if (this.visibilityTimerID) {
+      clearTimeout(this.visibilityTimerID)
     }
-    this.notifyID = setTimeout(area => {
+    this.visibilityTimerID = setTimeout(area => {
       area.classList.remove('visible')
       area.classList.remove('error')
     }, 4000, this.dom.notifyArea)

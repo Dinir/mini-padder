@@ -11,6 +11,15 @@
   height: 144px; }
 
 #canvas-container > div {
-  display: inline-block; }
+  display: inline-block;
+  position: relative;
+  width: 256px;
+  height: 144px; }
+  #canvas-container > div div, #canvas-container > div canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 256px;
+    height: 144px; }
 
 /*# sourceMappingURL=canvasContainer.css.map */

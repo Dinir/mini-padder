@@ -14,5 +14,15 @@
   
   & > div {
     display: inline-block;
+    position: relative;
+    width: $canvas-width;
+    height: $canvas-height;
+    div, canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: $canvas-width;
+      height: $canvas-height;
+    }
   }
 }

@@ -42,20 +42,25 @@ class ControlPanel {
   /**
    * Extract human readable description and gamepadId from `Gamepad.id`.
    * @param {string} idString
-   * @returns {{name: string, gamepadId: (gamepadId|string)}}
+   * @returns {{name: string, gamepadId: string}}
    */
   static getGamepadId (idString) {
-    if (/XInput/.test(idString)) {
+    const matchResult = idString.match(/ \(.*Vendor: ([0-9a-f]{4}) Product: ([0-9a-f]{4})\)/)
+    if (matchResult) {
+      return {
+        name: idString.substring(0, matchResult.index),
+        gamepadId: matchResult[1] + matchResult[2]
+      }
+    } else if (/XInput/.test(idString)) {
       const indexBeforeBracket = idString.search(/ \(/)
       return {
         name: idString.substring(0, indexBeforeBracket),
         gamepadId: 'XInput'
       }
     } else {
-      const matchResult = idString.match(/ \(.*Vendor: ([0-9a-f]{4}) Product: ([0-9a-f]{4})\)/)
       return {
-        name: idString.substring(0, matchResult.index),
-        gamepadId: matchResult[1] + matchResult[2]
+        name: 'XBox 360 Controller?',
+        gamepadId: 'XInput?'
       }
     }
   }

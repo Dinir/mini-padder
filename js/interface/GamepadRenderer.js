@@ -3,6 +3,9 @@
  * @description
  * This object contains axes and buttons data from Gamepad with 'delta' property added to each.
  * Unchanged values will be represented as null.
+ * @property {Object.<string, string>} id `gamepad.id` formatted into the name and the vendor-product code.
+ * @property {string} id.name name of the gamepad
+ * @property {string} id.id vendor-product code of the gamepad
  * @property {(?axisChange)[]} axes
  * @property {(?buttonChange)[]} buttons
  */

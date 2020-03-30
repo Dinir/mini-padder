@@ -224,6 +224,7 @@ class GamepadWatcher {
           id: this.gamepadId[newState.index]
         }
       }
+      const lastChange = lastChanges[newState.index]
       
       // check axes
       const axisChanges = Array(newState.axes.length).fill(null)
@@ -235,7 +236,7 @@ class GamepadWatcher {
           }
         }
       }
-      lastChanges[newState.index].axes = axisChanges
+      lastChange.axes = axisChanges
   
       // check buttons
       const buttonChanges = Array(newState.buttons.length).fill(null)
@@ -248,7 +249,7 @@ class GamepadWatcher {
           }
         }
       }
-      lastChanges[newState.index].buttons = buttonChanges
+      lastChange.buttons = buttonChanges
       
       // checking on the new state is done, update the stored old state with them
       this.gamepads[index] = newState

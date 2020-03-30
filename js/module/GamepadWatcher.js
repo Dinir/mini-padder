@@ -17,7 +17,7 @@
  */
 
 /**
- * @typedef {Object} GamepadChanges
+ * @typedef {Object} GamepadChange
  * @description
  * This object contains axes and buttons data from Gamepad with 'delta' property added to each.
  * Unchanged values will be represented as null.
@@ -79,7 +79,7 @@ class GamepadWatcher {
   
   /**
    * Dispatch an event of 'gamepadChange' type with data of changes included in it.
-   * @param {GamepadChanges} gamepadChanges
+   * @param {Object.<number, GamepadChange>} gamepadChanges
    */
   static announceGamepadChange(gamepadChanges) {
     window.dispatchEvent(new CustomEvent('gamepadChange', {
@@ -189,15 +189,17 @@ class GamepadWatcher {
   
     /**
      * @type {Object}
-     * @property {?GamepadChanges} [0]
-     * @property {?GamepadChanges} [1]
-     * @property {?GamepadChanges} [2]
-     * @property {?GamepadChanges} [3]
+     * @property {?GamepadChange} [0]
+     * @property {?GamepadChange} [1]
+     * @property {?GamepadChange} [2]
+     * @property {?GamepadChange} [3]
+     * @property {number} length defined so it can be iterated with for loop
      *
      * If there was no changes for a gamepad, the corresponding property will be set as null.
      * If a gamepad is not registered on the navigator, the corresponding property won't exist.
      */
-    const lastChange = {}
+    const lastChanges = {}
+    lastChanges.length = 4
 
     // check each gamepad for changes
     for (let i = 0; i < newStates.length; i++) {
@@ -214,10 +216,11 @@ class GamepadWatcher {
       
       // check if the state is changed
       if (newState.timestamp === oldState.timestamp) {
-        lastChange[newState.index] = null
+        lastChanges[newState.index] = null
         continue
       } else {
-        lastChange[newState.index] = {
+        // add gamepadId into the change object
+        lastChanges[newState.index] = {
           id: this.gamepadId[newState.index]
         }
       }
@@ -232,7 +235,7 @@ class GamepadWatcher {
           }
         }
       }
-      lastChange[newState.index].axes = axisChanges
+      lastChanges[newState.index].axes = axisChanges
   
       // check buttons
       const buttonChanges = Array(newState.buttons.length).fill(null)
@@ -245,17 +248,20 @@ class GamepadWatcher {
           }
         }
       }
-      lastChange[newState.index].buttons = buttonChanges
+      lastChanges[newState.index].buttons = buttonChanges
       
       // checking on the new state is done, update the stored old state with them
       this.gamepads[index] = newState
     }
     
     if (
-      Object.keys(lastChange).length &&
-      lastChange[0] || lastChange[1] || lastChange[2] || lastChange[3]
+      Object.keys(lastChanges).length &&
+      lastChanges[0] ||
+      lastChanges[1] ||
+      lastChanges[2] ||
+      lastChanges[3]
     ) {
-      GamepadWatcher.announceGamepadChange(lastChange)
+      GamepadWatcher.announceGamepadChange(lastChanges)
     }
     
     /* When running without gamepad events,

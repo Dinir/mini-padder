@@ -7,11 +7,11 @@
  * @property {String} name human readable string to tell what this mapping is for
  * @property {String[]} properties gamepad-specific features. All strings in this array should be defined in a render logic.
  *
- * @property {Object.<string, (number|Object.<string, number>)>} axes
+ * @property {Object.<string, (number|Object.<string, number>)>} sticks
  *
- * @property {number} axes.deadzone define the end of a range of value which shouldn't be treated as an actual movement. 0 is at the center, 1 is the end of the axis.
- * @property {{x: number, y: number, button: number}} axes.left indexes of axes and a button for left thumb stick
- * @property {{x: number, y: number, button: number}} axes.right numbers of axes and a button for right thumb stick
+ * @property {number} sticks.deadzone define the end of a range of value which shouldn't be treated as an actual movement. 0 is at the center, 1 is the end of the axis.
+ * @property {{x: number, y: number, button: number}} sticks.left indexes of axes and a button for left thumb stick
+ * @property {{x: number, y: number, button: number}} sticks.right numbers of axes and a button for right thumb stick
  *
  * @property {Object.<string, Object.<string, number>>} buttons
  *
@@ -209,7 +209,7 @@ class MappingStorageManager {
       // handle the case where gamepadId is not found
       processedChange.id = change.id.gamepadId === 'XInput?' ?
         'XInput' : change.id.gamepadId
-      processedChange.axes = {}
+      processedChange.sticks = {}
       processedChange.buttons = {}
       // handle the case where mapping for the gamepadId is not found
       // check a 'vender id' one, then if it's not found
@@ -220,9 +220,9 @@ class MappingStorageManager {
         this.mappings['DInput']
       const properties = mapping.properties
       
-      // axes.left and axes.right
-      processedChange.axes = MappingStorageManager.processAxes(
-        mapping.axes, change.axes, change.buttons
+      // sticks.left and sticks.right
+      processedChange.sticks = MappingStorageManager.processSticks(
+        mapping.sticks, change.axes, change.buttons
       )
       
       // buttons.dpad
@@ -257,59 +257,59 @@ class MappingStorageManager {
     }
   }
   
-  static processAxes (mappingAxes, changeAxes, changeButtons) {
-    const processedChangeAxes = {}
-    const deadzone = mappingAxes.deadzone || 0
+  static processSticks (mappingSticks, changeAxes, changeButtons) {
+    const processedChangeSticks = {}
+    const deadzone = mappingSticks.deadzone || 0
     
     for (let i = 0; i < 2; i++) {
       const side = i === 0 ? 'left' : 'right'
-      const mappingAxis = mappingAxes[side]
-      if (!mappingAxis) {
-        // this is a case the axis is not even listed on the mapping
+      const mappingStick = mappingSticks[side]
+      if (!mappingStick) {
+        // this is a case the stick is not even listed on the mapping
         // should I keep the `null`?
-        processedChangeAxes[side] = null
+        processedChangeSticks[side] = null
         continue
       }
       
       const value = [
-        changeAxes[mappingAxis.x],
-        changeAxes[mappingAxis.y],
+        changeAxes[mappingStick.x],
+        changeAxes[mappingStick.y],
       ]
       const hasButtonChange =
-        mappingAxis.button && changeButtons[mappingAxis.button]
+        mappingStick.button && changeButtons[mappingStick.button]
       if (hasButtonChange) {
-        value.push(changeButtons[mappingAxis.button])
+        value.push(changeButtons[mappingStick.button])
       } else if (value.every(v => v === null)) {
         // if `hasButtonChange` is true, that means there IS a change
-        // hence only checking axes for changes after checking the button
-        processedChangeAxes[side] = null
+        // hence only checking the stick for changes after checking the button
+        processedChangeSticks[side] = null
         continue
       }
       
       // assign changes
-      processedChangeAxes[side] = {
+      processedChangeSticks[side] = {
         value: [ null, null ],
         delta: [ null, null ]
       }
       for (let i = 0; i < value.length; i++) {
         if (!value[i]) { continue }
-        processedChangeAxes[side].value[i] = value[i].value
-        processedChangeAxes[side].delta[i] = value[i].delta
+        processedChangeSticks[side].value[i] = value[i].value
+        processedChangeSticks[side].delta[i] = value[i].delta
       }
       
       // tells if the stick is active
       let isActive = false
       if (hasButtonChange) {
-        processedChangeAxes[side].pressed = value[2].pressed
+        processedChangeSticks[side].pressed = value[2].pressed
         isActive = value[2].pressed
       }
       isActive = isActive ||
                  (value[0] ? Math.abs(value[0].value) > deadzone : false) ||
                  (value[1] ? Math.abs(value[1].value) > deadzone : false)
-      processedChangeAxes[side].active = isActive
+      processedChangeSticks[side].active = isActive
     }
     
-    return processedChangeAxes
+    return processedChangeSticks
   }
   
   static processAxisDpad (mappingDpad, changeAxis) {

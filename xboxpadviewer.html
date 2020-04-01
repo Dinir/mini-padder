@@ -1,19 +1,17 @@
-<!--
-Made by Dinir Nertan (@DinirNertan, DinirNertan@gmail.com)
-Use it freely, just don't delete my name on the code.
--->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <title>XBox Pad Viewer</title>
-  <link rel="stylesheet" href="1.2.0/mapping.css">
+  <link rel="stylesheet" href="1.2.1/mapping.css">
 </head>
 
-<script src="1.2.0/options.js"></script>
+<script src="1.2.1/options.js"></script>
 
 <script>
+  var version = '1.2.1'
+  
   window.onload = function () {
     document.body.style.fontSize = '16px'
     document.body.style.fontFamily = `${gpConstants.defaultFont}, monospace`
@@ -454,7 +452,7 @@ Use it freely, just don't delete my name on the code.
           if (cur && cur.type === 'button thumb') {
             e = d.getElementsByClassName(`axis ${cur.name}`)[0].children[0]
             if (val === 100) {
-              e.style.background = 'url(1.2.0/dot.png)'
+              e.style.background = `url(${version}/dot.png)`
             } else {
               e.style.background = gpConstants.defaultColor
             }

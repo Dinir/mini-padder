@@ -30,7 +30,7 @@ class GamepadRenderer {
   
   getSkin (gamepadIndex, dirname) {
     this.ready[gamepadIndex] = false
-    if (dirname.search(/[^0-9a-zA-Z_\-]/) !== -1) return false
+    if (dirname.search(/[^0-9a-zA-Z_\-]/) !== -1) { return false }
     
     const skinpath = `./skin/${dirname}/`
     fetch(skinpath + 'config.json')

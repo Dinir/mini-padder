@@ -23,7 +23,7 @@ This is made to be directly used in OBS Browser source without running any exter
 
 # How to Use
 
-- Download and unzip the [latest release] and **capture `gamepadviewer.html` in your streaming software**. If you can grant access to the Local storage to the [hosted webpage], you can capture it instead without downloading anything. Recommended Width and Height is 1048 × 600.
+- ~~Download and unzip the [latest release] and **capture `gamepadviewer.html` in your streaming software**. If you can grant access to the Local storage to the [hosted webpage], you can capture it instead without downloading anything.~~ Recommended Width and Height is 1048 × 600.
 - Right click the source, select *Transform -> Edit Transform...* to **crop off outside of the intended display area**.  
   The intended display area vary with the way you want multiple gamepads to be displayed. Single gamepad area is 256 × 144, and the overall area size will be displayed on the control panel.
 - To make a change using the control panel, right click the source and select *Interact*.
@@ -39,8 +39,6 @@ A local web page is not allowed to read files from the computer, so these progre
 ---
 
 I tried to make this project to prove to myself that I can make and *complete* making a thing. Also that I can use it for my own streams.
-
-This is my first project that I tried to get used to [JavaScript Standard Style].
 
 [hosted webpage]: https://dinir.github.io/gamepad-viewer/gamepadviewer.html
 [latest release]: https://github.com/Dinir/gamepad-viewer/releases/latest

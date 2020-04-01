@@ -45,6 +45,8 @@ div[id^="gp"] {
       -moz-border-radius: 100%;
       -ms-border-radius: 100%;
       border-radius: 100%; }
+      div[id^="gp"] div.axes span.axis span.pressed {
+        background: url(dot.png); }
   div[id^="gp"] div.bg-circles span.bg-circle:nth-child(1),
   div[id^="gp"] div.axes span.axis:nth-child(1) {
     left: 0.05em;
@@ -55,7 +57,7 @@ div[id^="gp"] {
     top: 1.25em; }
   div[id^="gp"] div.buttons span.button {
     position: fixed;
-    background: url(../dot.png);
+    background: url(dot.png);
     background-repeat: no-repeat;
     background-size: 0% 0%;
     background-position: 0% 0%;

@@ -8,12 +8,10 @@ Use it freely, just don't delete my name on the code.
 <head>
   <meta charset="utf-8">
   <title>XBox Pad Viewer</title>
-  <link rel="stylesheet" href="./css/mapping.css">
+  <link rel="stylesheet" href="1.2.0/mapping.css">
 </head>
 
-<script src="options.js"></script>
-<script src="js/module/OnBrowserTextEditor.js"></script>
-<script src="js/module/MappingStorageManager.js"></script>
+<script src="1.2.0/options.js"></script>
 
 <script>
   window.onload = function () {
@@ -456,7 +454,7 @@ Use it freely, just don't delete my name on the code.
           if (cur && cur.type === 'button thumb') {
             e = d.getElementsByClassName(`axis ${cur.name}`)[0].children[0]
             if (val === 100) {
-              e.style.background = 'url(dot.png)'
+              e.style.background = 'url(1.2.0/dot.png)'
             } else {
               e.style.background = gpConstants.defaultColor
             }

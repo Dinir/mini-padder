@@ -85,6 +85,9 @@ div[id^="gp"] {
         position: relative;
         box-shadow: $shadowValue #404040;
         @include border-radius(100%);
+        &.pressed {
+          background: url(dot.png);
+        }
       }
     }
   }
@@ -102,7 +105,7 @@ div[id^="gp"] {
   div.buttons {
     span.button {
       position: fixed;
-      background: url(../dot.png);
+      background: url(dot.png);
       background-repeat: no-repeat;
       background-size: 0% 0%;
       background-position: 0% 0%;

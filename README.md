@@ -6,7 +6,7 @@
 
 **This is a project being developed right now. Many of the introductions below won't apply to the actual project yet.**
 
-To use the old one that worked on only handful kind of gamepads, checkout the [1.2.1 release](./releases/tag/1.2.1), or go to [this hosted page](https://dinir.github.io/gamepad-viewer/xboxpadviewer.html).
+To use the old one that worked on only handful kind of gamepads, checkout the [1.2.1 release](https://github.com/Dinir/gamepad-viewer/releases/tag/1.2.1), or go to [this hosted page](https://dinir.github.io/gamepad-viewer/xboxpadviewer.html).
 
 ---
 
@@ -42,6 +42,6 @@ I tried to make this project to prove to myself that I can make and *complete* m
 
 This is my first project that I tried to get used to [JavaScript Standard Style].
 
-[hosted webpage]: ./gamepadviewer.html
-[latest release]: ./releases/latest
+[hosted webpage]: https://dinir.github.io/gamepad-viewer/gamepadviewer.html
+[latest release]: https://github.com/Dinir/gamepad-viewer/releases/latest
 [JavaScript Standard Style]: https://standardjs.com

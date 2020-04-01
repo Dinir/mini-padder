@@ -59,7 +59,7 @@ div[id^="gp"] {
   text-shadow: $shadowValue black;
   width: 178px;
   height: 77px;
-
+  
   div.bg-circles span.bg-circle,
   div.axes span.axis {
     display: block;
@@ -73,42 +73,43 @@ div[id^="gp"] {
   div.bg-circles {
     span.bg-circle {
       border-color: transparent;
-      &:first-child {
-        @include positionGrid(0+$thumbMargin, 1);
+    }
+  }
+  
+  div.axes {
+    span.axis {
+      box-shadow: $shadowValue black;
+      @include border-radius(100%);
+      span {
+        display: block;
+        position: relative;
+        box-shadow: $shadowValue #404040;
+        @include border-radius(100%);
+        &.pressed {
+          background: url(dot.png);
+        }
       }
-      &:last-child {
-        @include positionGrid(6+$thumbMargin, 1);
-      }
+    }
+  }
+
+  div.bg-circles span.bg-circle,
+  div.axes span.axis {
+    &:nth-child(1) {
+      @include positionGrid(0+$thumbMargin, 1);
+    }
+    &:nth-child(2) {
+      @include positionGrid(6+$thumbMargin, 1);
     }
   }
 
   div.buttons {
     span.button {
       position: fixed;
-      background: url(../dot.png);
+      background: url(dot.png);
       background-repeat: no-repeat;
       background-size: 0% 0%;
       background-position: 0% 0%;
       @include border-radius(4px);
-    }
-  }
-  div.axes {
-    span.axis {
-      box-shadow: $shadowValue black;
-      span {
-        display: block;
-        position: relative;
-        box-shadow: $shadowValue #404040;
-        background: url(../dot.png);
-        @include border-radius(100%);
-      }
-
-      &:nth-child(1) {
-        @include positionGrid(0+$thumbMargin, 1);
-      }
-      &:nth-child(2) {
-        @include positionGrid(6+$thumbMargin, 1);
-      }
     }
   }
 

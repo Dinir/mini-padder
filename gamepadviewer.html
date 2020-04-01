@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta content="text/html" http-equiv="content-type">
+  <meta charset="utf-8">
+  <title>Game Pad Viewer</title>
+  <link rel="stylesheet" href="./css/main.css">
+  <link rel="stylesheet" href="./css/canvasContainer.css">
+  <link rel="stylesheet" href="./css/controlPanel.css">
+  <link rel="stylesheet" href="./css/OnBrowserTextEditor.css">
+</head>
+
+<script src="./js/module/GamepadWatcher.js"></script>
+<script src="./js/module/MappingStorageManager.js"></script>
+<script src="./js/module/OnBrowserTextEditor.js"></script>
+<script src="./js/interface/mapper.js"></script>
+<script src="./js/interface/GamepadRenderer.js"></script>
+<script src="./js/interface/controlPanel.js"></script>
+
+<body>
+<div id="canvas-container">
+  <div>
+  </div>
+  <div>
+  </div>
+  <div>
+  </div>
+  <div>
+  </div>
+</div>
+
+<div id="control-panel" class="control-panel">
+  <div class="option" data-name="assignment">
+    <h1>Button Assignment</h1>
+    <button class="eachGamepad inactive">Gamepad Name</button>
+    <button class="eachGamepad inactive">Gamepad Name</button>
+    <button class="eachGamepad inactive">Gamepad Name</button>
+    <button class="eachGamepad inactive">Gamepad Name</button>
+  </div>
+  <div class="option" data-name="layout" data-layout-0 data-layout-1 data-layout-2 data-layout-3>
+    <h1>Gamepad Layout</h1>
+    <label class="allGamepad after-margin">
+      Every Gamepad is
+      <select ></select>
+    </label><br>
+    <label class="eachGamepad full-width inactive">
+      <span>Gamepad Name</span> is
+      <select></select><br>
+    </label>
+    <label class="eachGamepad full-width inactive">
+      <span>Gamepad Name</span> is
+      <select></select><br>
+    </label>
+    <label class="eachGamepad full-width inactive">
+      <span>Gamepad Name</span> is
+      <select></select><br>
+    </label>
+    <label class="eachGamepad full-width inactive">
+      <span>Gamepad Name</span> is
+      <select></select>
+    </label>
+  </div>
+  <div class="option half-width no-divider va-top" data-name="displayWidth">
+    <h1><label for="display-width-input">Display Width</label></h1>
+    <div style="width: 10em;">
+      <datalist class="hashmark" id="display-width-options">
+        <option value="1" label="1"></option>
+        <option value="2" label="2"></option>
+        <option value="3" label="4"></option>
+      </datalist>
+      <input class="allGamepad with-hashmark" id="display-width-input" type="range" list="display-width-options" min="1" max="3" step="1">
+    </div>
+    <span class="description">
+      <b>Display Size</b><br>
+      <span>&nbsp;256x144</span> (one gamepad)<br>
+      <span></span> (all gamepads)
+    </span>
+  </div>
+  <div class="option half-width no-divider" data-name="fadeOut">
+    <h1>Fade Out</h1>
+    <label>
+      <span>Time: </span>
+      <input type="text" placeholder="8,16,32">
+    </label>
+    <span class="description">seconds for each fade out level</span><br>
+    <label>
+      <span>Opacity: </span>
+      <input type="text" placeholder="0.5,0.9,1">
+    </label>
+    <span class="description">transparency values for each level</span><br>
+    <label>
+      <span>Duration: </span>
+      <input type="text" placeholder="4">
+    </label>
+    <span class="description">transition time of fade out</span>
+  </div>
+  <div class="option top-divider" data-name="management">
+    <h1>Export & Import</h1>
+    <button data-name="mappings">Show Current Mappings</button>
+    <button data-name="generalSettings">Show General Settings</button>
+    <br>
+    <span class="description">
+      You can copy JSON of the data to save in a text file, or paste from such text file and store them in the local storage of this web page.
+    </span>
+  </div>
+</div>
+</body>
+
+<!-- gamepad watcher -->
+<script>
+  const gpwatcher = new GamepadWatcher()
+
+  // get gamepad viewer messages on console
+  window.addEventListener('GPVMessage', e => {
+    if (e.detail.type === 'error') {
+      console.error(e.detail.from + ':', e.detail.message)
+    } else {
+      console.log(e.detail.from + ':', e.detail.message)
+    }
+  })
+</script>
+
+<!-- control panel -->
+<script>
+  const mapper = new MappingInterface()
+  const obte = new OnBrowserTextEditor()
+  obte.dom.wrapper.classList.add('control-panel')
+  obte.appendToParent(document.body)
+
+  const cpDom = document.getElementById('control-panel')
+  const cp = new ControlPanel({
+    assignment: 'dynamicButtons',
+    layout: 'selectFromList',
+    displayWidth: 'slider',
+    fadeOut: 'textArrays',
+    management: 'buttons'
+  }, [
+    'gamepadconnected', 'gamepaddisconnected'
+  ]).panel
+  
+  cp.assignment.assign(
+    cpDom.querySelectorAll(
+      'div[data-name="assignment"] button'
+    ), e => {
+      console.log('mapper mapping function goes here', e)
+    }
+  )
+
+  const canvasContainer = document.getElementById('canvas-container')
+  cp.displayWidth.assign(
+    cpDom.querySelector(
+      'div[data-name="displayWidth"] input'
+    ), e => {
+      const sizeDescriptor = cpDom.querySelector(
+        'div[data-name="displayWidth"] .description'
+      )
+      canvasContainer.dataset.width = e.target.value
+      sizeDescriptor.children[4].innerHTML =
+        (canvasContainer.offsetWidth < 1000 ? '&nbsp;' : '') +
+        canvasContainer.offsetWidth +
+        '×' + canvasContainer.offsetHeight
+    }
+  )
+
+  let temporarycallbacks = {
+    title: 'dummy title',
+    save: v => {console.log('dummy save function')},
+    load: v => {console.log('dummy load function')}
+  }
+  cp.management.assign(
+    cpDom.querySelectorAll(
+      'div[data-name="management"] button'
+    ), e => {
+      switch (e.target.dataset.name) {
+        case 'mappings':
+          obte.changeFocus(mapper.editorCallbacks)
+          obte.visibility = true
+          break;
+        case 'generalSettings':
+          obte.changeFocus(temporarycallbacks)
+          obte.visibility = true
+          break;
+      }
+    }
+  )
+</script>
+
+<!-- renderer -->
+<script>
+  const canvas = Array.from(
+    document.querySelectorAll('#canvas-container > div')
+  )
+  const gr = new GamepadRenderer(canvas)
+</script>
+
+<!-- test codes -->
+<script>
+  // gamepad viewer test - see change data
+  /*const changeViewDom = {
+    wrapper: document.createElement('div'),
+    axisView: document.createElement('pre'),
+    buttonView: document.createElement('pre'),
+    axis9View: document.createElement('pre')
+  }
+  changeViewDom.wrapper.id = 'change-viewer'
+  changeViewDom.wrapper.appendChild(changeViewDom.axisView)
+  changeViewDom.wrapper.appendChild(changeViewDom.buttonView)
+  changeViewDom.wrapper.appendChild(changeViewDom.axis9View)
+  document.body.appendChild(changeViewDom.wrapper)
+  const changeViewer = document.getElementById('change-viewer')
+  window.addEventListener('gamepadChange', e => {
+    changeViewer.children[0].innerHTML = JSON.stringify(e.detail[0].axes, null, 2)
+    changeViewer.children[1].innerHTML = JSON.stringify(e.detail[0].buttons, null, 2)
+    let directionText = ''
+    for (let d = 0; d < 8; d++) {
+      const number = Math.floor(10*((-7 + 2 * d) / 7))/10
+      directionText +=
+        (Math.abs(e.detail[0].axes[9].value - number) < 0.1) +
+        `: ${e.detail[0].axes[9].value} - ${number} < 0.1` +
+        '<br>'
+    }
+    changeViewer.children[2].innerHTML = directionText
+  })*/
+</script>
+
+</html>

@@ -1,0 +1,43 @@
+@import 'common';
+
+#text-editor-wrapper {
+  background: rgba(127,127,127,0.8);
+  overflow: hidden;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.2s;
+  
+  &.active {
+    opacity: 1;
+    z-index: auto;
+  }
+  
+  h1.title {
+    &:before {
+      content: 'Current Item: ';
+    }
+  }
+  button.close {
+    position: absolute;
+    top: 0.3em;
+    right: 0.6em;
+  }
+  textarea {
+    width: 98.83%;
+    height: 80%;
+    resize: none;
+  }
+  div#notify-area {
+    background: rgba(127,127,127,0.8);
+    position: absolute;
+    bottom: -12%;
+    width: 97%;
+    padding: 0.25em 0;
+    opacity: 0;
+    transition: opacity 0.5s, bottom 0.5s;
+    &.visible {
+      opacity: 1;
+      bottom: 12%;
+    }
+  }
+}

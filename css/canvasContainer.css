@@ -1,0 +1,27 @@
+#canvas-container[data-width='1'] {
+  width: 256px;
+  height: 600px; }
+
+#canvas-container[data-width='2'] {
+  width: 520px;
+  height: 296px; }
+
+#canvas-container[data-width='3'] {
+  width: 1048px;
+  height: 144px; }
+
+#canvas-container > div {
+  display: inline-block;
+  position: relative;
+  width: 256px;
+  height: 144px; }
+  #canvas-container > div div, #canvas-container > div canvas {
+    position: absolute; }
+  #canvas-container > div div {
+    top: 0;
+    left: 0;
+    width: 256px;
+    height: 144px;
+    background-repeat: no-repeat; }
+
+/*# sourceMappingURL=canvasContainer.css.map */

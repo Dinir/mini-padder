@@ -31,15 +31,33 @@ div[id^="gp"] {
     border-radius: 100%; }
   div[id^="gp"] div.bg-circles span.bg-circle {
     border-color: transparent; }
-    div[id^="gp"] div.bg-circles span.bg-circle:first-child {
-      left: 0.05em;
-      top: 1.25em; }
-    div[id^="gp"] div.bg-circles span.bg-circle:last-child {
-      left: 7.55em;
-      top: 1.25em; }
+  div[id^="gp"] div.axes span.axis {
+    box-shadow: 0px 0px 3px black;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    -ms-border-radius: 100%;
+    border-radius: 100%; }
+    div[id^="gp"] div.axes span.axis span {
+      display: block;
+      position: relative;
+      box-shadow: 0px 0px 3px #404040;
+      -webkit-border-radius: 100%;
+      -moz-border-radius: 100%;
+      -ms-border-radius: 100%;
+      border-radius: 100%; }
+      div[id^="gp"] div.axes span.axis span.pressed {
+        background: url(dot.png); }
+  div[id^="gp"] div.bg-circles span.bg-circle:nth-child(1),
+  div[id^="gp"] div.axes span.axis:nth-child(1) {
+    left: 0.05em;
+    top: 1.25em; }
+  div[id^="gp"] div.bg-circles span.bg-circle:nth-child(2),
+  div[id^="gp"] div.axes span.axis:nth-child(2) {
+    left: 7.55em;
+    top: 1.25em; }
   div[id^="gp"] div.buttons span.button {
     position: fixed;
-    background: url(../dot.png);
+    background: url(dot.png);
     background-repeat: no-repeat;
     background-size: 0% 0%;
     background-position: 0% 0%;
@@ -47,23 +65,6 @@ div[id^="gp"] {
     -moz-border-radius: 4px;
     -ms-border-radius: 4px;
     border-radius: 4px; }
-  div[id^="gp"] div.axes span.axis {
-    box-shadow: 0px 0px 3px black; }
-    div[id^="gp"] div.axes span.axis span {
-      display: block;
-      position: relative;
-      box-shadow: 0px 0px 3px #404040;
-      background: url(../dot.png);
-      -webkit-border-radius: 100%;
-      -moz-border-radius: 100%;
-      -ms-border-radius: 100%;
-      border-radius: 100%; }
-    div[id^="gp"] div.axes span.axis:nth-child(1) {
-      left: 0.05em;
-      top: 1.25em; }
-    div[id^="gp"] div.axes span.axis:nth-child(2) {
-      left: 7.55em;
-      top: 1.25em; }
   div[id^="gp"][class="Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02d1)"] div.buttons span.button:nth-child(4), div[id^="gp"][class="Xbox 360 Controller (XInput STANDARD GAMEPAD)"] div.buttons span.button:nth-child(4), div[id^="gp"][class="xinput"] div.buttons span.button:nth-child(4) {
     left: 9.025em;
     top: 1.25em; }
@@ -159,3 +160,5 @@ div[id^="gp"] {
     top: 2.5em; }
   div[id^="gp"][class="Unknown Gamepad (Vendor: 0000 Product: 0000)"] {
     display: none; }
+
+/*# sourceMappingURL=mapping.css.map */

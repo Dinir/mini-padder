@@ -1,0 +1,59 @@
+body {
+  margin: 0;
+  width: 1048px;
+  height: 600px;
+  font-size: 16px;
+  font-family: "Fira Code", monospace;
+  background-color: black; }
+
+#canvas-container {
+  letter-spacing: -2px;
+  line-height: 26px; }
+
+.control-panel {
+  font-size: 14px;
+  position: fixed;
+  top: 296px;
+  left: 520px;
+  width: 512px;
+  height: 288px;
+  padding: 8px;
+  overflow-y: scroll;
+  background-color: gray;
+  border-radius: 0 8px 8px; }
+  .control-panel > div {
+    padding-bottom: 0.5em;
+    margin-bottom: 0.5em;
+    border-bottom: 1px solid black; }
+    .control-panel > div:last-of-type, .control-panel > div.no-divider {
+      padding-bottom: 0;
+      margin-bottom: 0;
+      border-bottom: 0; }
+    .control-panel > div.after-margin {
+      margin-bottom: 0.5em; }
+    .control-panel > div.top-divider {
+      padding-top: 0.5em;
+      margin-top: 0.5em;
+      border-top: 1px solid black; }
+    .control-panel > div.va-top {
+      vertical-align: top; }
+    .control-panel > div.half-width {
+      width: 48%;
+      display: inline-block; }
+  .control-panel .after-margin {
+    margin-bottom: 0.25em; }
+  .control-panel .full-width {
+    display: block; }
+  .control-panel .inactive {
+    display: none; }
+  .control-panel .description {
+    font-size: 0.8em; }
+  .control-panel h1 {
+    font-size: 1em;
+    margin-block-start: 0;
+    margin-block-end: 0;
+    margin-bottom: 0.5em; }
+  .control-panel label {
+    display: inline-block; }
+
+/*# sourceMappingURL=main.css.map */

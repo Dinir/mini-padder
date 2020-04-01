@@ -1,0 +1,22 @@
+#control-panel div.option button {
+  text-align: right; }
+  #control-panel div.option button span {
+    font-size: 0.7em; }
+
+#control-panel div.option input.with-hashmark {
+  width: 100%;
+  margin: 0; }
+
+#control-panel div.option datalist.hashmark {
+  width: 100%;
+  display: flex;
+  justify-content: space-between; }
+
+#control-panel div.option.half-width > label {
+  width: 100%;
+  display: flex;
+  justify-content: space-between; }
+  #control-panel div.option.half-width > label input[type=text] {
+    width: 60%; }
+
+/*# sourceMappingURL=controlPanel.css.map */

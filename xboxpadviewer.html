@@ -1,20 +1,17 @@
-<!--
-Made by Dinir Nertan (@DinirNertan, DinirNertan@gmail.com)
-Use it freely, just don't delete my name on the code.
--->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta content="text/html; charset=utf-8" http-equiv="content-type">
-    <meta content="utf-8">
-    <title>XBox Pad Viewer</title>
-    <link rel="stylesheet" href="./css/mapping.css">
+  <meta charset="utf-8">
+  <title>XBox Pad Viewer</title>
+  <link rel="stylesheet" href="1.2.1/mapping.css">
 </head>
 
-<script src="options.js"></script>
-<!--<script src="./js/GamepadHandler.js"></script>-->
+<script src="1.2.1/options.js"></script>
+
 <script>
+  var version = '1.2.1'
+  
   window.onload = function () {
     document.body.style.fontSize = '16px'
     document.body.style.fontFamily = `${gpConstants.defaultFont}, monospace`
@@ -147,10 +144,10 @@ Use it freely, just don't delete my name on the code.
         , {name: 'St', type: 'button'}
         , {name: 'L', type: 'button thumb'}
         , {name: 'R', type: 'button thumb'}
-        , {name: '⏶', type: 'button'}
-        , {name: '⏷', type: 'button'}
-        , {name: '⏴', type: 'button'}
-        , {name: '⏵', type: 'button'}
+        , {name: '↑', type: 'button'}
+        , {name: '↓', type: 'button'}
+        , {name: '←', type: 'button'}
+        , {name: '→', type: 'button'}
         , {name: 'ⓧ', type: 'button'}
       ]
       , axes: [
@@ -311,11 +308,15 @@ Use it freely, just don't delete my name on the code.
         gamepadTimestamps[gp.index] = new gamepadTimestamp()
         var gts = gamepadTimestamps[gp.index]
       }
+      var gpId = gp.id
+      if (!gamepadMapping[gpId]) {
+        gpId = 'Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02d1)'
+      }
 
       // create dom for a gamepad
       var d = document.createElement('div')
       d.setAttribute('id', `gp${gp.index}`)
-      d.setAttribute('class', gp.id)
+      d.setAttribute('class', gpId)
 
       // create dom for background circles
       var bgCircles = document.createElement('div')
@@ -333,8 +334,8 @@ Use it freely, just don't delete my name on the code.
       var b = document.createElement('div')
       b.setAttribute('class', 'buttons')
       for (var i = 0; i < gp.buttons.length; i++) {
-        if (gamepadMapping[gp.id]) {
-          var cur = gamepadMapping[gp.id].buttons[i]
+        if (gamepadMapping[gpId]) {
+          var cur = gamepadMapping[gpId].buttons[i]
           var e = document.createElement('span')
           if (cur) {
             if (cur.type === 'button thumb') {} else {
@@ -359,8 +360,9 @@ Use it freely, just don't delete my name on the code.
       a.setAttribute('class', 'axes')
       var c // c resides in e and represent the position of thumb stick.
       for (i = 0; i < gp.axes.length; i++) {
-        if (gamepadMapping[gp.id]) {
-          var cur = gamepadMapping[gp.id].axes[i]
+        if (gamepadMapping[gpId]) {
+          var cur = gamepadMapping[gpId].axes[i]
+          if (!cur) { continue }
           if (cur.type === 'thumb') {
             if (a.getElementsByClassName(`axis ${cur.name}`).length) {
               c.style.top = `${gpConstants.thumbSize / 2}%`
@@ -368,6 +370,7 @@ Use it freely, just don't delete my name on the code.
               e = document.createElement('span')
               e.setAttribute('class', `axis ${cur.name}`)
               c = document.createElement('span')
+              c.style.backgroundColor = gpConstants.defaultColor
               c.style.width = `${gpConstants.thumbSize}%`
               c.style.height = `${gpConstants.thumbSize}%`
               c.style.left = `${gpConstants.thumbSize / 2}%`
@@ -432,19 +435,24 @@ Use it freely, just don't delete my name on the code.
           gts.age()
         }
         var d = document.getElementById(`gp${gp.index}`)
+  
+        var gpId = gp.id
+        if (!gamepadMapping[gpId]) {
+          gpId = 'Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02d1)'
+        }
 
         var b = d.getElementsByClassName('buttons')[0]
         for (var i = 0; i < gp.buttons.length; i++) {
           var e
           var es = gp.buttons[i] // each status of buttons
           var val = 100 * es.value
-          if (gamepadMapping[gp.id]) {
-            var cur = gamepadMapping[gp.id].buttons[i]
+          if (gamepadMapping[gpId]) {
+            var cur = gamepadMapping[gpId].buttons[i]
           }
           if (cur && cur.type === 'button thumb') {
             e = d.getElementsByClassName(`axis ${cur.name}`)[0].children[0]
             if (val === 100) {
-              e.style.background = 'url(dot.png)'
+              e.style.background = `url(${version}/dot.png)`
             } else {
               e.style.background = gpConstants.defaultColor
             }
@@ -469,9 +477,10 @@ Use it freely, just don't delete my name on the code.
 
         var a
         for (i = 0; i < gp.axes.length; i++) {
-          if (gamepadMapping[gp.id]) {
-            var cur = gamepadMapping[gp.id].axes[i]
+          if (gamepadMapping[gpId]) {
+            var cur = gamepadMapping[gpId].axes[i]
             var val = gp.axes[i]
+            if (!cur) { continue }
             if (cur.type === 'thumb') {
               a = d.getElementsByClassName(`axis ${cur.name}`)[0].children[0]
               var thumbMargin = (100 - gpConstants.thumbSize) / 2
@@ -484,14 +493,21 @@ Use it freely, just don't delete my name on the code.
               // simply swapping i values just before
               // converting gamepad's value to the top and left value.
               var linuxXpadCalibration = isLinuxXpad && (i === 3 || i === 4)
-              if (linuxXpadCalibration) { i === 3 ? i = 4 : i = 3 }
-              if (i % 2) {
-                if (linuxXpadCalibration) { i === 3 ? i = 4 : i = 3 }
-                a.style.top = `${thumbMargin + thumbMargin * val}%`
-              } else {
-                if (linuxXpadCalibration) { i === 3 ? i = 4 : i = 3 }
-                a.style.left = `${thumbMargin + thumbMargin * val}%`
-              }
+                if (linuxXpadCalibration) {
+                    i === 3 ? i = 4 : i = 3
+                }
+                if (i % 2) {
+                    if (linuxXpadCalibration) {
+                        i === 3 ? i = 4 : i = 3
+                    }
+                    a.style.top = `${thumbMargin + thumbMargin * val}%`
+                } else {
+                    if (linuxXpadCalibration) {
+                        i === 3 ? i = 4 : i = 3
+                    }
+                    a.style.left = `${thumbMargin + thumbMargin * val}%`
+                }
+              
               if (gpConstants.useFadeOut) {
                 gamepadDOMs.opacityControl(
                   gts.axisUpdate(cur.name, val),

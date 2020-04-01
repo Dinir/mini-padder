@@ -1,0 +1,33 @@
+@import 'common';
+
+#control-panel {
+  
+  div.option {
+    button {
+      text-align: right;
+      span {
+        font-size: 0.7em;
+      }
+    }
+    input.with-hashmark {
+      width: 100%;
+      margin: 0;
+    }
+    datalist.hashmark {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    &.half-width {
+      & > label {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        input[type=text] {
+          width: 60%;
+        }
+      }
+    }
+  }
+}

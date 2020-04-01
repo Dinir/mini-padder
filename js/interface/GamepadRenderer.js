@@ -1,26 +1,8 @@
 /**
- * @typedef {Object} GamepadChanges
+ * @typedef processedGamepadChange
+ * @type {Object}
  * @description
- * This object contains axes and buttons data from Gamepad with 'delta' property added to each.
- * Unchanged values will be represented as null.
- * @property {Object.<string, string>} id `gamepad.id` formatted into the name and the vendor-product code.
- * @property {string} id.name name of the gamepad
- * @property {string} id.id vendor-product code of the gamepad
- * @property {(?axisChange)[]} axes
- * @property {(?buttonChange)[]} buttons
- */
-/**
- * @typedef axisChange
- * @type {Object}
- * @property {number} value value Raw value of the axis.
- * @property {number} delta value Represents how much it moved from the last position.
- */
-/**
- * @typedef buttonChange
- * @type {Object}
- * @property {boolean} pressed Tells if the button is pressed.
- * @property {number} value State of the button. 0 when not pressed, 1 when fully pressed. Can be a number between 0 and 1 if the button is an analog kind.
- * @property {number} delta Represents how much it moved from the last position.
+ * This object contains input changes of a gamepad, arranged by a corresponding mapping.
  */
 
 class GamepadRenderer {

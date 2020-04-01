@@ -47,6 +47,41 @@
 /**
  * @typedef {string} gamepadId 8-digit hexadecimal string
  */
+/**
+ * @typedef {Object} GamepadChange
+ * @description
+ * This object contains axes and buttons data from Gamepad with 'delta' property added to each.
+ * Unchanged values will be represented as null.
+ *
+ * Rules about when something is `null`:
+ * - gamepad didn't change - `GamepadChange` will be `null`.
+ * - an axis didn't change - `GamepadChange.axes[a]` will be `null`.
+ * - a button didn't change - `GamepadChange.buttons[b]` will be `null`.
+ * `GamepadChange.axes` will always be an array with the length of the number of known axes.
+ * `GamepadChange.buttons` will always be an array with the length of the number of known buttons.
+ *
+ * @property {Object.<string, string>} id `gamepad.id` formatted into the name and the vendor-product code.
+ * @property {string} id.name name of the gamepad
+ * @property {string} id.id vendor-product code of the gamepad
+ * @property {(?axisChange)[]} axes
+ * @property {(?buttonChange)[]} buttons
+ */
+/**
+ * @typedef axisChange
+ * @type {Object}
+ * @property {number} value value Raw value of the axis.
+ * @property {number} delta value Represents how much it moved from the last position.
+ */
+/**
+ * @typedef buttonChange
+ * @type {Object}
+ * @property {boolean} pressed Tells if the button is pressed.
+ * @property {number} value State of the button. 0 when not pressed, 1 when fully pressed. Can be a number between 0 and 1 if the button is an analog kind.
+ * @property {number} delta Represents how much it moved from the last position.
+ */
+/** @typedef processedGamepadChange
+ *
+ */
 
 class MappingStorageManager {
   /**
@@ -60,6 +95,10 @@ class MappingStorageManager {
     } else {
       this.load()
     }
+    
+    window.addEventListener(
+      'gamepadChange', this.processGamepadChange.bind(this)
+    )
   }
   
   static validateMappings (mappings) {
@@ -78,6 +117,11 @@ class MappingStorageManager {
         type: messageType[type] || messageType.log,
         message: message
       }
+    }))
+  }
+  static announceGamepadChange(processedGamepadChange) {
+    window.dispatchEvent(new CustomEvent('processedGamepadChange', {
+      detail: processedGamepadChange
     }))
   }
   
@@ -106,12 +150,288 @@ class MappingStorageManager {
   }
   load () {
     const mappingsObj = JSON.parse(window.localStorage.getItem('mappings'))
-    this.mappings = mappingsObj || {}
+    if (MappingStorageManager.validateMappings(mappingsObj)) {
+      this.mappings = mappingsObj || this.mappings
   
-    MappingStorageManager.announceMessage(
-      Object.keys(this.mappings).length + ' mappings found.'
+      MappingStorageManager.announceMessage(
+        Object.keys(this.mappings).length + ' mappings found.'
+      )
+      return true
+    } else {
+      MappingStorageManager.announceMessage(
+        'Mappings couldn\'t be loaded.', 'error'
+      )
+      return false
+    }
+  }
+  
+  processGamepadChange (e) {
+    /**
+     * @description contains GamepadChange.
+     * Unchanged input in a GamepadChange will be represented as `null`.
+     * @type {Object}
+     * @property {?GamepadChange} [0]
+     * @property {?GamepadChange} [1]
+     * @property {?GamepadChange} [2]
+     * @property {?GamepadChange} [3]
+     * @property {number} length will always be 4 until Gamepad API changes.
+     */
+    const changes = e.detail
+    /**
+     * @description contains GamepadChange formatted by the given mapping.
+     * @type {Object}
+     * @property {?{id: gamepadId, axes: Object, buttons: Object}} [0]
+     * @property {?{id: gamepadId, axes: Object, buttons: Object}} [1]
+     * @property {?{id: gamepadId, axes: Object, buttons: Object}} [2]
+     * @property {?{id: gamepadId, axes: Object, buttons: Object}} [3]
+     * @property {number} length will always be 4 until Gamepad API changes.
+     * Rules about when to give `null`:
+     * - gamepad didn't change - `processedChanges[i]` will be `null`.
+     * - axis doesn't change - `processedChanges[i].axes[side]` will be `null`.
+     * - dpad doesn't change - `processedChanges[i].buttons.dpad` will be `null`.
+     * - dpad has few buttons changed - `processedChanges[i].buttons.dpad[direction]` unchanged ones will be `null`.
+     * - all buttons in a side doesn't change - `processedChanges[i].buttons.(face/shoulder)` will be `null`.
+     * - few buttons changed - `processedChanges[i].buttons.(face/shoulder)[name]` will be `null`.
+     */
+    const processedChanges = {}
+    processedChanges.length = changes.length
+    
+    // for each gamepadChange
+    for (let i = 0; i < changes.length; i++) {
+      if (!changes[i]) {
+        processedChanges[i] = null
+        continue
+      }
+      const change = changes[i]
+      processedChanges[i] = {}
+      const processedChange = processedChanges[i]
+      
+      // handle the case where gamepadId is not found
+      processedChange.id = change.id.gamepadId === 'XInput?' ?
+        'XInput' : change.id.gamepadId
+      processedChange.axes = {}
+      processedChange.buttons = {}
+      // handle the case where mapping for the gamepadId is not found
+      // check a 'vender id' one, then if it's not found
+      // assign DInput standard
+      const mapping =
+        this.mappings[processedChange.id] ||
+        this.mappings[processedChange.id.slice(0,4)] ||
+        this.mappings['DInput']
+      const properties = mapping.properties
+      
+      // axes.left and axes.right
+      processedChange.axes = MappingStorageManager.processAxes(
+        mapping.axes, change.axes, change.buttons
+      )
+      
+      // buttons.dpad
+      // 'axisdpad': axis is dpad - certain axis represents dpad
+      if (properties.some(v => v === 'axisdpad')) {
+        processedChange.buttons.dpad = MappingStorageManager.processAxisDpad(
+          mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis]
+        )
+      } else {
+        // dpad is reasonably found as simple and clean four buttons
+        processedChange.buttons.dpad = MappingStorageManager.processDpadSimple(
+          mapping.buttons.dpad, change.buttons
+        )
+      }
+      
+      // buttons.face and buttons.shoulder
+      Object.assign(
+        processedChange.buttons,
+        MappingStorageManager.processButtons(mapping.buttons, change.buttons)
+      )
+    }
+    
+    // dispatch the processed change
+    if (
+      Object.keys(processedChanges).length &&
+      processedChanges[0] ||
+      processedChanges[1] ||
+      processedChanges[2] ||
+      processedChanges[3]
+    ) {
+      MappingStorageManager.announceGamepadChange(processedChanges)
+    }
+  }
+  
+  static processAxes (mappingAxes, changeAxes, changeButtons) {
+    const processedChangeAxes = {}
+    const deadzone = mappingAxes.deadzone || 0
+    
+    for (let i = 0; i < 2; i++) {
+      const side = i === 0 ? 'left' : 'right'
+      const mappingAxis = mappingAxes[side]
+      if (!mappingAxis) {
+        // this is a case the axis is not even listed on the mapping
+        // should I keep the `null`?
+        processedChangeAxes[side] = null
+        continue
+      }
+      
+      const value = [
+        changeAxes[mappingAxis.x],
+        changeAxes[mappingAxis.y],
+      ]
+      const hasButtonChange =
+        mappingAxis.button && changeButtons[mappingAxis.button]
+      if (hasButtonChange) {
+        value.push(changeButtons[mappingAxis.button])
+      } else if (value.every(v => v === null)) {
+        // if `hasButtonChange` is true, that means there IS a change
+        // hence only checking axes for changes after checking the button
+        processedChangeAxes[side] = null
+        continue
+      }
+      
+      // assign changes
+      processedChangeAxes[side] = {
+        value: [ null, null ],
+        delta: [ null, null ]
+      }
+      for (let i = 0; i < value.length; i++) {
+        if (!value[i]) { continue }
+        processedChangeAxes[side].value[i] = value[i].value
+        processedChangeAxes[side].delta[i] = value[i].delta
+      }
+      
+      // tells if the stick is active
+      let isActive = false
+      if (hasButtonChange) {
+        processedChangeAxes[side].pressed = value[2].pressed
+        isActive = value[2].pressed
+      }
+      isActive = isActive ||
+                 (value[0] ? Math.abs(value[0].value) > deadzone : false) ||
+                 (value[1] ? Math.abs(value[1].value) > deadzone : false)
+      processedChangeAxes[side].active = isActive
+    }
+    
+    return processedChangeAxes
+  }
+  
+  static processAxisDpad (mappingDpad, changeAxis) {
+    if (!changeAxis) { return null }
+    
+    const value = changeAxis.value
+    const processedChangeButtonsDpad = {
+      up:    { value: 0 },
+      down:  { value: 0 },
+      left:  { value: 0 },
+      right: { value: 0 }
+    }
+  
+    // check if neutral
+    if (value > 1 || value === 0) {
+      // the value is 0 when connected and recognized,
+      // and it's 23/7 when returned to its neutral position.
+      return processedChangeButtonsDpad
+    }
+    
+    // find the direction
+    /*
+    converting up ~ upleft to 0 ~ 7,
+    in a clockwise order.
+    if I can be certain every dinput dpad value works in the same way I could make this much simpler...
+     */
+    const directions = [
+      mappingDpad.up,
+      mappingDpad.upright,
+      mappingDpad.right,
+      mappingDpad.downright,
+      mappingDpad.down,
+      mappingDpad.downleft,
+      mappingDpad.left,
+      mappingDpad.upleft,
+    ]
+    const directionConverted = [
+      [1,0,0,0],
+      [1,0,0,1],
+      [0,0,0,1],
+      [0,1,0,1],
+      [0,1,0,0],
+      [0,1,1,0],
+      [0,0,1,0],
+      [1,0,1,0]
+    ]
+    const precision = mappingDpad.precision
+    const direction = directions.findIndex( d =>
+      Math.abs(value - d) < precision
     )
     
-    return true
+    if (direction === -1) {
+      // it's not neutral but also not in any direction
+      return processedChangeButtonsDpad
+    }
+    
+    processedChangeButtonsDpad.up.value =
+      directionConverted[direction][0]
+    processedChangeButtonsDpad.down.value =
+      directionConverted[direction][1]
+    processedChangeButtonsDpad.left.value =
+      directionConverted[direction][2]
+    processedChangeButtonsDpad.right.value =
+      directionConverted[direction][3]
+    
+    return processedChangeButtonsDpad
+  }
+  
+  static processDpadSimple (mappingDpad, changeButtons) {
+    const directions = ['up', 'down', 'left', 'right']
+    const values = Array(4).fill(null)
+    
+    for (let d = 0; d < directions.length; d++) {
+      values[d] = changeButtons[mappingDpad[directions[d]]] || null
+    }
+    
+    if (values.every(v => v === null)) { return null }
+    
+    return {
+      up:    values[0],
+      down:  values[1],
+      left:  values[2],
+      right: values[3]
+    }
+  }
+  
+  static processButtons (mappingButtons, changeButtons) {
+    const processedChangeButtons = {}
+    const buttonSide = ['face', 'shoulder']
+    const buttonIndex = [
+      [
+        'down', 'right', 'left', 'up', 'select', 'start', 'home', 'touchpad'
+      ],
+      [
+        'l1', 'r1', 'l2', 'r2'
+      ]
+    ]
+    
+    for (let s = 0; s < buttonSide.length; s++) {
+      const side = buttonSide[s]
+      if (!mappingButtons[side]) {
+        // same concern as in `processAxes`.
+        // this is a case the side is not even on the mapping.
+        processedChangeButtons[side] = null
+        continue
+      }
+      const mappingButtonsSide = mappingButtons[side]
+      const index = buttonIndex[s]
+      processedChangeButtons[side] = {}
+      
+      for (let i = 0; i < index.length; i++) {
+        const buttonName = index[i]
+        const mappingButtonsSideIndex = mappingButtonsSide[buttonName]
+        if (mappingButtonsSideIndex === false) {
+          processedChangeButtons[side][buttonName] = null
+          continue
+        }
+        processedChangeButtons[side][buttonName] =
+          changeButtons[mappingButtonsSideIndex] || null
+      }
+    }
+    
+    return processedChangeButtons
   }
 }

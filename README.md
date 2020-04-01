@@ -6,7 +6,7 @@
 
 **This is a project being developed right now. Many of the introductions below won't apply to the actual project yet.**
 
-To use the old one that worked on only handful kind of gamepads, checkout the [1.2.1 release](./releases/tag/1.2.1), or go to [this hosted page](./xboxpadviewer.html).
+To use the old one that worked on only handful kind of gamepads, checkout the [1.2.1 release](./releases/tag/1.2.1), or go to [this hosted page](https://dinir.github.io/gamepad-viewer/xboxpadviewer.html).
 
 ---
 

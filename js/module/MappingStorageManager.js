@@ -1,8 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-undef */
 /**
- * @typedef gamepadMapping
- * @type {Object}
+ * @typedef {Object} gamepadMapping
  * @description contains which function of a gamepad can be found in which index of axis or buttons in the corresponding Gamepad object.
  * @property {String} name human readable string to tell what this mapping is for
  * @property {String[]} properties gamepad-specific features. All strings in this array should be defined in a render logic.
@@ -15,7 +14,8 @@
  *
  * @property {Object.<string, Object.<string, number>>} buttons
  *
- * @property {Object.<string, number>} buttons.dpad indexes of buttons for dpad. When a gamepad conveys the dpad state using an axis, there should be `axis` and `precision` properties, also direction properties should then point at values the axis represents when the dpad is pressed so, instead of the indexs of each buttons for dpad.
+ * @property {Object.<string, number>} buttons.dpad
+ * indexes of buttons for dpad. When a gamepad conveys the dpad state using an axis, there should be `axis` and `precision` properties, also direction properties should then point at values the axis represents when the dpad is pressed so, instead of the indexs of each buttons for dpad.
  * @property {number} buttons.dpad.up
  * @property {number} buttons.dpad.down
  * @property {number} buttons.dpad.left
@@ -28,59 +28,78 @@
  * @property {number} [buttons.dpad.upleft]
  *
  * @property {Object.<string, number>} buttons.face
- * @property {number} buttons.face.down index of down face button. Typically A in XInput controllers.
- * @property {number} buttons.face.right index of right face button. Typically B in XInput controllers.
- * @property {number} buttons.face.left index of left face button. Typically X in XInput controllers.
- * @property {number} buttons.face.up index of up face button. Typically Y in XInput controllers.
- * @property {number} buttons.face.select index of select button
- * @property {number} buttons.face.start index of start button
- * @property {number} [buttons.face.home] index of home button. Typically a logo button in gamepads.
- * @property {number} [buttons.face.touchpad] index of the touchpad button on DualShock4 controller. It can only track the click the touchpad makes.
+ * indexes of face buttons.
+ * @property {number} buttons.face.down 'A' on XInput, 'X' on DInput
+ * @property {number} buttons.face.right 'B' on XInput, 'o' on DInput
+ * @property {number} buttons.face.left 'X' on XInput, '□' on DInput
+ * @property {number} buttons.face.up 'Y' on XInput, 'Δ' on DInput
+ * @property {number} buttons.face.select '⧉' on XInput, 'Share' on DInput
+ * @property {number} buttons.face.start '≡' on XInput, 'Options' on DInput
+ * @property {number} [buttons.face.home] Logo button
+ * @property {number} [buttons.face.touchpad] Touchpad on standard DInput gamepad.
+ * It can only track the click the touchpad makes.
  *
  * @property {Object.<string, number>} buttons.shoulder
- * @property {number} buttons.shoulder.l1
- * @property {number} buttons.shoulder.r1
- * @property {number} [buttons.shoulder.l2]
- * @property {number} [buttons.shoulder.r2]
+ * indexes of shoulder buttons.
+ * @property {number} buttons.shoulder.l1 'LB' on XInput, 'L1' on DInput
+ * @property {number} buttons.shoulder.r1 'RB' on XInput, 'R1' on DInput
+ * @property {number} [buttons.shoulder.l2] 'LT' on XInput, 'L2' on DInput
+ * @property {number} [buttons.shoulder.r2] 'RT' on XInput, 'R2' on DInput
  *
  */
 /**
- * @typedef {string} gamepadId 8-digit hexadecimal string
- */
-/**
- * @typedef {Object} GamepadChange
+ * @typedef {Object} processedGamepadChange
  * @description
- * This object contains axes and buttons data from Gamepad with 'delta' property added to each.
- * Unchanged values will be represented as null.
+ * This object contains input changes of a gamepad, arranged by a corresponding mapping.
+ * This doesn't carry the whole state, only the changes made on the gamepad.
  *
- * Rules about when something is `null`:
- * - gamepad didn't change - `GamepadChange` will be `null`.
- * - an axis didn't change - `GamepadChange.axes[a]` will be `null`.
- * - a button didn't change - `GamepadChange.buttons[b]` will be `null`.
- * `GamepadChange.axes` will always be an array with the length of the number of known axes.
- * `GamepadChange.buttons` will always be an array with the length of the number of known buttons.
+ * @property {gamepadId} id
  *
- * @property {Object.<string, string>} id `gamepad.id` formatted into the name and the vendor-product code.
- * @property {string} id.name name of the gamepad
- * @property {string} id.id vendor-product code of the gamepad
- * @property {(?axisChange)[]} axes
- * @property {(?buttonChange)[]} buttons
+ * @property {Object.<string, ?stickChange>} sticks
+ *
+ * @property {?stickChange} sticks.left
+ * @property {?stickChange} sticks.right
+ *
+ * @property {Object.<string, Object.<string, ?(buttonChange|basicButtonChange)>>} buttons
+ *
+ * @property {?Object.<string, ?(buttonChange|basicButtonChange)>} buttons.dpad
+ * It will contain null when it's not using an axis as a dpad input, and there's no change on it.
+ * It will contain basicButtonChange if it's using an axis as a dpad input.
+ * @property {?(buttonChange|basicButtonChange)} buttons.dpad.up
+ * @property {?(buttonChange|basicButtonChange)} buttons.dpad.down
+ * @property {?(buttonChange|basicButtonChange)} buttons.dpad.left
+ * @property {?(buttonChange|basicButtonChange)} buttons.dpad.right
+ *
+ * @property {?Object.<string, ?buttonChange>} buttons.face
+ * It will contain null when it's not on the mapping of the gamepad.
+ * Otherwise it will always contain buttons as properties, each of which could be null on no changes.
+ * @property {?buttonChange} buttons.face.down 'A' on XInput, 'X' on DInput
+ * @property {?buttonChange} buttons.face.right 'B' on XInput, 'o' on DInput
+ * @property {?buttonChange} buttons.face.left 'X' on XInput, '□' on DInput
+ * @property {?buttonChange} buttons.face.up 'Y' on XInput, 'Δ' on DInput
+ * @property {?buttonChange} buttons.face.select '⧉' on XInput, 'Share' on DInput
+ * @property {?buttonChange} buttons.face.start '≡' on XInput, 'Options' on DInput
+ * @property {?buttonChange} buttons.face.home Logo button
+ * @property {?buttonChange} buttons.face.touchpad Touchpad on standard DInput gamepad
+ *
+ * @property {?Object.<string, ?buttonChange>} buttons.shoulder
+ * It will contain null when it's not on the mapping of the gamepad.
+ * Otherwise it will always contain buttons as properties, each of which could be null on no changes.
+ * @property {?buttonChange} buttons.shoulder.l1 'LB' on XInput, 'L1' on DInput
+ * @property {?buttonChange} buttons.shoulder.r1 'RB' on XInput, 'R1' on DInput
+ * @property {?buttonChange} buttons.shoulder.l2 'LT' on XInput, 'L2' on DInput
+ * @property {?buttonChange} buttons.shoulder.r2 'RT' on XInput, 'R2' on DInput
  */
 /**
- * @typedef axisChange
- * @type {Object}
- * @property {number} value value Raw value of the axis.
- * @property {number} delta value Represents how much it moved from the last position.
+ * @typedef {Object} stickChange Contains changes made on a single stick of a gamepad.
+ * @property {number[]} value Values of x-axis, y-axis, and a button of the stick.
+ * Length of the array will be 2 if there's no change on the button.
+ * @property {number[]} delta Change of the values from the last time processedGamepadChange was made.
+ * @property {boolean} [pressed] Indicates the state of the button. This will be undefined if there's no change.
+ * @property {boolean} active Indicates if the stick is out of its deadzone, or the button is pressed.
  */
 /**
- * @typedef buttonChange
- * @type {Object}
- * @property {boolean} pressed Tells if the button is pressed.
- * @property {number} value State of the button. 0 when not pressed, 1 when fully pressed. Can be a number between 0 and 1 if the button is an analog kind.
- * @property {number} delta Represents how much it moved from the last position.
- */
-/** @typedef processedGamepadChange
- *
+ * @typedef {{value: string}} basicButtonChange Contains value change made on a single button of a gamepad.
  */
 
 class MappingStorageManager {
@@ -170,29 +189,13 @@ class MappingStorageManager {
      * @description contains GamepadChange.
      * Unchanged input in a GamepadChange will be represented as `null`.
      * @type {Object}
-     * @property {?GamepadChange} [0]
-     * @property {?GamepadChange} [1]
-     * @property {?GamepadChange} [2]
-     * @property {?GamepadChange} [3]
+     * @property {?GamepadChange} 0
+     * @property {?GamepadChange} 1
+     * @property {?GamepadChange} 2
+     * @property {?GamepadChange} 3
      * @property {number} length will always be 4 until Gamepad API changes.
      */
     const changes = e.detail
-    /**
-     * @description contains GamepadChange formatted by the given mapping.
-     * @type {Object}
-     * @property {?{id: gamepadId, axes: Object, buttons: Object}} [0]
-     * @property {?{id: gamepadId, axes: Object, buttons: Object}} [1]
-     * @property {?{id: gamepadId, axes: Object, buttons: Object}} [2]
-     * @property {?{id: gamepadId, axes: Object, buttons: Object}} [3]
-     * @property {number} length will always be 4 until Gamepad API changes.
-     * Rules about when to give `null`:
-     * - gamepad didn't change - `processedChanges[i]` will be `null`.
-     * - axis doesn't change - `processedChanges[i].axes[side]` will be `null`.
-     * - dpad doesn't change - `processedChanges[i].buttons.dpad` will be `null`.
-     * - dpad has few buttons changed - `processedChanges[i].buttons.dpad[direction]` unchanged ones will be `null`.
-     * - all buttons in a side doesn't change - `processedChanges[i].buttons.(face/shoulder)` will be `null`.
-     * - few buttons changed - `processedChanges[i].buttons.(face/shoulder)[name]` will be `null`.
-     */
     const processedChanges = {}
     processedChanges.length = changes.length
     

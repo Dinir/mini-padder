@@ -2,18 +2,14 @@
  * @typedef Gamepad
  * @type {Object}
  * @property {number[]} axes contains value of each axis
- * @property {gamepadButton[]} buttons
+ * @property {Object[]} buttons
+ * @property {boolean} buttons.pressed Tells if the button is pressed.
+ * @property {number} buttons.value State of the button. 0 when not pressed, 1 when fully pressed. Can be a number between 0 and 1 if the button is an analog kind.
  * @property {boolean} connected shows the connection status. You see this being `false` when the gamepad object is passed via `gamepaddisconnected` event.
- * @property {string} id information about the controller. Controller name.
+ * @property {string} id controller name and its vendor id and product id.
  * @property {number} index integer representing each device connected.
  * @property {string} mapping not a useful property as of 2020.
  * @property {DOMHighResTimeStamp} timestamp last time the gamepad state is updated
- */
-/**
- * @typedef gamepadButton
- * @type {Object}
- * @property {boolean} pressed Tells if the button is pressed.
- * @property {number} value State of the button. 0 when not pressed, 1 when fully pressed. Can be a number between 0 and 1 if the button is an analog kind.
  */
 
 /**
@@ -21,24 +17,36 @@
  * @description
  * This object contains axes and buttons data from Gamepad with 'delta' property added to each.
  * Unchanged values will be represented as null.
- * @property {Object.<string, string>} id `gamepad.id` formatted into the name and the vendor-product code.
- * @property {string} id.name name of the gamepad
- * @property {string} id.id vendor-product code of the gamepad
+ *
+ * Rules about when something is `null`:
+ * - gamepad didn't change - `GamepadChange` will be `null`.
+ * - an axis didn't change - `GamepadChange.axes[a]` will be `null`.
+ * - a button didn't change - `GamepadChange.buttons[b]` will be `null`.
+ * `GamepadChange.axes` will always be an array with the length of the number of found axes.
+ * `GamepadChange.buttons` will always be an array with the length of the number of found buttons.
+ *
+ * @property {Object} id `gamepad.id` formatted into the name and the gamepadId.
+ * @property {string} id.name
+ * @property {gamepadId} id.id
  * @property {(?axisChange)[]} axes
  * @property {(?buttonChange)[]} buttons
  */
 /**
- * @typedef axisChange
- * @type {Object}
+ * @typedef {Object} axisChange Contains changes made on a single axis of a gamepad.
  * @property {number} value value Raw value of the axis.
  * @property {number} delta value Represents how much it moved from the last position.
  */
 /**
- * @typedef buttonChange
- * @type {Object}
- * @property {boolean} pressed Tells if the button is pressed.
- * @property {number} value State of the button. 0 when not pressed, 1 when fully pressed. Can be a number between 0 and 1 if the button is an analog kind.
- * @property {number} delta Represents how much it moved from the last position.
+ * @typedef {Object} buttonChange Contains changes made on a single button of a gamepad.
+ * @property {boolean} pressed Indicates the state of the button. This will be undefined if there's no change.
+ * @property {number} value Value of the button. It's 0 or 1 for digital buttons, and any value between and including them for analog buttons.
+ * @property {number} delta Change of the value from the last time processedGamepadChange was made.
+ */
+/**
+ * @typedef {string} gamepadId
+ * @description
+ * Vendor ID and Product ID of a gamepad concatenated into a 8-letter string, or
+ * if the gamepad is a standard one, the value will be 'XInput' or 'DInput'.
  */
 
 class GamepadWatcher {
@@ -53,6 +61,7 @@ class GamepadWatcher {
      * @property {Gamepad} [3]
      */
     this.gamepads = {}
+    /** @type {{name: string, gamepadId: string}[]} */
     this.gamepadId = []
     this.onLoop = false
     this.pollID = 0
@@ -188,14 +197,13 @@ class GamepadWatcher {
   
     /**
      * @type {Object}
-     * @property {?GamepadChange} [0]
-     * @property {?GamepadChange} [1]
-     * @property {?GamepadChange} [2]
-     * @property {?GamepadChange} [3]
+     * @property {?GamepadChange} 0
+     * @property {?GamepadChange} 1
+     * @property {?GamepadChange} 2
+     * @property {?GamepadChange} 3
      * @property {number} length defined so it can be iterated with for loop
      *
-     * If there was no changes for a gamepad, the corresponding property will be set as null.
-     * If a gamepad is not registered on the navigator, the corresponding property won't exist.
+     * If there was no changes for a gamepad (or it's not connected), the corresponding property will be set as null.
      */
     const lastChanges = {}
     lastChanges.length = 4

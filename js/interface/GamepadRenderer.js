@@ -1,10 +1,3 @@
-/**
- * @typedef processedGamepadChange
- * @type {Object}
- * @description
- * This object contains input changes of a gamepad, arranged by a corresponding mapping.
- */
-
 class GamepadRenderer {
   constructor (canvasArray) {
     this.canvas = canvasArray

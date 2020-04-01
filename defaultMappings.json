@@ -1,6 +1,6 @@
 {
 	"XInput": {
-		"name": "XInput Generic Controller",
+		"name": "XInput Standard Controller",
 		"properties": [],
 		"axes": {
 			"deadzone": 0.08,
@@ -24,34 +24,8 @@
 			}
 		}
 	},
-	"054c05c4": {
-		"name": "DualShock4 (ZCT1x)",
-		"properties": [],
-		"axes": {
-			"deadzone": 0.08,
-			"left": {
-				"x": 0, "y": 1, "button": 10
-			},
-			"right": {
-				"x": 2, "y": 3, "button": 11
-			}
-		},
-		"buttons": {
-			"dpad": {
-				"up": 12, "down": 13, "left": 14, "right": 15
-			},
-			"face": {
-				"down": 0, "right": 1, "left": 2, "up": 3,
-				"select": 8, "start": 9,
-				"PS": 16, "touchpad": 17
-			},
-			"shoulder": {
-				"l1": 4, "r1": 5, "l2": 6, "r2": 7
-			}
-		}
-	},
-	"054c09cc": {
-		"name": "DualShock4 (ZCT2x)",
+	"DInput": {
+		"name": "DInput Standard Controller",
 		"properties": [],
 		"axes": {
 			"deadzone": 0.08,
@@ -73,6 +47,60 @@
 			},
 			"shoulder": {
 				"l1": 4, "r1": 5, "l2": 6, "r2": 7
+			}
+		}
+	},
+	"0f30": {
+		"name": "Qanba Joystick",
+		"properties": ["axisdpad"],
+		"axes": {
+			"deadzone": 0,
+			"left": {
+				"x": 0, "y": 1, "button": null
+			},
+			"right": null
+		},
+		"buttons": {
+			"dpad": {
+				"axis": 9,
+				"precision": 0.1,
+				"up": -1, "upright": -0.8, "right": -0.5, "downright": -0.2,
+				"down": 0.1, "downleft": 0.4, "left": 0.7, "upleft": 1
+			},
+			"face": {
+				"down": 0, "right": 1, "left": 2, "up": 3,
+				"select": 8, "start": 9
+			},
+			"shoulder": {
+				"r1": 4, "l1": 5, "r2": 6, "l2": 7
+			}
+		}
+	},
+	"0f0d": {
+		"name": "Hori Joystick?",
+		"properties": ["axisdpad"],
+		"axes": {
+			"deadzone": 0,
+			"left": {
+				"x": 0, "y": 1, "button": 10
+			},
+			"right": {
+				"x": 2, "y": 3, "button": 11
+			}
+		},
+		"buttons": {
+			"dpad": {
+				"axis": 9,
+				"precision": 0.1,
+				"up": -1, "upright": -0.8, "right": -0.5, "downright": -0.2,
+				"down": 0.1, "downleft": 0.4, "left": 0.7, "upleft": 1
+			},
+			"face": {
+				"down": 0, "right": 1, "left": 2, "up": 3,
+				"select": 8, "start": 9
+			},
+			"shoulder": {
+				"r1": 4, "l1": 5, "r2": 6, "l2": 7
 			}
 		}
 	},
@@ -107,7 +135,7 @@
 	},
 	"0f301012": {
 		"name": "Q4RAF (DInput - PS3.PC)",
-		"properties": ["axisdpad", "dpadleftstick"],
+		"properties": ["axisdpad"],
 		"axes": {
 			"deadzone": 0,
 			"left": {

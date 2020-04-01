@@ -229,11 +229,9 @@ class GamepadWatcher {
       // check axes
       const axisChanges = Array(newState.axes.length).fill(null)
       for (let ai = 0; ai < newState.axes.length; ai++) {
-        if (newState.axes[ai] !== oldState.axes[ai]) {
-          axisChanges[ai] = {
-            value: newState.axes[ai],
-            delta: newState.axes[ai] - oldState.axes[ai]
-          }
+        axisChanges[ai] = {
+          value: newState.axes[ai],
+          delta: newState.axes[ai] - oldState.axes[ai]
         }
       }
       lastChange.axes = axisChanges

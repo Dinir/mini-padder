@@ -152,7 +152,7 @@ class GamepadWatcher {
     for (let i = 0; i < gamepads.length; i++) {
       if (gamepads[i]) {
         this.gamepads[gamepads[i].index] = gamepads[i]
-        this.gamepadId[gamepad.index] =
+        this.gamepadId[gamepads[i].index] =
           GamepadWatcher.getGamepadId(gamepads[i].id)
       }
       else {
@@ -183,8 +183,7 @@ class GamepadWatcher {
   loop () {
     if (!this.onLoop) { return }
     
-    // make copies of both before-loop and current states.
-    const oldStates = this.gamepads
+    // make copy of current states at the time the loop starts
     const newStates = navigator.getGamepads()
   
     /**

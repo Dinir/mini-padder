@@ -84,7 +84,6 @@ div[id^="gp"] {
         display: block;
         position: relative;
         box-shadow: $shadowValue #404040;
-        background: url(../dot.png);
         @include border-radius(100%);
       }
     }

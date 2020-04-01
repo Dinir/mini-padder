@@ -104,7 +104,7 @@
 			}
 		}
 	},
-	"2dc86101": {
+	"2dc86001": {
 		"name": "8BitDo SN30 Pro (DInput)",
 		"properties": ["axisdpad"],
 		"sticks": {

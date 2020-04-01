@@ -312,11 +312,15 @@ Use it freely, just don't delete my name on the code.
         gamepadTimestamps[gp.index] = new gamepadTimestamp()
         var gts = gamepadTimestamps[gp.index]
       }
+      var gpId = gp.id
+      if (!gamepadMapping[gpId]) {
+        gpId = 'Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02d1)'
+      }
 
       // create dom for a gamepad
       var d = document.createElement('div')
       d.setAttribute('id', `gp${gp.index}`)
-      d.setAttribute('class', gp.id)
+      d.setAttribute('class', gpId)
 
       // create dom for background circles
       var bgCircles = document.createElement('div')
@@ -334,8 +338,8 @@ Use it freely, just don't delete my name on the code.
       var b = document.createElement('div')
       b.setAttribute('class', 'buttons')
       for (var i = 0; i < gp.buttons.length; i++) {
-        if (gamepadMapping[gp.id]) {
-          var cur = gamepadMapping[gp.id].buttons[i]
+        if (gamepadMapping[gpId]) {
+          var cur = gamepadMapping[gpId].buttons[i]
           var e = document.createElement('span')
           if (cur) {
             if (cur.type === 'button thumb') {} else {
@@ -360,8 +364,9 @@ Use it freely, just don't delete my name on the code.
       a.setAttribute('class', 'axes')
       var c // c resides in e and represent the position of thumb stick.
       for (i = 0; i < gp.axes.length; i++) {
-        if (gamepadMapping[gp.id]) {
-          var cur = gamepadMapping[gp.id].axes[i]
+        if (gamepadMapping[gpId]) {
+          var cur = gamepadMapping[gpId].axes[i]
+          if (!cur) { continue }
           if (cur.type === 'thumb') {
             if (a.getElementsByClassName(`axis ${cur.name}`).length) {
               c.style.top = `${gpConstants.thumbSize / 2}%`
@@ -433,14 +438,19 @@ Use it freely, just don't delete my name on the code.
           gts.age()
         }
         var d = document.getElementById(`gp${gp.index}`)
+  
+        var gpId = gp.id
+        if (!gamepadMapping[gpId]) {
+          gpId = 'Microsoft Controller (STANDARD GAMEPAD Vendor: 045e Product: 02d1)'
+        }
 
         var b = d.getElementsByClassName('buttons')[0]
         for (var i = 0; i < gp.buttons.length; i++) {
           var e
           var es = gp.buttons[i] // each status of buttons
           var val = 100 * es.value
-          if (gamepadMapping[gp.id]) {
-            var cur = gamepadMapping[gp.id].buttons[i]
+          if (gamepadMapping[gpId]) {
+            var cur = gamepadMapping[gpId].buttons[i]
           }
           if (cur && cur.type === 'button thumb') {
             e = d.getElementsByClassName(`axis ${cur.name}`)[0].children[0]
@@ -470,9 +480,10 @@ Use it freely, just don't delete my name on the code.
 
         var a
         for (i = 0; i < gp.axes.length; i++) {
-          if (gamepadMapping[gp.id]) {
-            var cur = gamepadMapping[gp.id].axes[i]
+          if (gamepadMapping[gpId]) {
+            var cur = gamepadMapping[gpId].axes[i]
             var val = gp.axes[i]
+            if (!cur) { continue }
             if (cur.type === 'thumb') {
               a = d.getElementsByClassName(`axis ${cur.name}`)[0].children[0]
               var thumbMargin = (100 - gpConstants.thumbSize) / 2

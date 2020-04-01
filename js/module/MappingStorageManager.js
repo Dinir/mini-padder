@@ -67,7 +67,6 @@ class MappingStorageManager {
             typeof mappings === 'object' &&
             Object.keys(mappings).length > 0) || false
   }
-  
   static announceMessage (message, type) {
     const messageType = {
       log: 'log',
@@ -85,7 +84,6 @@ class MappingStorageManager {
   addOrUpdate (gamepadId, mappingObj) {
     this.mappings[gamepadId] = mappingObj
   }
-  
   remove (gamepadId) {
     delete this.mappings[gamepadId]
   }
@@ -106,7 +104,6 @@ class MappingStorageManager {
       return false
     }
   }
-
   load () {
     const mappingsObj = JSON.parse(window.localStorage.getItem('mappings'))
     this.mappings = mappingsObj || {}

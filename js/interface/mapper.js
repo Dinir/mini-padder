@@ -52,7 +52,6 @@ class MappingInterface extends MappingStorageManager {
       MappingInterface.announceMessage({name: e.name, message: e.message}, 'error')
     }
   }
-  
   get editorCallbacks () {
     return {
       title: 'Gamepad Mappings',

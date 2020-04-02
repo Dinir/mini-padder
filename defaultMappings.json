@@ -76,6 +76,34 @@
 			}
 		}
 	},
+	"0738": {
+		"name": "Mad Catz Joystick",
+		"properties": ["axisdpad"],
+		"sticks": {
+			"deadzone": 0.5,
+			"left": {
+				"x": 0, "y": 1, "button": 10
+			},
+			"right": {
+				"x": 2, "y": 5, "button": 11
+			}
+		},
+		"buttons": {
+			"dpad": {
+				"axis": 9,
+				"precision": 0.1,
+				"up": -1, "upright": -0.8, "right": -0.5, "downright": -0.2,
+				"down": 0.1, "downleft": 0.4, "left": 0.7, "upleft": 1
+			},
+			"face": {
+				"left": 0, "down": 1, "right": 2, "up": 3,
+				"select": 8, "start": 9
+			},
+			"shoulder": {
+				"l1": 4, "r1": 5, "l2": 6, "r2": 7
+			}
+		}
+	},
 	"0f0d": {
 		"name": "Hori Joystick?",
 		"properties": ["axisdpad"],

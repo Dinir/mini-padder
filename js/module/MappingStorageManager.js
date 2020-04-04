@@ -53,7 +53,7 @@
  * This object contains input changes of a gamepad, arranged by a corresponding mapping.
  * This doesn't carry the whole state, only the changes made on the gamepad.
  *
- * @property {gamepadId} id
+ * @property {gamepadId} gamepadId
  *
  * @property {Object.<string, ?stickChange>} sticks
  *
@@ -210,7 +210,7 @@ class MappingStorageManager {
       const processedChange = processedChanges[i]
       
       // handle the case where gamepadId is not found
-      processedChange.id = change.id.gamepadId === 'XInput?' ?
+      processedChange.gamepadId = change.id.gamepadId === 'XInput?' ?
         'XInput' : change.id.gamepadId
       processedChange.sticks = {}
       processedChange.buttons = {}
@@ -218,8 +218,8 @@ class MappingStorageManager {
       // check a 'vender id' one, then if it's not found
       // assign DInput standard
       const mapping =
-        this.mappings[processedChange.id] ||
-        this.mappings[processedChange.id.slice(0,4)] ||
+        this.mappings[processedChange.gamepadId] ||
+        this.mappings[processedChange.gamepadId.slice(0,4)] ||
         this.mappings['DInput']
       const properties = mapping.properties
       

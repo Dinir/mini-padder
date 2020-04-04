@@ -27,7 +27,7 @@
  *
  * @property {Object} id `gamepad.id` formatted into the name and the gamepadId.
  * @property {string} id.name
- * @property {gamepadId} id.id
+ * @property {gamepadId} id.gamepadId
  * @property {(?axisChange)[]} axes
  * @property {(?buttonChange)[]} buttons
  */
@@ -99,7 +99,7 @@ class GamepadWatcher {
   /**
    * Extract human readable description and gamepadId from `Gamepad.id`.
    * @param {string} idString
-   * @returns {{name: string, gamepadId: string}}
+   * @returns {{name: string, gamepadId: gamepadId}}
    */
   static getGamepadId (idString) {
     const matchResult = idString.match(/ \(.*Vendor: ([0-9a-f]{4}) Product: ([0-9a-f]{4})\)/)

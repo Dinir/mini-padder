@@ -107,6 +107,13 @@
 </div>
 </body>
 
+<!-- dom references -->
+<script>
+  const canvasContainer = document.getElementById('canvas-container')
+  const canvas = Array.from(canvasContainer.querySelectorAll('div'))
+  const cpDom = document.getElementById('control-panel')
+</script>
+
 <!-- gamepad watcher -->
 <script>
   const gpwatcher = new GamepadWatcher()
@@ -128,7 +135,6 @@
   obte.dom.wrapper.classList.add('control-panel')
   obte.appendToParent(document.body)
 
-  const cpDom = document.getElementById('control-panel')
   const cp = new ControlPanel({
     assignment: 'dynamicButtons',
     layout: 'selectFromList',
@@ -147,7 +153,6 @@
     }
   )
 
-  const canvasContainer = document.getElementById('canvas-container')
   cp.displayWidth.assign(
     cpDom.querySelector(
       'div[data-name="displayWidth"] input'
@@ -188,9 +193,6 @@
 
 <!-- renderer -->
 <script>
-  const canvas = Array.from(
-    document.querySelectorAll('#canvas-container > div')
-  )
   const gr = new GamepadRenderer(canvas)
 </script>
 

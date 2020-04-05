@@ -53,7 +53,9 @@
  * This object contains input changes of a gamepad, arranged by a corresponding mapping.
  * This doesn't carry the whole state, only the changes made on the gamepad.
  *
- * @property {gamepadId} gamepadId
+ * @property {Object} id `Gamepad.id` formatted into the name and the gamepadId.
+ * @property {string} id.name
+ * @property {gamepadId} id.gamepadId
  *
  * @property {Object.<string, ?stickChange>} sticks
  *
@@ -209,17 +211,18 @@ class MappingStorageManager {
       processedChanges[i] = {}
       const processedChange = processedChanges[i]
       
-      // handle the case where gamepadId is not found
-      processedChange.gamepadId = change.id.gamepadId === 'XInput?' ?
-        'XInput' : change.id.gamepadId
+      // copy the reference to the id property
+      processedChange.id = change.id
       processedChange.sticks = {}
       processedChange.buttons = {}
-      // handle the case where mapping for the gamepadId is not found
-      // check a 'vender id' one, then if it's not found
-      // assign DInput standard
+  
+      // if it's not one of two standards,
+      // check vendor id, if still not known then assign DInput
+      /* I assume gamepads have xinput mode beside
+       their own mode that could be fit as dinput */
       const mapping =
-        this.mappings[processedChange.gamepadId] ||
-        this.mappings[processedChange.gamepadId.slice(0,4)] ||
+        this.mappings[processedChange.id.gamepadId] ||
+        this.mappings[processedChange.id.gamepadId.slice(0,4)] ||
         this.mappings['DInput']
       const properties = mapping.properties
       

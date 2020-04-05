@@ -25,7 +25,7 @@
  * `GamepadChange.axes` will always be an array with the length of the number of found axes.
  * `GamepadChange.buttons` will always be an array with the length of the number of found buttons.
  *
- * @property {Object} id `gamepad.id` formatted into the name and the gamepadId.
+ * @property {Object} id `Gamepad.id` formatted into the name and the gamepadId.
  * @property {string} id.name
  * @property {gamepadId} id.gamepadId
  * @property {(?axisChange)[]} axes
@@ -108,6 +108,7 @@ class GamepadWatcher {
         name: idString.substring(0, matchResult.index),
         gamepadId: matchResult[1] + matchResult[2]
       }
+      // vender and product aren't found. assume it's a standard gamepad.
     } else if (/XInput/.test(idString)) {
       const indexBeforeBracket = idString.search(/ \(/)
       return {
@@ -116,8 +117,8 @@ class GamepadWatcher {
       }
     } else {
       return {
-        name: 'XBox 360 Controller?',
-        gamepadId: 'XInput?'
+        name: 'DInput Standard Controller?',
+        gamepadId: 'DInput'
       }
     }
   }

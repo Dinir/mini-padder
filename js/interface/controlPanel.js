@@ -42,7 +42,7 @@ class ControlPanel {
   /**
    * Extract human readable description and gamepadId from `Gamepad.id`.
    * @param {string} idString
-   * @returns {{name: string, gamepadId: string}}
+   * @returns {{name: string, gamepadId: gamepadId}}
    */
   static getGamepadId (idString) {
     const matchResult = idString.match(/ \(.*Vendor: ([0-9a-f]{4}) Product: ([0-9a-f]{4})\)/)
@@ -51,6 +51,7 @@ class ControlPanel {
         name: idString.substring(0, matchResult.index),
         gamepadId: matchResult[1] + matchResult[2]
       }
+      // vender and product aren't found. assume it's a standard gamepad.
     } else if (/XInput/.test(idString)) {
       const indexBeforeBracket = idString.search(/ \(/)
       return {
@@ -59,8 +60,8 @@ class ControlPanel {
       }
     } else {
       return {
-        name: 'XBox 360 Controller?',
-        gamepadId: 'XInput?'
+        name: 'DInput Standard Controller?',
+        gamepadId: 'DInput'
       }
     }
   }

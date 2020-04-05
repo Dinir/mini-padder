@@ -1,12 +1,81 @@
+/**
+ * @typedef {Object} SkinSlot
+ * @description data required to draw gamepad changes to canvases in the corresponding gamepad slot
+ *
+ * @property {gamepadId} gamepadId
+ * gamepadId of the gamepad included in processedGamepadChange
+ * when the slot is made. It is used for the GamepadRenderer to tell
+ * if the gamepad which issued the change has changed, that it needs to
+ * recreate a skin slot for the new gamepad.
+ *
+ * @property {HTMLImageElement[]} src
+ * reference to an image element containing a spritesheet,
+ * ordered by config.json.
+ *
+ * @property {HTMLCanvasElement[]} layer
+ * canvas element for each layers, ordered by config.json.
+ *
+ * @property {CanvasRenderingContext2D[]} ctx
+ * canvas contex for each layers, ordered by config.json.
+ *
+ * @property {Object} instruction
+ * specific data to draw each sprites,
+ * mapped in a form of processedGamepadChange.
+ * It's a reference to `config.sticks` and `config.buttons`.
+ */
 class GamepadRenderer {
+  /**
+   *
+   * @param {HTMLDivElement[]} canvasArray contains divs for each set of canvas
+   */
   constructor (canvasArray) {
+    this.renderPending = true
+    
+    this.loadOrders()
+    this.loadInstructions()
+    this.followInstructions.bind(this)
+  
     this.canvas = canvasArray
-    this.skins = []
-    this.ready = Array(4).fill(false)
-    this.renderPending = false
-    window.addEventListener('gamepadChange', this.requestRender.bind(this))
+    this.fadeOut = {}
+  
+    this.loadFadeOutOption()
+    
+    /**
+     * @type {Object.<string, Object>}
+     * Contains skin data obtained from each `config.json` in their directories. Key value is their directory names.
+     * @property {boolean} loaded `true` when loading is complete
+     * @property {string} path
+     * path to the skin directory, relative to the root of the page
+     * @property {HTMLImageElement[]} src
+     * contains image required for the skin
+     * @property {Object} config
+     * data from `config.json` in the skin directory
+     */
+    this.skins = {}
+    /**
+     * @type {Object.<string, string>}
+     * store relations of gamepadId and a skin directory name, as key-value pair.
+     */
+    this.skinMapping = {}
+    this.loadSkinMapping()
+    // after finishing loading all, `renderPending` will be `false`.
+    this.loadAllStoredSkins()
+  
+    /**
+     * @type {SkinSlot[]} save references of skins for each gamepad slot.
+     * Index is that of the gamepad.
+     */
+    this.skinSlot = []
+    
+    this.requestRender = this.requestRender.bind(this)
+    this.renderAll = this.renderAll.bind(this)
+    
+    window.addEventListener('processedGamepadChange', this.requestRender.bind(this))
   }
   
+  static isDirnameOkay (dirname) {
+    return !/[^0-9a-zA-Z_\-]/.test(dirname)
+  }
   static announceMessage (message, type) {
     const messageType = {
       log: 'log',
@@ -21,84 +90,401 @@ class GamepadRenderer {
     }))
   }
   
-  getSkin (gamepadIndex, dirname) {
-    this.ready[gamepadIndex] = false
-    if (dirname.search(/[^0-9a-zA-Z_\-]/) !== -1) { return false }
+  /**
+   * Convert fade out options given in input elements
+   * into a number array / number and save the converted value to the instance.
+   *
+   * `time` and `opacity` is a string with numbers separated by commas. `duration` is one number.
+   *
+   * @param {Object.<string, string>} optionObj
+   * @param {string} optionObj.time seconds for each fade out level.
+   * @param {string} optionObj.opacity transparency values for each level
+   * @param {string} optionObj.duration transition time of fade out
+   */
+  setFadeOutOption (optionObj) {
+    const convertIntoArray =
+      v => v.split(',')
+        .map(v => Number(v))
+        .filter(v => !isNaN(v))
+    this.fadeOut.time = convertIntoArray(optionObj.time || '0')
+    this.fadeOut.opacity = convertIntoArray(optionObj.opacity || '0')
+    this.fadeOut.duration = Number(optionObj.duration) || 0
     
-    const skinpath = `./skin/${dirname}/`
-    fetch(skinpath + 'config.json')
+    this.saveFadeOutOption()
+  }
+  setFadeOutOptionFromArray (optionObj) {
+    this.fadeOut.time = optionObj.time || [0]
+    this.fadeOut.opacity = optionObj.opacity || [0]
+    this.fadeOut.duration = Number(optionObj.duration) || 0
+  }
+  saveFadeOutOption () {
+    const optionJSON = JSON.stringify(this.fadeOut)
+    window.localStorage.setItem('fadeOutOption', optionJSON)
+  }
+  loadFadeOutOption () {
+    const fadeOutOption = JSON.parse(window.localStorage.getItem('fadeOutOption'))
+    this.setFadeOutOptionFromArray(fadeOutOption || this.fadeOut || {})
+  }
+  
+  setSkinMapping (gamepadId, skinDirname) {
+    if (!GamepadRenderer.isDirnameOkay(skinDirname)) { return false }
+    this.skinMapping[gamepadId] = skinDirname
+    this.saveSkinMapping()
+  }
+  saveSkinMapping () {
+    const mappingJSON = JSON.stringify(this.skinMapping)
+    window.localStorage.setItem('rendererSkinMapping', mappingJSON)
+  }
+  loadSkinMapping () {
+    const rendererSkinMapping = JSON.parse(window.localStorage.getItem('rendererSkinMapping'))
+    this.skinMapping = rendererSkinMapping || this.skinMapping || {}
+  }
+  loadAllStoredSkins () {
+    const dirnameSeen = {}
+    const allSkinDirnames = Object.values(this.skinMapping)
+      .filter(dirname => {
+        return dirnameSeen.hasOwnProperty(dirname) ?
+          false : (dirnameSeen[dirname] = true)
+      })
+    for (let d = 0; d < allSkinDirnames.length; d++) {
+      this.loadSkin(allSkinDirnames[d])
+    }
+    this.renderPending = false
+  }
+  /**
+   * loads a skin and store the config under `this.skins[dirname]`.
+   * @param {string} dirname directory name for the skin
+   */
+  loadSkin (dirname) {
+    if (!GamepadRenderer.isDirnameOkay(dirname)) { return false }
+    this.skins[dirname] = {
+      loaded: false
+    }
+    const skin = this.skins[dirname]
+    const path = `./skin/${dirname}`
+    fetch(`${path}/config.json`)
       .then(response => response.json())
       .then(data => {
-        this.skins[gamepadIndex] = {
-          path: skinpath, config: data
+        skin.path = path
+        skin.config = data
+        skin.src = []
+        for (let i = 0; i < skin.config.src.length; i++) {
+          skin.src[i] = new Image()
+          skin.src[i].src = `${skin.path}/${skin.config.src[i]}`
         }
-        this.ready[gamepadIndex] = true
-        this.applySkin(gamepadIndex)
+        skin.loaded = true
         GamepadRenderer.announceMessage(
-          `Gamepad ${gamepadIndex} now has ` +
-          `'${this.skins[gamepadIndex].config.name}' skin.`
+          `Skin '${skin.config.name}' is loaded.`
         )
       })
       .catch(error => {
-        this.skins[gamepadIndex] = null
+        delete this.skins[dirname]
         GamepadRenderer.announceMessage(error, 'error')
       })
   }
-  applySkin (gamepadIndex) {
-    this.skins[gamepadIndex].img = []
-    this.skins[gamepadIndex].layer = []
-    this.skins[gamepadIndex].tool = {}
-    const { config, img, layer, tool } =
-      this.skins[gamepadIndex]
-    const canvas = this.canvas[gamepadIndex]
+  /**
+   * setup a loaded skin for one of four canvas
+   * @param {string} dirname directory name for the skin
+   * @param {number} slot index for one of four canvas
+   * @param {gamepadId} gamepadId gamepad the skin is set to be used for
+   */
+  applySkinToSlot (dirname, slot, gamepadId) {
+    if (!this.skins[dirname] || typeof slot === 'undefined') { return false }
+    if (!this.skins[dirname].loaded) { return false }
     
-    for (let i = 0; i < config.src.length; i++) {
-      img[i] = new Image()
-      img[i].src = this.skins[gamepadIndex].path + config.src[i]
+    const skin = this.skins[dirname]
+    const config = skin.config
+  
+    const canvas = this.canvas[slot]
+    this.skinSlot[slot] = {}
+    /** @type {SkinSlot} */
+    const skinSlot = this.skinSlot[slot]
+    
+    skinSlot.gamepadId = gamepadId
+    skinSlot.src = skin.src
+    skinSlot.layer = []
+    skinSlot.ctx = []
+    skinSlot.instruction = {
+      sticks: skin.config.sticks,
+      buttons: skin.config.buttons
     }
-    for (let i = 0; i < config.layer.length; i++) {
-      switch (config.layer[i].dynamic) {
-        case false:
-          layer[i] = document.createElement('div')
-          layer[i].style.backgroundImage =
-            `url(${img[config.layer[i].src].src})`
-          layer[i].style.backgroundPosition =
-            config.layer[i].x + 'px ' +
-            config.layer[i].y + 'px'
-          canvas.appendChild(layer[i])
-          break;
-        case true:
-          layer[i] = document.createElement('canvas')
-          layer[i].setAttribute('width', config.layer[i].width)
-          layer[i].setAttribute('height', config.layer[i].height)
-          layer[i].style.top = config.layer[i].y + 'px'
-          layer[i].style.left = config.layer[i].x + 'px'
-          tool[config.layer[i].name] = {
-            ctx: layer[i].getContext('2d'),
-            src: img[config.layer[i].src]
-          }
-          canvas.appendChild(layer[i])
-          break;
+    
+    for (let l = 0; l < config.layer.length; l++) {
+      const layer = document.createElement('canvas')
+      layer.setAttribute('width', config.layer[l].width)
+      layer.setAttribute('height', config.layer[l].height)
+      layer.style.top = config.layer[l].y + 'px'
+      layer.style.left = config.layer[l].x + 'px'
+      
+      skinSlot.layer.push(layer)
+      skinSlot.ctx.push(layer.getContext('2d'))
+      canvas.appendChild(layer)
+    }
+  }
+  removeSkinFromSlot (slot) {
+    delete this.skinSlot[slot].gamepadId
+    delete this.skinSlot[slot].src
+    delete this.skinSlot[slot].layer
+    delete this.skinSlot[slot].ctx
+    delete this.skinSlot[slot].instruction
+    delete this.skinSlot[slot]
+    while (this.canvas[slot].firstChild) {
+      this.canvas[slot].removeChild(this.canvas[slot].lastChild)
+    }
+  }
+  
+  requestRender (e) {
+    if (this.renderPending) { return false }
+    if (!e.detail) {
+      GamepadRenderer.announceMessage(
+        'Type of the received `processedGamepadChange` event is different.',
+        'error'
+      )
+      return false
+    }
+    
+    this._e = e.detail
+    this.renderPending = true
+    requestAnimationFrame(this.renderAll)
+  }
+  renderAll () {
+    this.renderPending = false
+    if (!this._e) { return false }
+    
+    for (
+      let gamepadIndex = 0;
+      gamepadIndex < this._e.length;
+      gamepadIndex++
+    ) {
+      if (!this._e[gamepadIndex]) { continue }
+      
+      const skinSlot = this.skinSlot[gamepadIndex]
+      /** @type {processedGamepadChange} */
+      const gamepadChange = this._e[gamepadIndex]
+      
+      // skinSlot already exists
+      if (skinSlot) {
+        // it's the same slot used before
+        if (skinSlot.gamepadId === gamepadChange.id.gamepadId) {
+          this.render(gamepadIndex)
+        } else { // the gamepad for the slot is changed
+          this.removeSkinFromSlot(gamepadIndex)
+          this.applySkinToSlot(
+            this.skinMapping[gamepadChange.id.gamepadId],
+            gamepadIndex,
+            gamepadChange.id.gamepadId
+          )
+        }
+      } else { // skinSlot isn't made
+        // find skin for the gamepad
+        const newSkinDirname =
+          this.skinMapping[gamepadChange.id.gamepadId] ||
+          (/XInput/i.test(gamepadChange.id.gamepadId) ? 'xinput' : 'dinput')
+        if (!newSkinDirname) {
+          GamepadRenderer.announceMessage({
+            message: 'Can\'t assign a skin directory name for the gamepad.',
+            processedGamepadChange: gamepadChange
+          }, 'error')
+          continue
+        }
+        this.setSkinMapping(gamepadChange.id.gamepadId, newSkinDirname)
+        this.applySkinToSlot(
+          newSkinDirname, gamepadIndex, gamepadChange.id.gamepadId
+        )
+      }
+    }
+    this._e = null
+  }
+  render (gamepadIndex) {
+    const src = this.skinSlot[gamepadIndex].src
+    const ctx = this.skinSlot[gamepadIndex].ctx
+    const inst = this.skinSlot[gamepadIndex].instruction
+    if (!src || !ctx || !inst) {
+      GamepadRenderer.announceMessage({
+        message: 'Renderer is ready to draw but tools are somehow missing.',
+        skinSlot: this.skinSlot[gamepadIndex]
+      }, 'error')
+      return false
+    }
+    /** @type {{left: ?stickChange, right: ?stickChange}} */
+    const sticks = this._e[gamepadIndex].sticks
+    /**
+     *  @type {Object}
+     *  @property {?Object.<string, ?(buttonChange|basicButtonChange)>} dpad
+     *  @property {?Object.<string, ?buttonChange>} face
+     *  @property {?Object.<string, ?buttonChange>} shoulder
+     */
+    const buttons = this._e[gamepadIndex].buttons
+    
+    for (let s = 0; s < this.order.stick.length; s++) {
+      // sticks in the change will always exist
+      const stickName = this.order.stick[s]
+      
+    }
+    
+    for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
+      const buttonGroupName = this.order.buttonGroup[bg]
+      const buttonLayerIndex = inst.buttons.layer
+      // dpad will be null on non 'axisdpad' gamepads when there's no change
+      if (!buttons[buttonGroupName]) { continue }
+      
+      for (let b = 0; b < this.order.button[bg].length; b++) {
+        const buttonName = this.order.button[bg][b]
+        if(!buttons[buttonGroupName][buttonName]) { continue }
+        
+        // at this point the existence of the button input is confirmed
+        const value = buttons[buttonGroupName][buttonName].value
+        const buttonInst = inst.buttons[buttonGroupName][buttonName]
+        // skip if the referred instruction is not made
+        if(buttonInst.constructor !== Object) { continue }
+        
+        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.clear)
+        // comparing to 0 so that analog buttons with non-zero value
+        // will be drawn with 'on' instruction
+        if (value === 0) {
+          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.off)
+        } else {
+          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.on, value)
+        }
       }
     }
   }
   
-  requestRender () {
-    if (this.renderPending) { return false }
-    this.renderPending = true
-    requestAnimationFrame(this.renderAll.bind(this))
+  followInstructions (ctx, src, inst, value) {
+    // `this` is bound as `GamepadRenderer` in the constructor
+    for (let i = 0; i < inst.length; i++) {
+      const instName = inst[i].instruction
+      const instArgs = []
+      for (let a = 0; a < this.instructionParameters[instName].length; a++) {
+        const parameterName = this.instructionParameters[instName][a]
+        switch (parameterName) {
+          case 'ctx':
+            instArgs.push(ctx)
+            break
+          case 'src':
+            instArgs.push(src[inst[i].src])
+            break
+          case 'value':
+            instArgs.push(value)
+            break
+          default:
+            if(inst[i].hasOwnProperty(parameterName)) {
+              instArgs.push(inst[i][parameterName])
+            }
+        }
+      }
+      this.instruction[instName](...instArgs)
+    }
   }
-  renderAll () {
-    this.renderPending = false
-    
-    this.render(0)
-    this.render(1)
-    this.render(2)
-    this.render(3)
+  
+  /**
+   * This method is to define many drawing instructions inside the class,
+   * so render method can use them without redefining them every time.
+   */
+  loadInstructions () {
+    this.instructionParameters = {
+      drawImage: ['ctx', 'src', 'coord', 'alpha'],
+      drawImageInPolygon: ['ctx', 'src', 'path', 'coord', 'alpha'],
+      drawImageInPolygonByValue: ['ctx', 'src', 'value', 'areaWidth', 'path', 'coord', 'alpha'],
+      clearParallelogram: ['ctx', 'xMin', 'xMax', 'yMin', 'height', 'skewAway', 'vertical'],
+      clearParallelogramByValue: ['ctx', 'value', 'areaWidth', 'xMin', 'xMax', 'yMin', 'height', 'skewAway', 'vertical']
+    }
+    this.instruction = {
+      drawImage: function (ctx, src, coord, alpha = 1) {
+        if (alpha === 0) { return }
+        if (alpha !== 1) {
+          ctx.save()
+          ctx.globalAlpha = alpha
+        }
+        ctx.drawImage(src, ...coord)
+        if (alpha !== 1) {
+          ctx.restore()
+        }
+      },
+      drawImageInPolygon: function (
+        ctx, src, path, coord, alpha = 1
+      ) {
+        ctx.save()
+        if (alpha === 0) { return }
+        if (alpha !== 1) { ctx.globalAlpha = alpha }
+        ctx.beginPath()
+        for (let p = 0; p < path.length; p=p+2) {
+          if (p === 0) {
+            ctx.moveTo(path[i], path[i+1])
+            continue
+          }
+          ctx.lineTo(path[i], path[i+1])
+        }
+        ctx.closePath()
+        ctx.clip()
+        ctx.drawImage(src, ...coord)
+        ctx.restore()
+      },
+      drawImageInPolygonByValue: function (
+        ctx, src, value, areaWidth,
+        path, coord, alpha = 1
+      ) {
+        
+      },
+      clearParallelogram: function (
+        ctx, xMin, xMax, yMin, height, skewAway = false, vertical = false
+      ) {
+        ctx.save()
+        ctx.globalCompositeOperation = 'destination-out'
+        ctx.fillStyle = 'black'
+        
+        ctx.beginPath()
+        if (!vertical) {
+          ctx.moveTo(xMax, yMin)
+          ctx.lineTo(xMin, yMin)
+          if (!skewAway) {
+            ctx.lineTo(xMin - height, yMin + height)
+            ctx.lineTo(xMax - height, yMin + height)
+          } else {
+            ctx.lineTo(xMin + height, yMin + height)
+            ctx.lineTo(xMax + height, yMin + height)
+          }
+        } else {
+          ctx.moveTo(yMin, xMax)
+          ctx.lineTo(yMin, xMin)
+          if (!skewAway) {
+            ctx.lineTo(yMin + height, xMin - height)
+            ctx.lineTo(yMin + height, xMax - height)
+          } else {
+            ctx.lineTo(yMin + height, xMin + height)
+            ctx.lineTo(yMin + height, xMax + height)
+          }
+        }
+        ctx.closePath()
+        ctx.fill()
+        
+        ctx.restore()
+      },
+      clearParallelogramByValue: function (
+        ctx, value, areaWidth,
+        xMin, xMax, yMin, height, skewAway = false, vertical = false
+      ) {
+        const width = value * areaWidth
+        this.clearParallelogram(
+          ctx, xMin + width, xMax, yMin, height, skewAway, vertical
+        )
+      }
+    }
   }
-  render (gamepadIndex) {
-    if (!this.ready[gamepadIndex]) { return false }
-    
-    
+  
+  /**
+   * This method is to define gamepad input orders in a way
+   * I can hopefully efficiently loop through.
+   */
+  loadOrders () {
+    this.order = {
+      stick: ['left','right'],
+      buttonGroup: ['dpad', 'face', 'shoulder'],
+      button: [
+        ['up','down','left','right'],
+        ['down','right','left','up','select','start','home','touchpad'],
+        ['l1','r1','l2','r2']
+      ]
+    }
   }
 }

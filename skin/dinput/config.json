@@ -1,0 +1,160 @@
+{
+	"name": "DInput Default",
+	"src": [
+		"frame.png", "active.png"
+	],
+	"layer": [
+		{
+			"name": "stick", "src": 0,
+			"x": 0, "y": 40, "width": 256, "height": 96
+		},
+		{
+			"name": "button", "src": 1,
+			"x": 0, "y": 8, "width": 256, "height": 128
+		}
+	],
+	"sticks": {
+		"layer": 0,
+		"left":  {
+			"radius": 24,
+			"stick":  [  0, 48, 48, 48, 24, 24, 48, 48],
+			"button": [332,  0, 48, 48, 24, 24, 48, 48]
+		},
+		"right": {
+			"radius": 24,
+			"stick":  [ 48, 48, 48, 48, 184, 24, 48, 48],
+			"button": [380,  0, 48, 48, 184, 24, 48, 48]
+		}
+	},
+	"buttons": {
+		"layer": 1,
+		"dpad": {
+			"up":    [428, 0, 24, 32, 36, 44, 24, 32],
+			"down":  [452, 0, 24, 32, 36, 84, 24, 32],
+			"left":  [476, 0, 32, 24, 12, 68, 32, 24],
+			"right": [508, 0, 32, 24, 52, 68, 32, 24]
+		},
+		"face": {
+			"down":     [  0, 0, 28, 28, 194,  92, 28, 28],
+			"right":    [ 28, 0, 28, 28, 220,  66, 28, 28],
+			"left":     [ 56, 0, 28, 28, 168,  66, 28, 28],
+			"up":       [ 84, 0, 28, 28, 194,  40, 28, 28],
+			"select":   [300, 0, 16, 24,  94,  32, 16, 24],
+			"start":    [316, 0, 16, 24, 146,  32, 16, 24],
+			"home":     [540, 0, 16, 16, 120, 112, 16, 16],
+			"touchpad": [556, 0, 32, 16, 112,  32, 32, 16]
+		},
+		"shoulder": {
+			"l1": {
+				"clear": [
+					{
+						"instruction": "clearParallelogram",
+						"xMin": 62, "xMax": 113,
+						"yMin": 0, "height": 24
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [112, 0, 47, 24, 45, 0, 47, 24]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [112, 0, 47, 24, 45, 0, 47, 24]
+					}
+				]
+			},
+			"r1": {
+				"clear": [
+					{
+						"instruction": "clearParallelogram",
+						"xMin": 143, "xMax": 194,
+						"yMin": 0, "height": 24,
+						"skewAway": true
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [159, 0, 47, 24, 164, 0, 47, 24]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [159, 0, 47, 24, 164, 0, 47, 24]
+					}
+				]
+			},
+			"l2": {
+				"clear": [
+					{
+						"instruction": "clearParallelogram",
+						"xMin": 7, "xMax": 58,
+						"yMin": 0, "height": 24
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [206, 0, 47, 24,   4, 0, 47, 24]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImageInPolygonByValue",
+						"src": 0,
+						"path": [4,0, [7,true],0, [-17,true],0, 4,32],
+						"areaWidth": 50,
+						"coord": [206, 0, 47, 24,   4, 0, 47, 24]
+					},
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [206, 0, 47, 24,   4, 0, 47, 24]
+					},
+					{
+						"instruction": "clearParallelogramByValue",
+						"xMin": 7, "areaWidth": 50, "xMax": 58,
+						"yMin": 0, "height": 24
+					}
+				]
+			},
+			"r2": {
+				"clear": [
+					{
+						"instruction": "clearParallelogram",
+						"xMin": 249, "xMax": 198,
+						"yMin": 0, "height": 24,
+						"skewAway": true
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [253, 0, 47, 24, 205, 0, 47, 24]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [253, 0, 47, 24, 205, 0, 47, 24]
+					},
+					{
+						"instruction": "drawImageInPolygon",
+						"src": 1,
+						"path": [],
+						"coord": [253, 0, 47, 24, 205, 0, 47, 24]
+					},
+					{
+						"instruction": "clearParallelogramByValue",
+						"xMin": 249, "areaWidth": 50, "xMax": 198,
+						"yMin": 0, "height": 24,
+						"skewAway": true
+					}
+				]
+			}
+		}
+	}
+}

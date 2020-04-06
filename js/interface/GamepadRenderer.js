@@ -274,6 +274,16 @@ class GamepadRenderer {
             gamepadIndex,
             gamepadChange.id.gamepadId
           )
+          if (
+            this.skins[this.skinMapping[gamepadChange.id.gamepadId]].loaded
+          ) {
+            this.render(gamepadIndex)
+          } else {
+            GamepadRenderer.announceMessage(
+              'skipping first frame for gamepad ' + gamepadIndex +
+              ' as the skin is not ready'
+            )
+          }
         }
       } else { // skinSlot isn't made
         // find skin for the gamepad
@@ -291,6 +301,14 @@ class GamepadRenderer {
         this.applySkinToSlot(
           newSkinDirname, gamepadIndex, gamepadChange.id.gamepadId
         )
+        if (this.skins[newSkinDirname].loaded) {
+          this.render(gamepadIndex)
+        } else {
+          GamepadRenderer.announceMessage(
+            'skipping first frame for gamepad ' + gamepadIndex +
+            ' as the skin is not ready'
+          )
+        }
       }
     }
     this._e = null

@@ -409,11 +409,12 @@ class GamepadRenderer {
         if (alpha !== 1) { ctx.globalAlpha = alpha }
         ctx.beginPath()
         for (let p = 0; p < path.length; p=p+2) {
+          if (typeof path[p+1] === 'undefined') { continue }
           if (p === 0) {
-            ctx.moveTo(path[i], path[i+1])
+            ctx.moveTo(path[p], path[p+1])
             continue
           }
-          ctx.lineTo(path[i], path[i+1])
+          ctx.lineTo(path[p], path[p+1])
         }
         ctx.closePath()
         ctx.clip()
@@ -424,7 +425,21 @@ class GamepadRenderer {
         ctx, src, value, areaWidth,
         path, coord, alpha = 1
       ) {
-        
+        const fixedPath = []
+        const width = value * areaWidth
+        for (let p = 0; p < path.length; p++) {
+          if (path[p].constructor === Array) {
+            fixedPath.push(
+              path[p][0] + (path[p][1] ? 1 : -1) * width
+            )
+          } else {
+            fixedPath.push(path[p])
+          }
+        }
+        console.log(fixedPath)
+        this.drawImageInPolygon(
+          ctx, src, fixedPath, coord, alpha
+        )
       },
       clearParallelogram: function (
         ctx, xMin, xMax, yMin, height, skewAway = false, vertical = false

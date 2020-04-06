@@ -99,25 +99,20 @@
 				"off": [
 					{
 						"instruction": "drawImage",
-						"src": 0, "coord": [206, 0, 47, 24,   4, 0, 47, 24]
+						"src": 0, "coord": [206, 0, 47, 24, 4, 0, 47, 24]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImageInPolygonByValue",
-						"src": 0,
-						"path": [4,0, [7,true],0, [-17,true],0, 4,32],
-						"areaWidth": 50,
-						"coord": [206, 0, 47, 24,   4, 0, 47, 24]
-					},
-					{
 						"instruction": "drawImage",
-						"src": 1, "coord": [206, 0, 47, 24,   4, 0, 47, 24]
+						"src": 0, "coord": [206, 0, 47, 24, 4, 0, 47, 24]
 					},
 					{
-						"instruction": "clearParallelogramByValue",
-						"xMin": 7, "areaWidth": 50, "xMax": 58,
-						"yMin": 0, "height": 24
+						"instruction": "drawImageInPolygonByValue",
+						"src": 1,
+						"areaWidth": 51,
+						"path": [4, 0, [7,true], 0, [-17,true], 24, 4, 24],
+						"coord": [206, 0, 47, 24, 4, 0, 47, 24]
 					}
 				]
 			},
@@ -142,16 +137,11 @@
 						"src": 0, "coord": [253, 0, 47, 24, 205, 0, 47, 24]
 					},
 					{
-						"instruction": "drawImageInPolygon",
+						"instruction": "drawImageInPolygonByValue",
 						"src": 1,
-						"path": [],
+						"areaWidth": 51,
+						"path": [252, 0, [249,false], 0, [273,false], 24, 252, 24],
 						"coord": [253, 0, 47, 24, 205, 0, 47, 24]
-					},
-					{
-						"instruction": "clearParallelogramByValue",
-						"xMin": 249, "areaWidth": 50, "xMax": 198,
-						"yMin": 0, "height": 24,
-						"skewAway": true
 					}
 				]
 			}

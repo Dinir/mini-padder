@@ -48,9 +48,8 @@
 			"l1": {
 				"clear": [
 					{
-						"instruction": "clearParallelogram",
-						"xMin": 62, "xMax": 113,
-						"yMin": 0, "height": 24
+						"instruction": "clearPolygon",
+						"path": [62, 0, 92, 0, 92, 24, 38, 24]
 					}
 				],
 				"off": [
@@ -69,10 +68,8 @@
 			"r1": {
 				"clear": [
 					{
-						"instruction": "clearParallelogram",
-						"xMin": 143, "xMax": 194,
-						"yMin": 0, "height": 24,
-						"skewAway": true
+						"instruction": "clearPolygon",
+						"path": [164, 0, 194, 0, 218, 24, 164, 24]
 					}
 				],
 				"off": [
@@ -91,9 +88,8 @@
 			"l2": {
 				"clear": [
 					{
-						"instruction": "clearParallelogram",
-						"xMin": 7, "xMax": 58,
-						"yMin": 0, "height": 24
+						"instruction": "clearPolygon",
+						"path": [4, 0, 58, 0, 34, 24, 4, 24]
 					}
 				],
 				"off": [
@@ -119,10 +115,8 @@
 			"r2": {
 				"clear": [
 					{
-						"instruction": "clearParallelogram",
-						"xMin": 249, "xMax": 198,
-						"yMin": 0, "height": 24,
-						"skewAway": true
+						"instruction": "clearPolygon",
+						"path": [198, 0, 252, 0, 252, 24, 222, 24]
 					}
 				],
 				"off": [

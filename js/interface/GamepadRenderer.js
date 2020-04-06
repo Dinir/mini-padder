@@ -404,6 +404,7 @@ class GamepadRenderer {
       drawImage: ['ctx', 'src', 'coord', 'alpha'],
       drawImageInPolygon: ['ctx', 'src', 'path', 'coord', 'alpha'],
       drawImageInPolygonByValue: ['ctx', 'src', 'value', 'areaWidth', 'path', 'coord', 'alpha'],
+      clearPolygon: ['ctx', 'path'],
       clearParallelogram: ['ctx', 'xMin', 'xMax', 'yMin', 'height', 'skewAway', 'vertical'],
       clearParallelogramByValue: ['ctx', 'value', 'areaWidth', 'xMin', 'xMax', 'yMin', 'height', 'skewAway', 'vertical']
     }
@@ -453,6 +454,21 @@ class GamepadRenderer {
         this.drawImageInPolygon(
           ctx, src, fixedPath, coord, alpha
         )
+      },
+      clearPolygon: function (
+        ctx, path
+      ) {
+        ctx.save()
+        ctx.globalCompositeOperation = 'destination-out'
+        ctx.beginPath()
+        for (let p = 0; p < path.length; p=p+2) {
+          if (typeof path[p+1] === 'undefined') { continue }
+          ctx.lineTo(path[p], path[p+1])
+        }
+        ctx.closePath()
+        ctx.fill()
+    
+        ctx.restore()
       },
       clearParallelogram: function (
         ctx, xMin, xMax, yMin, height, skewAway = false, vertical = false

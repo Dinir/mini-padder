@@ -410,10 +410,6 @@ class GamepadRenderer {
         ctx.beginPath()
         for (let p = 0; p < path.length; p=p+2) {
           if (typeof path[p+1] === 'undefined') { continue }
-          if (p === 0) {
-            ctx.moveTo(path[p], path[p+1])
-            continue
-          }
           ctx.lineTo(path[p], path[p+1])
         }
         ctx.closePath()
@@ -436,7 +432,6 @@ class GamepadRenderer {
             fixedPath.push(path[p])
           }
         }
-        console.log(fixedPath)
         this.drawImageInPolygon(
           ctx, src, fixedPath, coord, alpha
         )

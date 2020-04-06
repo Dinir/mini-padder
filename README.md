@@ -10,7 +10,7 @@ To use the old one that worked on only handful kind of gamepads, checkout the [1
 
 ---
 
-<!--screenshots-->
+![DInput Default Skin]
 
 Simple gamepad input overlay for streaming, with default skins that keep a good readability even in tough encoding situations.
 
@@ -39,6 +39,8 @@ A local web page is not allowed to read files from the computer, so these progre
 ---
 
 I tried to make this project to prove to myself that I can make and *complete* making a thing. Also that I can use it for my own streams.
+
+[DInput Default Skin]: ./images/DInput-Skin.gif '(38.14kB) DInput Default Skin'
 
 [hosted webpage]: https://dinir.github.io/gamepad-viewer/gamepadviewer.html
 [latest release]: https://github.com/Dinir/gamepad-viewer/releases/latest

@@ -275,6 +275,8 @@ class GamepadRenderer {
             gamepadChange.id.gamepadId
           )
           if (
+  
+            this.skins[this.skinMapping[gamepadChange.id.gamepadId]] &&
             this.skins[this.skinMapping[gamepadChange.id.gamepadId]].loaded
           ) {
             this.render(gamepadIndex)
@@ -301,7 +303,10 @@ class GamepadRenderer {
         this.applySkinToSlot(
           newSkinDirname, gamepadIndex, gamepadChange.id.gamepadId
         )
-        if (this.skins[newSkinDirname].loaded) {
+        if (
+          this.skins[newSkinDirname] &&
+          this.skins[newSkinDirname].loaded
+        ) {
           this.render(gamepadIndex)
         } else {
           GamepadRenderer.announceMessage(

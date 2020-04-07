@@ -97,7 +97,7 @@
  * @property {number[]} value Values of x-axis, y-axis, and a button of the stick.
  * Length of the array will be 2 if there's no change on the button.
  * @property {number[]} delta Change of the values from the last time processedGamepadChange was made.
- * @property {boolean} [pressed] Indicates the state of the button. This will be undefined if there's no change.
+ * @property {?boolean} pressed Indicates the state of the button. This will be null if there's no change.
  * @property {boolean} active Indicates if the stick is out of its deadzone, or the button is pressed.
  */
 /**
@@ -280,22 +280,22 @@ class MappingStorageManager {
       const value = [
         changeAxes[mappingStick.x],
         changeAxes[mappingStick.y],
+        mappingStick.button ?
+          changeButtons[mappingStick.button] : null
       ]
-      const hasButtonChange =
-        mappingStick.button && changeButtons[mappingStick.button]
-      if (hasButtonChange) {
-        value.push(changeButtons[mappingStick.button])
-      } else if (value.every(v => v === null)) {
-        // if `hasButtonChange` is true, that means there IS a change
-        // hence only checking the stick for changes after checking the button
+      if (
+        value[0] === null &&
+        value[1] === null &&
+        value[2] === null
+      ) {
         processedChangeSticks[side] = null
         continue
       }
       
       // assign changes
       processedChangeSticks[side] = {
-        value: [ null, null ],
-        delta: [ null, null ]
+        value: Array(3).fill(null),
+        delta: Array(3).fill(null)
       }
       for (let i = 0; i < value.length; i++) {
         if (!value[i]) { continue }
@@ -305,11 +305,9 @@ class MappingStorageManager {
       
       // tells if the stick is active
       let isActive = false
-      if (hasButtonChange) {
-        processedChangeSticks[side].pressed = value[2].pressed
-        isActive = value[2].pressed
-      }
-      isActive = isActive ||
+      processedChangeSticks[side].pressed =
+        value[2] ? value[2].pressed : null
+      isActive = processedChangeSticks[side].pressed ||
                  (value[0] ? Math.abs(value[0].value) > deadzone : false) ||
                  (value[1] ? Math.abs(value[1].value) > deadzone : false)
       processedChangeSticks[side].active = isActive

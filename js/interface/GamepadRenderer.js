@@ -312,7 +312,7 @@ class GamepadRenderer {
         // find skin for the gamepad
         const newSkinDirname =
           this.skinMapping[gamepadChange.id.gamepadId] ||
-          (/XInput/i.test(gamepadChange.id.gamepadId) ? 'xinput' : 'dinput')
+          (/XInput/i.test(gamepadChange.id.gamepadId) ? 'XInput' : 'DInput')
         if (!newSkinDirname) {
           GamepadRenderer.announceMessage({
             message: 'Can\'t assign a skin directory name for the gamepad.',

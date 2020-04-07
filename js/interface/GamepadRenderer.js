@@ -38,7 +38,7 @@
  * canvas element for each layers, ordered by config.json.
  *
  * @property {CanvasRenderingContext2D[]} ctx
- * canvas contex for each layers, ordered by config.json.
+ * canvas context for each layers, ordered by config.json.
  *
  * @property {Object} instruction
  * specific data to draw each sprites,
@@ -302,7 +302,6 @@ class GamepadRenderer {
             gamepadChange.id.gamepadId
           )
           if (
-  
             this.skins[this.skinMapping[gamepadChange.id.gamepadId]] &&
             this.skins[this.skinMapping[gamepadChange.id.gamepadId]].loaded
           ) {
@@ -347,6 +346,7 @@ class GamepadRenderer {
       }, 'error')
       return false
     }
+    
     /** @type {{left: ?stickChange, right: ?stickChange}} */
     const sticks = this._e[gamepadIndex].sticks
     const stickLayerIndex = inst.sticks.layer
@@ -389,7 +389,7 @@ class GamepadRenderer {
       
       for (let b = 0; b < this.order.button[bg].length; b++) {
         const buttonName = this.order.button[bg][b]
-        if(!buttons[buttonGroupName][buttonName]) { continue }
+        if (!buttons[buttonGroupName][buttonName]) { continue }
         
         // at this point the existence of the button input is confirmed
         const value = buttons[buttonGroupName][buttonName].value
@@ -515,7 +515,9 @@ class GamepadRenderer {
     
         ctx.restore()
       },
-      drawImage: function (ctx, src, coord, alpha = 1) {
+      drawImage: function (
+        ctx, src, coord, alpha = 1
+      ) {
         if (alpha === 0) { return }
         if (alpha !== 1) {
           ctx.save()
@@ -568,8 +570,9 @@ class GamepadRenderer {
         ctx.restore()
       },
       drawImageInPolygonByValue: function (
-        ctx, src, value, areaWidth,
-        path, coord, alpha = 1
+        ctx, src,
+        value, areaWidth, path,
+        coord, alpha = 1
       ) {
         const fixedPath = []
         const width = value * areaWidth
@@ -621,8 +624,9 @@ class GamepadRenderer {
         ctx.restore()
       },
       clearParallelogramByValue: function (
-        ctx, value, areaWidth,
-        xMin, xMax, yMin, height, skewAway = false, vertical = false
+        ctx,
+        value, areaWidth, xMin,
+        xMax, yMin, height, skewAway = false, vertical = false
       ) {
         const width = value * areaWidth
         this.clearParallelogram(

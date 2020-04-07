@@ -8,6 +8,28 @@
  * if the gamepad which issued the change has changed, that it needs to
  * recreate a skin slot for the new gamepad.
  *
+ * @property {{left: boolean, right: boolean}} stickButtonState
+ * last stick button state, stored for rendering.
+ *
+ * Why is it in a renderer class?
+ * MappingStorageManager will always only transfer 'changes',
+ * which works for usages that don't need to bind anything together:
+ * a logic dealing each of the inputs separately can only work whenever
+ * a change occurred therefore it's transferred from MappingStorageManager,
+ * and it won't be out of sync to a present state of the gamepad.
+ *
+ * But here the renderer will try to draw button press states
+ * 'on' the position of each sticks, which should be updated every time
+ * a corresponding stick moves, regardless of changes on the buttons.
+ *
+ * So it should bind the position and the button state of a stick.
+ *
+ * Stick position is always included in processedGamepadChange
+ * to avoid stick state considered 'inactive' when it's pushed
+ * all the way along a single axis.
+ * And with that, the renderer only need to remember the other one,
+ * the button state of the stick.
+ *
  * @property {HTMLImageElement[]} src
  * reference to an image element containing a spritesheet,
  * ordered by config.json.
@@ -201,6 +223,10 @@ class GamepadRenderer {
     const skinSlot = this.skinSlot[slot]
     
     skinSlot.gamepadId = gamepadId
+    skinSlot.stickButtonState = {
+      left: false,
+      right: false
+    }
     skinSlot.src = skin.src
     skinSlot.layer = []
     skinSlot.ctx = []
@@ -223,6 +249,7 @@ class GamepadRenderer {
   }
   removeSkinFromSlot (slot) {
     delete this.skinSlot[slot].gamepadId
+    delete this.skinSlot[slot].stickButtonState
     delete this.skinSlot[slot].src
     delete this.skinSlot[slot].layer
     delete this.skinSlot[slot].ctx
@@ -319,6 +346,7 @@ class GamepadRenderer {
     this._e = null
   }
   render (gamepadIndex) {
+    const stickButtonState = this.skinSlot[gamepadIndex].stickButtonState
     const src = this.skinSlot[gamepadIndex].src
     const ctx = this.skinSlot[gamepadIndex].ctx
     const inst = this.skinSlot[gamepadIndex].instruction
@@ -331,6 +359,7 @@ class GamepadRenderer {
     }
     /** @type {{left: ?stickChange, right: ?stickChange}} */
     const sticks = this._e[gamepadIndex].sticks
+    const stickLayerIndex = inst.sticks.layer
     /**
      *  @type {Object}
      *  @property {?Object.<string, ?(buttonChange|basicButtonChange)>} dpad
@@ -338,16 +367,33 @@ class GamepadRenderer {
      *  @property {?Object.<string, ?buttonChange>} shoulder
      */
     const buttons = this._e[gamepadIndex].buttons
+    const buttonLayerIndex = inst.buttons.layer
     
+    // give instructions for sticks
     for (let s = 0; s < this.order.stick.length; s++) {
       // sticks in the change will always exist
       const stickName = this.order.stick[s]
+      if (!sticks[stickName]) { continue }
+      const values = sticks[stickName]
+      // update last seen stick button state when a change is found
+      if (values.pressed !== null) {
+        stickButtonState[stickName] = values.pressed
+      }
+      const stickInst = inst.sticks[stickName]
+      // skip if the referred instruction is not made
+      if (!stickInst || stickInst.constructor !== Object) { continue }
       
+      this.followInstructions(ctx[stickLayerIndex], src, stickInst.clear, null, null)
+      if (stickButtonState[stickName]) {
+        this.followInstructions(ctx[stickLayerIndex], src, stickInst.on, values.value, values.delta)
+      } else {
+        this.followInstructions(ctx[stickLayerIndex], src, stickInst.off, values.value, values.delta)
+      }
     }
     
+    // give instructions for buttons
     for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
       const buttonGroupName = this.order.buttonGroup[bg]
-      const buttonLayerIndex = inst.buttons.layer
       // dpad will be null on non 'axisdpad' gamepads when there's no change
       if (!buttons[buttonGroupName]) { continue }
       
@@ -359,15 +405,15 @@ class GamepadRenderer {
         const value = buttons[buttonGroupName][buttonName].value
         const buttonInst = inst.buttons[buttonGroupName][buttonName]
         // skip if the referred instruction is not made
-        if(buttonInst.constructor !== Object) { continue }
+        if (!buttonInst || buttonInst.constructor !== Object) { continue }
         
-        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.clear)
+        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.clear, null, null)
         // comparing to 0 so that analog buttons with non-zero value
         // will be drawn with 'on' instruction
         if (value === 0) {
-          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.off)
+          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.off, null, null)
         } else {
-          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.on, value)
+          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.on, value, null)
         }
       }
     }
@@ -388,7 +434,11 @@ class GamepadRenderer {
             instArgs.push(src[inst[i].src])
             break
           case 'value':
+          case 'pos':
             instArgs.push(value)
+            break
+          case 'alpha':
+            instArgs.push(typeof alpha === 'number' ? alpha : 1)
             break
           default:
             if(inst[i].hasOwnProperty(parameterName)) {
@@ -409,6 +459,7 @@ class GamepadRenderer {
       clearRect: ['ctx', 'x', 'y', 'width', 'height'],
       clearPolygon: ['ctx', 'path'],
       drawImage: ['ctx', 'src', 'coord', 'alpha'],
+      drawImageByPos: ['ctx', 'src', 'pos', 'areaSize', 'coord', 'alpha'],
       drawImageInPolygon: ['ctx', 'src', 'path', 'coord', 'alpha'],
       drawImageInPolygonByValue: ['ctx', 'src', 'value', 'areaWidth', 'path', 'coord', 'alpha'],
       clearParallelogram: ['ctx', 'xMin', 'xMax', 'yMin', 'height', 'skewAway', 'vertical'],
@@ -445,6 +496,31 @@ class GamepadRenderer {
         if (alpha !== 1) {
           ctx.restore()
         }
+      },
+      drawImageByPos: function (
+        ctx, src,
+        pos, areaSize, coord,
+        alpha = 1
+      ) {
+        const fixedPos = []
+        for (let a = 0; a < 2; a++) {
+          fixedPos.push(pos[a] * areaSize[a])
+        }
+        const fixedCoord = []
+        for (let p = 0; p < coord.length; p++) {
+          if (coord[p].constructor === Array) {
+            for (let a = 0; a < 2; a++) {
+              fixedCoord.push(
+                fixedPos[a] + (coord[p][a+2] ? 1 : -1) * coord[p][a]
+              )
+            }
+          } else {
+            fixedCoord.push(coord[p])
+          }
+        }
+        this.drawImage(
+          ctx, src, fixedCoord, alpha
+        )
       },
       drawImageInPolygon: function (
         ctx, src, path, coord, alpha = 1

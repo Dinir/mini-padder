@@ -15,15 +15,53 @@
 	],
 	"sticks": {
 		"layer": 0,
-		"left":  {
-			"radius": 24,
-			"stick":  [  0, 48, 48, 48, 24, 24, 48, 48],
-			"button": [332,  0, 48, 48, 24, 24, 48, 48]
+		"left": {
+			"clear": [
+				{
+					"instruction": "clearRect",
+					"x": 0, "y": 0, "width": 96, "height": 96
+				},
+				{
+					"instruction": "drawImage",
+					"src": 0, "coord": [0, 36, 96, 96, 0, 0, 96, 96]
+				}
+			],
+			"off": [
+				{
+					"instruction": "drawImageByPos",
+					"areaSize": [24, 24], "src": 1, "coord": [0, 48, 48, 48, [24,24,true,true], 48, 48]
+				}
+			],
+			"on": [
+				{
+					"instruction": "drawImageByPos",
+					"areaSize": [24, 24], "src": 1, "coord": [332, 0, 48, 48, [24,24,true,true], 48, 48]
+				}
+			]
 		},
 		"right": {
-			"radius": 24,
-			"stick":  [ 48, 48, 48, 48, 184, 24, 48, 48],
-			"button": [380,  0, 48, 48, 184, 24, 48, 48]
+			"clear": [
+				{
+					"instruction": "clearRect",
+					"x": 160, "y": 0, "width": 96, "height": 96
+				},
+				{
+					"instruction": "drawImage",
+					"src": 0, "coord": [96, 36, 96, 96, 160, 0, 96, 96]
+				}
+			],
+			"off": [
+				{
+					"instruction": "drawImageByPos",
+					"areaSize": [24, 24], "src": 1, "coord": [48, 48, 48, 48, [184,24,true,true], 48, 48]
+				}
+			],
+			"on": [
+				{
+					"instruction": "drawImageByPos",
+					"areaSize": [24, 24], "src": 1, "coord": [380, 0, 48, 48, [184,24,true,true], 48, 48]
+				}
+			]
 		}
 	},
 	"buttons": {

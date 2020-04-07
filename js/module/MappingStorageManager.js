@@ -177,12 +177,11 @@ class MappingStorageManager {
       MappingStorageManager.announceMessage(
         Object.keys(this.mappings).length + ' mappings found.'
       )
-      return true
     } else {
       MappingStorageManager.announceMessage(
-        'Mappings couldn\'t be loaded.', 'error'
+        'Mappings couldn\'t be loaded. Default mappings for XInput and DInput will be loaded and stored.'
       )
-      return false
+      this.initiate()
     }
   }
   
@@ -437,5 +436,66 @@ class MappingStorageManager {
     }
     
     return processedChangeButtons
+  }
+  
+  /**
+   * force store default mappings to localStorage,
+   * then load that to the instance.
+   */
+  initiate () {
+    this.mappings = {
+      "XInput": {
+        "name": "XInput Standard Controller",
+        "properties": [],
+        "sticks": {
+          "deadzone": 0.08,
+          "left": {
+            "x": 0, "y": 1, "button": 10
+          },
+          "right": {
+            "x": 2, "y": 3, "button": 11
+          }
+        },
+        "buttons": {
+          "dpad": {
+            "up": 12, "down": 13, "left": 14, "right": 15
+          },
+          "face": {
+            "down": 0, "right": 1, "left": 2, "up": 3,
+            "select": 8, "start": 9
+          },
+          "shoulder": {
+            "l1": 4, "r1": 5, "l2": 6, "r2": 7
+          }
+        }
+      },
+      "DInput": {
+        "name": "DInput Standard Controller",
+        "properties": [],
+        "sticks": {
+          "deadzone": 0.08,
+          "left": {
+            "x": 0, "y": 1, "button": 10
+          },
+          "right": {
+            "x": 2, "y": 3, "button": 11
+          }
+        },
+        "buttons": {
+          "dpad": {
+            "up": 12, "down": 13, "left": 14, "right": 15
+          },
+          "face": {
+            "down": 0, "right": 1, "left": 2, "up": 3,
+            "select": 8, "start": 9,
+            "home": 16, "touchpad": 17
+          },
+          "shoulder": {
+            "l1": 4, "r1": 5, "l2": 6, "r2": 7
+          }
+        }
+      }
+    }
+    this.store()
   }
 }

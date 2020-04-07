@@ -179,6 +179,10 @@ class GamepadRenderer {
    */
   loadSkin (dirname) {
     if (!GamepadRenderer.isDirnameOkay(dirname)) { return false }
+    if (
+      this.skins[dirname] &&
+      typeof this.skins[dirname].loaded === 'boolean'
+    ) { return true }
     this.skins[dirname] = {
       loaded: false
     }
@@ -211,7 +215,10 @@ class GamepadRenderer {
    * @param {gamepadId} gamepadId gamepad the skin is set to be used for
    */
   applySkinToSlot (dirname, slot, gamepadId) {
-    if (!this.skins[dirname] || typeof slot === 'undefined') { return false }
+    if (!this.skins[dirname] || typeof slot === 'undefined') {
+      this.loadSkin(dirname)
+      return false
+    }
     if (!this.skins[dirname].loaded) { return false }
     
     const skin = this.skins[dirname]

@@ -67,9 +67,9 @@ class MappingInterface extends MappingStorageManager {
   initiate () {
     this.mappings = {
       "XInput": {
-        "name": "XInput Generic Controller",
+        "name": "XInput Standard Controller",
         "properties": [],
-        "axes": {
+        "sticks": {
           "deadzone": 0.08,
           "left": {
             "x": 0, "y": 1, "button": 10
@@ -91,10 +91,10 @@ class MappingInterface extends MappingStorageManager {
           }
         }
       },
-      "054c05c4": {
-        "name": "DualShock4 (ZCT1x)",
+      "DInput": {
+        "name": "DInput Standard Controller",
         "properties": [],
-        "axes": {
+        "sticks": {
           "deadzone": 0.08,
           "left": {
             "x": 0, "y": 1, "button": 10
@@ -110,43 +110,17 @@ class MappingInterface extends MappingStorageManager {
           "face": {
             "down": 0, "right": 1, "left": 2, "up": 3,
             "select": 8, "start": 9,
-            "PS": 16, "Touchpad": 17
+            "home": 16, "touchpad": 17
           },
           "shoulder": {
             "l1": 4, "r1": 5, "l2": 6, "r2": 7
           }
         }
       },
-      "054c09cc": {
-        "name": "DualShock4 (ZCT2x)",
-        "properties": [],
-        "axes": {
-          "deadzone": 0.08,
-          "left": {
-            "x": 0, "y": 1, "button": 10
-          },
-          "right": {
-            "x": 2, "y": 3, "button": 11
-          }
-        },
-        "buttons": {
-          "dpad": {
-            "up": 12, "down": 13, "left": 14, "right": 15
-          },
-          "face": {
-            "down": 0, "right": 1, "left": 2, "up": 3,
-            "select": 8, "start": 9,
-            "home": 16, "Touchpad": 17
-          },
-          "shoulder": {
-            "l1": 4, "r1": 5, "l2": 6, "r2": 7
-          }
-        }
-      },
-      "2dc86101": {
+      "2dc86001": {
         "name": "8BitDo SN30 Pro (DInput)",
         "properties": ["axisdpad"],
-        "axes": {
+        "sticks": {
           "deadzone": 0.02,
           "left": {
             "x": 0, "y": 1, "button": 13
@@ -175,7 +149,7 @@ class MappingInterface extends MappingStorageManager {
       "0f301012": {
         "name": "Q4RAF (DInput - PS3.PC)",
         "properties": ["axisdpad", "dpadleftstick"],
-        "axes": {
+        "sticks": {
           "deadzone": 0,
           "left": {
             "x": 0, "y": 1, "button": null

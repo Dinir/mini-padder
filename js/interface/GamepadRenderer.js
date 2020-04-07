@@ -306,12 +306,7 @@ class GamepadRenderer {
             this.skins[this.skinMapping[gamepadChange.id.gamepadId]] &&
             this.skins[this.skinMapping[gamepadChange.id.gamepadId]].loaded
           ) {
-            this.render(gamepadIndex)
-          } else {
-            GamepadRenderer.announceMessage(
-              'skipping first frame for gamepad ' + gamepadIndex +
-              ' as the skin is not ready'
-            )
+            this.renderFrame(gamepadIndex)
           }
         }
       } else { // skinSlot isn't made
@@ -334,12 +329,7 @@ class GamepadRenderer {
           this.skins[newSkinDirname] &&
           this.skins[newSkinDirname].loaded
         ) {
-          this.render(gamepadIndex)
-        } else {
-          GamepadRenderer.announceMessage(
-            'skipping first frame for gamepad ' + gamepadIndex +
-            ' as the skin is not ready'
-          )
+          this.renderFrame(gamepadIndex)
         }
       }
     }
@@ -419,7 +409,46 @@ class GamepadRenderer {
     }
   }
   
-  followInstructions (ctx, src, inst, value) {
+  /**
+   * Render the frame of the skin, to show every part of skin.
+   * @param {number} gamepadIndex
+   * @see GamepadRenderer.render
+   */
+  renderFrame (gamepadIndex) {
+    const src = this.skinSlot[gamepadIndex].src
+    const ctx = this.skinSlot[gamepadIndex].ctx
+    const inst = this.skinSlot[gamepadIndex].instruction
+    if (!src || !ctx || !inst) {
+      GamepadRenderer.announceMessage({
+        message: 'Renderer is ready to draw but tools are somehow missing.',
+        skinSlot: this.skinSlot[gamepadIndex]
+      }, 'error')
+      return false
+    }
+    
+    const stickLayerIndex = inst.sticks.layer
+    const buttonLayerIndex = inst.buttons.layer
+    
+    for (let s = 0; s < this.order.stick.length; s++) {
+      const stickInst = inst.sticks[this.order.stick[s]]
+      if (!stickInst || stickInst.constructor !== Object) { continue }
+      this.followInstructions(ctx[stickLayerIndex], src, stickInst.clear, null, null)
+      this.followInstructions(ctx[stickLayerIndex], src, stickInst.off, [0, 0, null], [0, 0, null])
+    }
+    
+    for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
+      const buttonGroupName = this.order.buttonGroup[bg]
+      for (let b = 0; b < this.order.button[bg].length; b++) {
+        const buttonName = this.order.button[bg][b]
+        const buttonInst = inst.buttons[buttonGroupName][buttonName]
+        if (!buttonInst || buttonInst.constructor !== Object) { continue }
+        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.clear, null, null)
+        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.off, null, null)
+      }
+    }
+  }
+  
+  followInstructions (ctx, src, inst, value, additionalValue, alpha) {
     // `this` is bound as `GamepadRenderer` in the constructor
     for (let i = 0; i < inst.length; i++) {
       const instName = inst[i].instruction

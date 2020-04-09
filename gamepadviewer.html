@@ -12,10 +12,10 @@
 </head>
 
 <script src="./js/module/GamepadWatcher.js"></script>
-<script src="./js/module/MappingStorageManager.js"></script>
+<script src="./js/module/MappingManager.js"></script>
+<script src="./js/module/GamepadRenderer.js"></script>
 <script src="./js/module/OnBrowserTextEditor.js"></script>
-<script src="./js/interface/mapper.js"></script>
-<script src="./js/interface/GamepadRenderer.js"></script>
+<script src="./js/interface/Mapper.js"></script>
 <script src="./js/interface/controlPanel.js"></script>
 
 <body>
@@ -114,10 +114,7 @@
   const cpDom = document.getElementById('control-panel')
 </script>
 
-<!-- gamepad watcher -->
 <script>
-  const gpwatcher = new GamepadWatcher()
-
   // get gamepad viewer messages on console
   window.addEventListener('GPVMessage', e => {
     if (e.detail.type === 'error') {
@@ -126,6 +123,16 @@
       console.log(e.detail.from + ':', e.detail.message)
     }
   })
+</script>
+
+<!-- class instances -->
+<script>
+  const Watcher = new GamepadWatcher()
+  const Mapper = new MappingInterface()
+  const Renderer = new GamepadRenderer(canvas)
+  const Obte = new OnBrowserTextEditor()
+  Obte.dom.wrapper.classList.add('control-panel')
+  Obte.appendToParent(document.body)
 </script>
 
 <!-- control panel -->

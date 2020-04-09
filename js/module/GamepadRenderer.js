@@ -1,5 +1,6 @@
 /**
  * @typedef {Object} SkinSlot
+ * @memberOf GamepadRenderer#
  * @description data required to draw gamepad changes to canvases in the corresponding gamepad slot
  *
  * @property {gamepadId} gamepadId
@@ -12,10 +13,10 @@
  * last stick button state, stored for rendering.
  *
  * Why is it in a renderer class?
- * MappingStorageManager will always only transfer 'changes',
+ * MappingManager will always only transfer 'changes',
  * which works for usages that don't need to bind anything together:
  * a logic dealing each of the inputs separately can only work whenever
- * a change occurred therefore it's transferred from MappingStorageManager,
+ * a change occurred therefore it's transferred from MappingManager,
  * and it won't be out of sync to a present state of the gamepad.
  *
  * But here the renderer will try to draw button press states
@@ -45,6 +46,10 @@
  * mapped in a form of processedGamepadChange.
  * It's a reference to `config.sticks` and `config.buttons`.
  */
+/**
+ *
+ * @class
+ */
 class GamepadRenderer {
   /**
    *
@@ -63,8 +68,8 @@ class GamepadRenderer {
     this.loadFadeOutOption()
     
     /**
-     * @type {Object.<string, Object>}
      * Contains skin data obtained from each `config.json` in their directories. Key value is their directory names.
+     * @type {Object.<string, Object>}
      * @property {boolean} loaded `true` when loading is complete
      * @property {string} path
      * path to the skin directory, relative to the root of the page
@@ -75,8 +80,8 @@ class GamepadRenderer {
      */
     this.skins = {}
     /**
+     * Store relations of gamepadId and a skin directory name, as key-value pair.
      * @type {Object.<string, string>}
-     * store relations of gamepadId and a skin directory name, as key-value pair.
      */
     this.skinMapping = {}
     this.loadSkinMapping()
@@ -84,8 +89,8 @@ class GamepadRenderer {
     this.loadAllStoredSkins()
   
     /**
-     * @type {SkinSlot[]} save references of skins for each gamepad slot.
-     * Index is that of the gamepad.
+     * Save references of skins for each gamepad slot. Index is that of the gamepad.
+     * @type {SkinSlot[]}
      */
     this.skinSlot = []
     
@@ -93,6 +98,8 @@ class GamepadRenderer {
     this.renderAll = this.renderAll.bind(this)
     
     window.addEventListener('processedGamepadChange', this.requestRender.bind(this))
+    
+    this.setSkinMappingInBulk = this.setSkinMappingInBulk.bind(this)
   }
   
   static isDirnameOkay (dirname) {
@@ -153,9 +160,34 @@ class GamepadRenderer {
     this.skinMapping[gamepadId] = skinDirname
     this.saveSkinMapping()
   }
+  setSkinMappingInBulk (idDirnamePairs) {
+    if (
+      typeof idDirnamePairs !== 'object' ||
+      Object.keys(idDirnamePairs).length === 0
+    ) {
+      return false
+    }
+    
+    this.resetSkinMapping()
+    for (const gamepadId in idDirnamePairs) {
+      const dirnameOkay =
+        GamepadRenderer.isDirnameOkay(idDirnamePairs[gamepadId])
+      if (!dirnameOkay) { continue }
+      this.skinMapping[gamepadId] = idDirnamePairs[gamepadId]
+    }
+    this.saveSkinMapping()
+    
+    return true
+  }
   saveSkinMapping () {
     const mappingJSON = JSON.stringify(this.skinMapping)
     window.localStorage.setItem('rendererSkinMapping', mappingJSON)
+  }
+  resetSkinMapping () {
+    for (const gamepadId in this.skinMapping) {
+      if (!this.skinMapping.hasOwnProperty(gamepadId)) { continue }
+      delete this.skinMapping[gamepadId]
+    }
   }
   loadSkinMapping () {
     const rendererSkinMapping = JSON.parse(window.localStorage.getItem('rendererSkinMapping'))
@@ -267,6 +299,13 @@ class GamepadRenderer {
     }
   }
   
+  /**
+   *
+   * @param {MappingManager#processedGamepadChange} e
+   * @listens MappingManager#processedGamepadChange
+   * @returns {boolean} `true` if the render could be started,
+   * instead of already being started at the time of request.
+   */
   requestRender (e) {
     if (this.renderPending) { return false }
     if (!e.detail) {
@@ -276,10 +315,11 @@ class GamepadRenderer {
       )
       return false
     }
-    
     this._e = e.detail
     this.renderPending = true
     requestAnimationFrame(this.renderAll)
+    
+    return true
   }
   renderAll () {
     this.renderPending = false
@@ -419,7 +459,7 @@ class GamepadRenderer {
   /**
    * Render the frame of the skin, to show every part of skin.
    * @param {number} gamepadIndex
-   * @see GamepadRenderer.render
+   * @see GamepadRenderer#render
    */
   renderFrame (gamepadIndex) {
     const src = this.skinSlot[gamepadIndex].src

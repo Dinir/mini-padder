@@ -1,6 +1,5 @@
 /**
- * @typedef Gamepad
- * @type {Object}
+ * @typedef {Object} Gamepad
  * @property {number[]} axes contains value of each axis
  * @property {Object[]} buttons
  * @property {boolean} buttons.pressed Tells if the button is pressed.
@@ -10,6 +9,23 @@
  * @property {number} index integer representing each device connected.
  * @property {string} mapping not a useful property as of 2020.
  * @property {DOMHighResTimeStamp} timestamp last time the gamepad state is updated
+ */
+/**
+ * @typedef {Object} GamepadEvent
+ * @property {Gamepad} gamepad
+ * The gamepad related to this event.
+ * @property {string} type
+ * Either `gamepadconnected` or `gamepaddisconnected`.
+ * @property {DOMHighResTimeStamp} timestamp
+ * Timestamp of the moment this event is fired.
+ */
+/**
+ * @event gamepadconnected
+ * @type {GamepadEvent}
+ */
+/**
+ * @event gamepaddisconnected
+ * @type {GamepadEvent}
  */
 
 /**
@@ -28,8 +44,8 @@
  * @property {Object} id `Gamepad.id` formatted into the name and the gamepadId.
  * @property {string} id.name
  * @property {gamepadId} id.gamepadId
- * @property {(?axisChange)[]} axes
- * @property {(?buttonChange)[]} buttons
+ * @property {?axisChange[]} axes
+ * @property {?buttonChange[]} buttons
  */
 /**
  * @typedef {Object} axisChange Contains changes made on a single axis of a gamepad.
@@ -49,6 +65,31 @@
  * if the gamepad is a standard one, the value will be 'XInput' or 'DInput'.
  */
 
+/**
+ * @event GamepadWatcher#gamepadChange
+ * @type {Object}
+ * @description
+ * Contains changes on inputs of gamepads.
+ *
+ * If there was no changes for a gamepad (or it's not connected), the corresponding property will be set as null.
+ *
+ * @property {?GamepadChange} detail.0
+ * @property {?GamepadChange} detail.1
+ * @property {?GamepadChange} detail.2
+ * @property {?GamepadChange} detail.3
+ * @property {number} detail.length Defined so it can be iterated with for loop.
+ */
+
+/**
+ * Manages gamepad connections, and dispatches
+ * a `{@link GamepadWatcher#event:gamepadChange gamepadChange}` event
+ * when receiving inputs from connected gamepads that has changes.
+ *
+ * @see GamepadChange
+ * @see {@link GamepadWatcher#event:gamepadChange gamepadChange (event)}
+ *
+ * @class
+ */
 class GamepadWatcher {
   constructor() {
     /**
@@ -61,7 +102,7 @@ class GamepadWatcher {
      * @property {Gamepad} [3]
      */
     this.gamepads = {}
-    /** @type {{name: string, gamepadId: string}[]} */
+    /** @type {Array<{name: string, gamepadId: string}>} */
     this.gamepadId = []
     this.onLoop = false
     this.pollID = 0
@@ -87,8 +128,10 @@ class GamepadWatcher {
   }
   
   /**
-   * Dispatch an event of 'gamepadChange' type with data of changes included in it.
-   * @param {Object.<number, GamepadChange>} gamepadChanges
+   * Dispatch an event of 'gamepadChange' type
+   * with data of changes included in it.
+   * @param {Object.<GamepadChange, number>} gamepadChanges
+   * @fires GamepadWatcher#gamepadChange
    */
   static announceGamepadChange(gamepadChanges) {
     window.dispatchEvent(new CustomEvent('gamepadChange', {
@@ -127,6 +170,12 @@ class GamepadWatcher {
     return Object.keys(this.gamepads).length
   }
   
+  /**
+   * @param {GamepadEvent} event
+   * @param {boolean} connection
+   * @listens event:gamepadconnected
+   * @listens event:gamepaddisconnected
+   */
   updateConnection (event, connection) {
     const gamepad = event.gamepad
     
@@ -197,14 +246,14 @@ class GamepadWatcher {
     const newStates = navigator.getGamepads()
   
     /**
+     * If there was no changes for a gamepad (or it's not connected), the corresponding property will be set as null.
+     *
      * @type {Object}
      * @property {?GamepadChange} 0
      * @property {?GamepadChange} 1
      * @property {?GamepadChange} 2
      * @property {?GamepadChange} 3
      * @property {number} length defined so it can be iterated with for loop
-     *
-     * If there was no changes for a gamepad (or it's not connected), the corresponding property will be set as null.
      */
     const lastChanges = {}
     lastChanges.length = 4

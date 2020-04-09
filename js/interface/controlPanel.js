@@ -1,7 +1,3 @@
-/**
- * @typedef {string} gamepadId 8-digit hexadecimal string
- */
-
 /*
 this is made solely for this project!
 Good bye reusability!!!

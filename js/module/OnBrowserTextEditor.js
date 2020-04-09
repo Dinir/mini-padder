@@ -1,10 +1,4 @@
 /**
- * @typedef {Object} TextEditorCallbacks
- * @property {string} title short description of what user is seeing and editing
- * @property {callback} save function to call when user tries to save
- * @property {callback} load function to call when user tries to load
- */
-/**
  * @typedef {Object} TextEditorDOM
  * @property {HTMLElement} wrapper a div wrapping all the elements
  * @property {HTMLHeadingElement} title
@@ -28,7 +22,11 @@ Direction of save/load
  */
 class OnBrowserTextEditor {
   constructor () {
-    this.callbacks = {}
+    this.dataTitle = ''
+    this.reference = {
+      data: null,
+      callback: null
+    }
     this.makeDomStructure()
     
     this.visibilityTimerID = 0
@@ -60,8 +58,8 @@ class OnBrowserTextEditor {
     buttonDiv.appendChild(loadButton)
   
     closeButton.addEventListener('click', () => {this.visibility = false})
-    saveButton.addEventListener('click', this.save.bind(this))
-    loadButton.addEventListener('click', this.load.bind(this))
+    saveButton.addEventListener('click', this.saveFromEditor.bind(this))
+    loadButton.addEventListener('click', this.loadToEditor.bind(this))
   
     const wrapper = document.createElement('div')
     wrapper.setAttribute('id', 'text-editor-wrapper')
@@ -111,33 +109,75 @@ class OnBrowserTextEditor {
     }
   }
   
-  /** @param {TextEditorCallbacks} callbacks */
-  changeFocus (callbacks) {
-    this.callbacks = callbacks
-    this.dom.title.innerText = this.callbacks.title
-    this.load()
+  static announceMessage (message, type) {
+    const messageType = {
+      log: 'log',
+      error: 'error'
+    }
+    window.dispatchEvent(new CustomEvent('GPVMessage', {
+      detail: {
+        from: 'On-Browser Text Editor',
+        type: messageType[type] || messageType.log,
+        message: message
+      }
+    }))
   }
   
   /**
-   * gives the text in the textarea for the callback in the parameter to do the job.
+   * Change the data the editor is 'focusing' on.
+   *
+   * @param {string} title Visible title text on the editor.
+   * @param {Object} dataRef *Reference* to the data the editor should be dealing with.
+   * @param {callback} callback The actual function to process the data referred by `dataRef`.
+   * The editor will hold on the reference and the callback can't update the reference.
+   * So it's required for the callback to not change the reference to the data.
+   * If it failed to follow it, the 'load button' of the editor will load the data
+   * before it is changed by the callback, until the editor get to 'change the focus' again
+   * and to update the reference stored in it.
    */
-  save () {
-    if (!this.callbacks.save) {
+  changeFocus (title, dataRef, callback) {
+    this.dataTitle = title
+    this.dom.title.innerText = title
+    this.reference.data = dataRef
+    this.reference.callback = callback
+    this.loadToEditor()
+    this.visibility = true
+  }
+  
+  saveFromEditor () {
+    if (!this.reference.callback) {
       this.notify('There\'s no save function assigned!', true)
       return false
     }
-    this.callbacks.save(this.dom.textarea.value, this.notify.bind(this))
-  }
-  /**
-   * gives the textarea for the callback in the parameter to do the job.
-   */
-  load () {
-    if (!this.callbacks.load) {
-      this.notify('There\'s no load function assigned!', true)
-      return false
+    OnBrowserTextEditor.announceMessage(`Saving ${this.dataTitle} from the editor...`)
+    try {
+      const parsedInput = JSON.parse(this.dom.textarea.value)
+      // bind the callback to the instance they're from
+      const result = this.reference.callback(parsedInput)
+      if (result === true) {
+        this.notify('Data are saved.')
+        OnBrowserTextEditor.announceMessage(`Saved ${this.dataTitle} from the editor.`)
+      } else {
+        this.notify('Data aren\'t saved.')
+        if (result !== false) {
+          OnBrowserTextEditor.announceMessage(result, 'error')
+        }
+      }
+    } catch (e) {
+      this.notify('Data can\'t be read.', true)
+      OnBrowserTextEditor.announceMessage({name: e.name, message: e.message}, 'error')
     }
-    this.dom.textarea.value = ''
-    this.callbacks.load(this.dom.textarea, this.notify.bind(this))
+  }
+  loadToEditor () {
+    OnBrowserTextEditor.announceMessage(`Loading ${this.dataTitle} to the editor...`)
+    try {
+      this.dom.textarea.value = JSON.stringify(this.reference.data, null, 2)
+      this.notify('Data are loaded.')
+      OnBrowserTextEditor.announceMessage(`Loaded ${this.dataTitle} to the editor.`)
+    } catch (e) {
+      this.notify('Data can\'t be read.', true)
+      OnBrowserTextEditor.announceMessage({name: e.name, message: e.message}, 'error')
+    }
   }
   
   /**
@@ -146,7 +186,7 @@ class OnBrowserTextEditor {
    * @param {string} message
    * @param {boolean} isError
    */
-  notify (message, isError) {
+  notify (message, isError = false) {
     this.dom.notifyArea.classList.add('visible')
     if (isError) {
       this.dom.notifyArea.classList.add('error')

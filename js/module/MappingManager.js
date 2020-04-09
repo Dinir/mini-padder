@@ -48,7 +48,7 @@
  *
  */
 /**
- * @typedef {Object} processedGamepadChange
+ * @typedef {Object} ProcessedGamepadChange
  * @description
  * This object contains input changes of a gamepad, arranged by a corresponding mapping.
  * This doesn't carry the whole state, only the changes made on the gamepad.
@@ -101,32 +101,101 @@
  * @property {boolean} active Indicates if the stick is out of its deadzone, or the button is pressed.
  */
 /**
- * @typedef {{value: string}} basicButtonChange Contains value change made on a single button of a gamepad.
+ * @typedef {{value: number}} basicButtonChange Contains value change made on a single button of a gamepad.
  */
 
-class MappingStorageManager {
+/**
+ * @event MappingManager#processedGamepadChange
+ * @type {Object}
+ * @description
+ * Contains changes on inputs of gamepads, mapped by a `gamepadMapping`.
+ *
+ * If there was no changes for a gamepad (or it's not connected), the corresponding property will be set as null.
+ *
+ * @property {?ProcessedGamepadChange} detail.0
+ * @property {?ProcessedGamepadChange} detail.1
+ * @property {?ProcessedGamepadChange} detail.2
+ * @property {?ProcessedGamepadChange} detail.3
+ * @property {number} detail.length Defined so it can be iterated with for loop.
+ */
+
+/**
+ * MappingManager does:
+ *
+ * - Imports `{@link gamepadMapping}`s, store them to and load them from the local storage
+ * - Listens to custom event with name of
+ * `{@link GamepadWatcher#event:gamepadChange gamepadChange}`
+ * - Maps the changes using `gamepadMapping`s and dispatches a
+ * `{@link MappingManager#event:processedGamepadChange processedGamepadChange}` event.
+ *
+ * @see gamepadMapping
+ * @see {@link GamepadWatcher#event:gamepadChange gamepadChange}
+ * @see ProcessedGamepadChange
+ * @see {@link MappingManager#event:processedGamepadChange processedGamepadChange (event)}
+ *
+ * @class
+ */
+class MappingManager {
   /**
-   * @param {?gamepadMapping[]} newMappings all mappings to store on the computer. Key should be the gamepadId value.
+   * @param {?gamepadMapping[]} newMappings all mappings to store on the computer.
+   * Key should be the gamepadId value.
    */
   constructor (newMappings) {
     this.mappings = {}
-    if (MappingStorageManager.validateMappings(newMappings)) {
-      this.mappings = newMappings
-      this.store()
+    this.import = this.import.bind(this)
+    if (newMappings) {
+      this.import(newMappings)
     } else {
       this.load()
     }
     
+    this.processGamepadChange = this.processGamepadChange.bind(this)
     window.addEventListener(
-      'gamepadChange', this.processGamepadChange.bind(this)
+      'gamepadChange', this.processGamepadChange
     )
   }
   
   static validateMappings (mappings) {
-    return (mappings &&
-            typeof mappings === 'object' &&
-            Object.keys(mappings).length > 0) || false
+    if (
+      mappings.constructor !== Object ||
+      Object.keys(mappings).length === 0
+    ) { return false }
+    const issue = {}
+    let invalidityFound = false
+    for (const gamepadId in mappings) {
+      if (!mappings.hasOwnProperty(gamepadId)) { continue }
+      const isBasicallyObject =
+        mappings[gamepadId].constructor === Object &&
+        Object.keys(mappings[gamepadId]).length > 0
+      const hasInfo =
+        (mappings[gamepadId].hasOwnProperty('name') && mappings[gamepadId].name.constructor === String) &&
+        (mappings[gamepadId].hasOwnProperty('properties') && mappings[gamepadId].properties.constructor === Array)
+      const hasMapping =
+        (mappings[gamepadId].hasOwnProperty('sticks') && mappings[gamepadId].sticks.constructor === Object) &&
+        (mappings[gamepadId].hasOwnProperty('buttons') && mappings[gamepadId].buttons.constructor === Object)
+      
+      issue[gamepadId] = {
+        valid: isBasicallyObject && hasInfo && hasMapping,
+        isBasicallyObject,
+        hasInfo,
+        hasMapping
+      }
+    }
+    
+    for (const gamepadId in issue) {
+      if (!issue.hasOwnProperty(gamepadId)) { continue }
+      if (!issue[gamepadId].valid) {
+        invalidityFound = true
+        break
+      }
+    }
+    
+    if (!invalidityFound) { return true }
+    else {
+      return issue
+    }
   }
+  
   static announceMessage (message, type) {
     const messageType = {
       log: 'log',
@@ -140,63 +209,123 @@ class MappingStorageManager {
       }
     }))
   }
+  /**
+   * Dispatch an event of 'processedGamepadChange' type
+   * with data of mapped changes included in it.
+   * @param {Object.<ProcessedGamepadChange, number>} processedGamepadChange
+   * @fires MappingManager#processedGamepadChange
+   */
   static announceGamepadChange(processedGamepadChange) {
     window.dispatchEvent(new CustomEvent('processedGamepadChange', {
       detail: processedGamepadChange
     }))
   }
   
+  // these are methods made for
+  // making changes without losing the reference to mappings
   addOrUpdate (gamepadId, mappingObj) {
     this.mappings[gamepadId] = mappingObj
   }
   remove (gamepadId) {
     delete this.mappings[gamepadId]
   }
-
+  removeAll () {
+    for (const gamepadId in this.mappings) {
+      if (!this.mappings.hasOwnProperty(gamepadId)) { continue }
+      this.remove(gamepadId)
+    }
+  }
+  
+  import (exportedMappings) {
+    const mappingsAreValid = MappingManager.validateMappings(exportedMappings)
+    if (mappingsAreValid !== true) {
+      MappingManager.announceMessage(
+        {
+          message: 'Some of the given mappings are not valid.',
+          detail: mappingsAreValid
+        },
+        'error'
+      )
+      return mappingsAreValid
+    }
+    this.removeAll()
+    for (const gamepadId in exportedMappings) {
+      if (!exportedMappings.hasOwnProperty(gamepadId)) { continue }
+      this.addOrUpdate(gamepadId, exportedMappings[gamepadId])
+    }
+    MappingManager.announceMessage(
+      `Imported ${Object.keys(exportedMappings).length} mappings.`
+    )
+    
+    return this.store()
+  }
   store () {
-    if (MappingStorageManager.validateMappings(this.mappings)) {
+    const mappingsAreValid = MappingManager.validateMappings(this.mappings)
+    if (mappingsAreValid === true) {
       const mappingsJSON = JSON.stringify(this.mappings)
       window.localStorage.setItem('mappings', mappingsJSON)
   
-      MappingStorageManager.announceMessage(
-        Object.keys(JSON.parse(mappingsJSON)).length + ' mappings stored.'
+      MappingManager.announceMessage(
+        Object.keys(JSON.parse(mappingsJSON)).length +
+        ' mappings stored in the local storage.'
       )
       return true
     } else {
-      MappingStorageManager.announceMessage(
-        'No mappings to store.'
+      MappingManager.announceMessage(
+        {
+          message: 'Some mappings loaded at the moment are not valid.',
+          detail: mappingsAreValid
+        },
+        'error'
       )
       return false
     }
   }
   load () {
-    const mappingsObj = JSON.parse(window.localStorage.getItem('mappings'))
-    if (MappingStorageManager.validateMappings(mappingsObj)) {
-      this.mappings = mappingsObj || this.mappings
-  
-      MappingStorageManager.announceMessage(
-        Object.keys(this.mappings).length + ' mappings found.'
+    const mappingsFromStorage = JSON.parse(window.localStorage.getItem('mappings'))
+    MappingManager.announceMessage(
+      'Loading stored mappings from the local storage...'
+    )
+    const mappingsAreValid = MappingManager.validateMappings(mappingsFromStorage)
+    if (mappingsAreValid !== true) {
+      MappingManager.announceMessage(
+        {
+          message: 'Some mappings stored in the local storage are invalid!\n' +
+                   'Default mappings for standards will be loaded and stored.',
+          detail: mappingsAreValid
+        }
       )
-    } else {
-      MappingStorageManager.announceMessage(
-        'Mappings couldn\'t be loaded. Default mappings for XInput and DInput will be loaded and stored.'
-      )
-      this.initiate()
+      return this.initiate()
     }
+    
+    this.removeAll()
+    for (const gamepadId in mappingsFromStorage) {
+      if (!mappingsFromStorage.hasOwnProperty(gamepadId)) { continue }
+      this.addOrUpdate(gamepadId, mappingsFromStorage[gamepadId])
+    }
+    MappingManager.announceMessage(
+      Object.keys(this.mappings).length + ' mappings found.'
+    )
+    
+    return true
   }
   
+  /**
+   * @param {GamepadWatcher#event:gamepadChange} e
+   * @listens GamepadWatcher#event:gamepadChange
+   */
   processGamepadChange (e) {
-    /**
-     * @description contains GamepadChange.
-     * Unchanged input in a GamepadChange will be represented as `null`.
-     * @type {Object}
-     * @property {?GamepadChange} 0
-     * @property {?GamepadChange} 1
-     * @property {?GamepadChange} 2
-     * @property {?GamepadChange} 3
-     * @property {number} length will always be 4 until Gamepad API changes.
-     */
     const changes = e.detail
+    /**
+     * If there was no changes for a gamepad (or it's not connected), the corresponding property will be set as null.
+     *
+     * @type {Object}
+     * @property {?ProcessedGamepadChange} 0
+     * @property {?ProcessedGamepadChange} 1
+     * @property {?ProcessedGamepadChange} 2
+     * @property {?ProcessedGamepadChange} 3
+     * @property {number} length Defined so it can be iterated with for loop.
+     */
     const processedChanges = {}
     processedChanges.length = changes.length
     
@@ -226,19 +355,19 @@ class MappingStorageManager {
       const properties = mapping.properties
       
       // sticks.left and sticks.right
-      processedChange.sticks = MappingStorageManager.processSticks(
+      processedChange.sticks = MappingManager.processSticks(
         mapping.sticks, change.axes, change.buttons
       )
       
       // buttons.dpad
       // 'axisdpad': axis is dpad - certain axis represents dpad
       if (properties.some(v => v === 'axisdpad')) {
-        processedChange.buttons.dpad = MappingStorageManager.processAxisDpad(
+        processedChange.buttons.dpad = MappingManager.processAxisDpad(
           mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis]
         )
       } else {
         // dpad is reasonably found as simple and clean four buttons
-        processedChange.buttons.dpad = MappingStorageManager.processDpadSimple(
+        processedChange.buttons.dpad = MappingManager.processDpadSimple(
           mapping.buttons.dpad, change.buttons
         )
       }
@@ -246,7 +375,7 @@ class MappingStorageManager {
       // buttons.face and buttons.shoulder
       Object.assign(
         processedChange.buttons,
-        MappingStorageManager.processButtons(mapping.buttons, change.buttons)
+        MappingManager.processButtons(mapping.buttons, change.buttons)
       )
     }
     
@@ -258,7 +387,7 @@ class MappingStorageManager {
       processedChanges[2] ||
       processedChanges[3]
     ) {
-      MappingStorageManager.announceGamepadChange(processedChanges)
+      MappingManager.announceGamepadChange(processedChanges)
     }
   }
   
@@ -443,7 +572,7 @@ class MappingStorageManager {
    * then load that to the instance.
    */
   initiate () {
-    this.mappings = {
+    const defaultMappings = {
       "XInput": {
         "name": "XInput Standard Controller",
         "properties": [],
@@ -496,6 +625,6 @@ class MappingStorageManager {
         }
       }
     }
-    this.store()
+    return this.import(defaultMappings)
   }
 }

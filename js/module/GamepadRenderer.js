@@ -63,10 +63,22 @@ class GamepadRenderer {
     this.followInstructions.bind(this)
   
     this.canvas = canvasArray
-    this.fadeOut = {}
+    // I give it default values I used when it was 'XBoxPadViewer'.
+    /**
+     * @typedef {Object} fadeOption
+     * @description
+     * Configuration values for fade effect.
+     * @property {Number[]} time Seconds for each fade out level.
+     * @property {Number[]} opacity Transparency values for each level.
+     * @property {Number} duration Transition time of fade effect.
+     */
+    this.fade = {
+      time: [8,16,32],
+      opacity: [0.5,0.9,1],
+      duration: 4
+    }
   
-    this.loadFadeOutOption()
-    
+    this.loadFadeOption()
     /**
      * Contains skin data obtained from each `config.json` in their directories. Key value is their directory names.
      * @type {Object.<string, Object>}
@@ -97,9 +109,10 @@ class GamepadRenderer {
     this.requestRender = this.requestRender.bind(this)
     this.renderAll = this.renderAll.bind(this)
     
-    window.addEventListener('processedGamepadChange', this.requestRender.bind(this))
+    window.addEventListener('processedGamepadChange', this.requestRender)
     
     this.setSkinMappingInBulk = this.setSkinMappingInBulk.bind(this)
+    this.setFadeOptionFromArray = this.setFadeOptionFromArray.bind(this)
   }
   
   static isDirnameOkay (dirname) {
@@ -120,39 +133,58 @@ class GamepadRenderer {
   }
   
   /**
-   * Convert fade out options given in input elements
+   * Convert fade options given in input elements
    * into a number array / number and save the converted value to the instance.
    *
    * `time` and `opacity` is a string with numbers separated by commas. `duration` is one number.
    *
    * @param {Object.<string, string>} optionObj
-   * @param {string} optionObj.time seconds for each fade out level.
-   * @param {string} optionObj.opacity transparency values for each level
-   * @param {string} optionObj.duration transition time of fade out
+   * @param {string} optionObj.time Seconds for each fade level.
+   * @param {string} optionObj.opacity Transparency values for each level.
+   * @param {string} optionObj.duration Transition time of fade effect.
    */
-  setFadeOutOption (optionObj) {
+  setFadeOption (optionObj) {
     const convertIntoArray =
       v => v.split(',')
         .map(v => Number(v))
         .filter(v => !isNaN(v))
-    this.fadeOut.time = convertIntoArray(optionObj.time || '0')
-    this.fadeOut.opacity = convertIntoArray(optionObj.opacity || '0')
-    this.fadeOut.duration = Number(optionObj.duration) || 0
+    this.fade.time = convertIntoArray(optionObj.time || '0')
+    this.fade.opacity = convertIntoArray(optionObj.opacity || '0')
+    this.fade.duration = Number(optionObj.duration) || 0
     
-    this.saveFadeOutOption()
+    this.saveFadeOption()
   }
-  setFadeOutOptionFromArray (optionObj) {
-    this.fadeOut.time = optionObj.time || [0]
-    this.fadeOut.opacity = optionObj.opacity || [0]
-    this.fadeOut.duration = Number(optionObj.duration) || 0
+  setFadeOptionWithoutConversion (optionObj) {
+    this.fade.time = optionObj.time || [0]
+    this.fade.opacity = optionObj.opacity || [0]
+    this.fade.duration = Number(optionObj.duration) || 0
   }
-  saveFadeOutOption () {
-    const optionJSON = JSON.stringify(this.fadeOut)
-    window.localStorage.setItem('fadeOutOption', optionJSON)
+  setFadeOptionFromArray (optionArray) {
+    if (!optionArray) {
+      this.saveFadeOption()
+      return false
+    }
+    const optionObj = {
+      time: optionArray[0],
+      opacity: optionArray[1],
+      duration: optionArray[2]
+    }
+    this.setFadeOption(optionObj)
   }
-  loadFadeOutOption () {
-    const fadeOutOption = JSON.parse(window.localStorage.getItem('fadeOutOption'))
-    this.setFadeOutOptionFromArray(fadeOutOption || this.fadeOut || {})
+  getFadeOptionAsTextArray () {
+    return [
+      this.fade.time.join(','),
+      this.fade.opacity.join(','),
+      this.fade.duration.toString()
+    ]
+  }
+  saveFadeOption () {
+    const optionJSON = JSON.stringify(this.fade)
+    window.localStorage.setItem('fadeOption', optionJSON)
+  }
+  loadFadeOption () {
+    const fadeOutOption = JSON.parse(window.localStorage.getItem('fadeOption'))
+    this.setFadeOptionWithoutConversion(fadeOutOption || this.fade || {})
   }
   
   setSkinMapping (gamepadId, skinDirname) {
@@ -170,10 +202,7 @@ class GamepadRenderer {
     
     this.resetSkinMapping()
     for (const gamepadId in idDirnamePairs) {
-      const dirnameOkay =
-        GamepadRenderer.isDirnameOkay(idDirnamePairs[gamepadId])
-      if (!dirnameOkay) { continue }
-      this.skinMapping[gamepadId] = idDirnamePairs[gamepadId]
+      this.setSkinMapping(gamepadId, idDirnamePairs[gamepadId])
     }
     this.saveSkinMapping()
     

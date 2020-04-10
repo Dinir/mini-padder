@@ -77,13 +77,13 @@
       <span></span> (all gamepads)
     </span>
   </div>
-  <div class="option half-width no-divider" data-name="fadeOut">
+  <div class="option half-width no-divider" data-name="fade">
     <h1>Fade Out</h1>
     <label>
       <span>Time: </span>
       <input type="text" placeholder="8,16,32">
     </label>
-    <span class="description">seconds for each fade out level</span><br>
+    <span class="description">seconds for each fade level</span><br>
     <label>
       <span>Opacity: </span>
       <input type="text" placeholder="0.5,0.9,1">
@@ -93,12 +93,13 @@
       <span>Duration: </span>
       <input type="text" placeholder="4">
     </label>
-    <span class="description">transition time of fade out</span>
+    <span class="description">transition time of fade effect</span>
   </div>
   <div class="option top-divider" data-name="management">
     <h1>Export & Import</h1>
-    <button data-name="mappings">Show Current Mappings</button>
-    <button data-name="generalSettings">Show General Settings</button>
+    <button data-name="mappings">Gamepad Mappings</button>
+    <button data-name="skinMapping">Skin Mapping</button>
+    <button data-name="controlPanel">Control Panel Settings</button>
     <br>
     <span class="description">
       You can copy JSON of the data to save in a text file, or paste from such text file and store them in the local storage of this web page.
@@ -112,6 +113,9 @@
   const canvasContainer = document.getElementById('canvas-container')
   const canvas = Array.from(canvasContainer.querySelectorAll('div'))
   const cpDom = document.getElementById('control-panel')
+  const cpDomSizeDescriptor = cpDom.querySelector(
+    'div[data-name="displayWidth"] .description'
+  )
 </script>
 
 <script>
@@ -137,62 +141,78 @@
 
 <!-- control panel -->
 <script>
-  const mapper = new MappingInterface()
-  const obte = new OnBrowserTextEditor()
-  obte.dom.wrapper.classList.add('control-panel')
-  obte.appendToParent(document.body)
-
-  const cp = new ControlPanel({
+  const Cp = new ControlPanel({
     assignment: 'dynamicButtons',
     layout: 'selectFromList',
     displayWidth: 'slider',
-    fadeOut: 'textArrays',
+    fade: 'textArray',
     management: 'buttons'
   }, [
     'gamepadconnected', 'gamepaddisconnected'
-  ]).panel
+  ])
+  cpPanel = Cp.panel
   
-  cp.assignment.assign(
+  cpPanel.assignment.assign(
     cpDom.querySelectorAll(
       'div[data-name="assignment"] button'
     ), e => {
-      console.log('mapper mapping function goes here', e)
+      console.log('Mapper mapping function goes here', e)
     }
   )
 
-  cp.displayWidth.assign(
+  cpPanel.displayWidth.assign(
     cpDom.querySelector(
       'div[data-name="displayWidth"] input'
     ), e => {
-      const sizeDescriptor = cpDom.querySelector(
-        'div[data-name="displayWidth"] .description'
-      )
       canvasContainer.dataset.width = e.target.value
-      sizeDescriptor.children[4].innerHTML =
+      cpDomSizeDescriptor.children[4].innerHTML =
         (canvasContainer.offsetWidth < 1000 ? '&nbsp;' : '') +
         canvasContainer.offsetWidth +
         '×' + canvasContainer.offsetHeight
     }
   )
-
-  let temporarycallbacks = {
-    title: 'dummy title',
-    save: v => {console.log('dummy save function')},
-    load: v => {console.log('dummy load function')}
+  
+  cpPanel.fade.assign(
+    cpDom.querySelector(
+      'div[data-name="fade"]'
+    ),
+    Renderer.setFadeOptionFromArray
+  )
+  if (!cpPanel.fade.panelValue) {
+    cpPanel.fade.receivePanelValue(
+      Renderer.getFadeOptionAsTextArray()
+    )
+    cpPanel.fade.updatePanelValue(
+      cpPanel.fade.panelValue
+    )
   }
-  cp.management.assign(
+
+  cpPanel.management.assign(
     cpDom.querySelectorAll(
       'div[data-name="management"] button'
     ), e => {
       switch (e.target.dataset.name) {
         case 'mappings':
-          obte.changeFocus(mapper.editorCallbacks)
-          obte.visibility = true
-          break;
-        case 'generalSettings':
-          obte.changeFocus(temporarycallbacks)
-          obte.visibility = true
-          break;
+          Obte.changeFocus(
+            'Gamepad Mappings',
+            Mapper.mappings,
+            Mapper.import
+          )
+          break
+        case 'skinMapping':
+          Obte.changeFocus(
+            'Skin Mapping',
+            Renderer.skinMapping,
+            Renderer.setSkinMappingInBulk
+          )
+          break
+        case 'controlPanel':
+          Obte.changeFocus(
+            'Control Panel Configuration',
+            Cp.panelValues,
+            Cp.setPanelValuesInBulk
+          )
+          break
       }
     }
   )

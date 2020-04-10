@@ -11,7 +11,7 @@ class ControlPanel {
   constructor (typeListingObject, globalEventsToListen) {
     this.panel = {}
     this.globalEventCallbacks = []
-    this.panelValue = {}
+    this.panelValues = {}
     this.loadPanelValues()
     
     for (const item in typeListingObject) {
@@ -27,11 +27,13 @@ class ControlPanel {
         this.globalEventCallbacks.forEach(f => f(e))
       })
     })
+    
+    this.setPanelValuesInBulk = this.setPanelValuesInBulk.bind(this)
   }
   
   static get recognizedTypes () {
     return [
-      'dynamicButtons', 'selectFromList', 'slider', 'textArrays', 'buttons'
+      'dynamicButtons', 'selectFromList', 'slider', 'textArray', 'buttons'
     ]
   }
   
@@ -63,21 +65,46 @@ class ControlPanel {
   }
   
   setPanelValue (key, value) {
-    this.panelValue[key] = value
+    this.panelValues[key] = value
     this.savePanelValues()
   }
+  setPanelValuesInBulk (keyValuePairs) {
+    if (
+      typeof keyValuePairs !== 'object' ||
+      Object.keys(keyValuePairs).length === 0
+    ) {
+      return false
+    }
+    
+    this.resetPanelValues()
+    for (const key in keyValuePairs) {
+      this.setPanelValue(key, keyValuePairs[key])
+      if (this.panel.hasOwnProperty(key)) {
+        this.panel[key].receivePanelValue(this.panelValues[key])
+      }
+    }
+    this.savePanelValues()
+    
+    return true
+  }
   removePanelValue (key) {
-    delete this.panelValue[key]
+    delete this.panelValues[key]
+  }
+  resetPanelValues () {
+    for (const key in this.panelValues) {
+      if (!this.panelValues.hasOwnProperty(key)) { continue }
+      this.removePanelValue(key)
+    }
   }
   savePanelValues () {
-    const converted = JSON.stringify(this.panelValue)
+    const converted = JSON.stringify(this.panelValues)
     window.localStorage.setItem('controlPanelValues', converted)
   }
   loadPanelValues () {
     const converted = JSON.parse(
       window.localStorage.getItem('controlPanelValues')
     )
-    this.panelValue = converted || {}
+    this.panelValues = converted || this.panelValues || {}
   }
   
   getControlForType (typeName, name) {
@@ -98,11 +125,22 @@ class ControlPanel {
       }
     
       if (control.hasOwnProperty('panelValue')) {
-        if (this.panelValue.hasOwnProperty(name)) {
-          control.receivePanelValue(
-            this.panelValue[name]
-          )
+        if (!this.panelValues.hasOwnProperty(name)) {
+          this.setPanelValue(name, null)
         }
+        // panelValue from outside -> control.panelValue
+        const receivePanelValue = function (value) {
+          this.panelValue = value
+          this.applyPanelValue()
+        }
+        // control.panelValue -> CP.panelValues[name]
+        const updatePanelValue = value => { this.setPanelValue(name, value) }
+  
+        control.receivePanelValue = receivePanelValue.bind(control)
+        control.updatePanelValue = updatePanelValue.bind(this)
+        control.receivePanelValue(
+          this.panelValues[name]
+        )
       }
     
       return control
@@ -172,34 +210,67 @@ class ControlPanel {
   }
   
   getControlForSlider (name) {
-    const nameOnPanel = name
-    const updatePanelValue = value => {
-      this.setPanelValue(nameOnPanel, value)
-    }
     return {
       name: name,
+      /** @type {number} */
       panelValue: null,
-      assign: function (input, customCallback) {
-        this.slider = input
-        this.callback = customCallback
-        if (this.panelValue) {
-          this.updateSlider()
-        }
-        this.slider.addEventListener('change', e => {
-          this.panelValue = e.target.value
-          updatePanelValue(this.panelValue)
-          this.callback(e)
-        })
-      },
-      receivePanelValue: function (value) {
-        this.panelValue = value
-        this.updateSlider()
-      },
-      updateSlider () {
+      applyPanelValue: function () {
         if (this.slider && this.callback) {
           this.slider.value = this.panelValue
           this.callback({target: {value: this.panelValue}})
         }
+      },
+      assign: function (input, customCallback) {
+        this.slider = input
+        this.callback = customCallback
+        if (this.panelValue) {
+          this.applyPanelValue()
+        } else {
+          this.receivePanelValue(this.slider.min)
+          this.updatePanelValue(this.panelValue)
+        }
+        this.slider.addEventListener('change', e => {
+          this.panelValue = e.target.value
+          this.updatePanelValue(this.panelValue)
+          this.callback(e)
+        })
+      },
+    }
+  }
+  
+  getControlForTextArray (name) {
+    return {
+      name: name,
+      /** @type {string[]} */
+      panelValue: null,
+      applyPanelValue: function () {
+        if (this.textArray && this.callback) {
+          for (let i = 0; i < this.textArray.length; i++) {
+            this.textArray[i].value = this.panelValue[i]
+          }
+          this.callback(this.panelValue)
+        }
+      },
+      assign: function (textArrayContainer, customCallback) {
+        this.container = textArrayContainer
+        this.textArray = Array.from(
+          textArrayContainer.querySelectorAll('input')
+        )
+        this.callback = customCallback
+        for (let i = 0; i < this.textArray.length; i++) {
+          this.textArray[i].dataset.index = i
+        }
+        if (this.panelValue) {
+          this.applyPanelValue()
+        }
+        this.container.addEventListener('change', e => {
+          if (e.target.tagName !== 'INPUT') return
+          const index = e.target.dataset.index
+          const value = e.target.value
+          this.panelValue[index] = value
+          this.updatePanelValue(this.panelValue)
+          this.callback(this.panelValue)
+        })
       }
     }
   }

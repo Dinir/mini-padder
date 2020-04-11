@@ -74,7 +74,7 @@ class GamepadRenderer {
      */
     this.fade = {
       time: [8,16,32],
-      opacity: [0.5,0.9,1],
+      opacity: [0.5,0.1,0],
       duration: 4
     }
   
@@ -149,14 +149,14 @@ class GamepadRenderer {
         .map(v => Number(v))
         .filter(v => !isNaN(v))
     this.fade.time = convertIntoArray(optionObj.time || '0')
-    this.fade.opacity = convertIntoArray(optionObj.opacity || '0')
+    this.fade.opacity = convertIntoArray(optionObj.opacity || '1')
     this.fade.duration = Number(optionObj.duration) || 0
     
     this.saveFadeOption()
   }
   setFadeOptionWithoutConversion (optionObj) {
     this.fade.time = optionObj.time || [0]
-    this.fade.opacity = optionObj.opacity || [0]
+    this.fade.opacity = optionObj.opacity || [1]
     this.fade.duration = Number(optionObj.duration) || 0
   }
   setFadeOptionFromArray (optionArray) {

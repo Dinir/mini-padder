@@ -196,6 +196,12 @@ class ControlPanel {
     }
   }
   
+  getControlForSelectFromList (name) {
+    return {
+      name: name
+    }
+  }
+  
   getControlForButtons (name) {
     return {
       name: name,

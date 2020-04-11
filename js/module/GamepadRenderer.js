@@ -77,6 +77,11 @@ class GamepadRenderer {
       opacity: [0.5,0.1,0],
       duration: 4
     }
+    /**
+     * @type {DOMHighResTimeStamp}
+     * @description Contains a timestamp at the moment `renderAll` just started running.
+     */
+    this._timestamp = null
   
     this.loadFadeOption()
     /**
@@ -302,6 +307,8 @@ class GamepadRenderer {
       sticks: skin.config.sticks,
       buttons: skin.config.buttons
     }
+    // contains timestamp for the last time a part is active
+    skinSlot.lastActive = {}
     
     for (let l = 0; l < config.layer.length; l++) {
       const layer = document.createElement('canvas')
@@ -350,8 +357,9 @@ class GamepadRenderer {
     
     return true
   }
-  renderAll () {
+  renderAll (timestamp) {
     this.renderPending = false
+    this._timestamp = timestamp || performance.now()
     if (!this._e) { return false }
     
     for (
@@ -422,6 +430,9 @@ class GamepadRenderer {
       }, 'error')
       return false
     }
+  
+    const lastActive = this.skinSlot[gamepadIndex].lastActive
+    const timeOrigin = this._timestamp || performance.now()
     
     /** @type {{left: ?stickChange, right: ?stickChange}} */
     const sticks = this._e[gamepadIndex].sticks
@@ -455,6 +466,11 @@ class GamepadRenderer {
       } else {
         this.followInstructions(ctx[stickLayerIndex], src, stickInst.off, values.value, values.delta)
       }
+      if (values.active || stickButtonState[stickName]) {
+        lastActive.sticks[stickName] = timeOrigin
+      } else {
+        // TODO: apply the transparent erase
+      }
     }
     
     // give instructions for buttons
@@ -478,8 +494,10 @@ class GamepadRenderer {
         // will be drawn with 'on' instruction
         if (value === 0) {
           this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.off, null, null)
+          // TODO: apply the transparent erase
         } else {
           this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.on, value, null)
+          lastActive.buttons[buttonGroupName][buttonName] = timeOrigin
         }
       }
     }
@@ -501,25 +519,34 @@ class GamepadRenderer {
       }, 'error')
       return false
     }
+  
+    const lastActive = this.skinSlot[gamepadIndex].lastActive
+    const timeOrigin = this._timestamp || performance.now()
     
     const stickLayerIndex = inst.sticks.layer
     const buttonLayerIndex = inst.buttons.layer
     
+    lastActive.sticks = lastActive.sticks || {}
     for (let s = 0; s < this.order.stick.length; s++) {
       const stickInst = inst.sticks[this.order.stick[s]]
       if (!stickInst || stickInst.constructor !== Object) { continue }
       this.followInstructions(ctx[stickLayerIndex], src, stickInst.clear, null, null)
       this.followInstructions(ctx[stickLayerIndex], src, stickInst.off, [0, 0, null], [0, 0, null])
+      lastActive.sticks[stickName] = timeOrigin
     }
     
+    lastActive.buttons = lastActive.buttons || {}
     for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
       const buttonGroupName = this.order.buttonGroup[bg]
+      lastActive.buttons[buttonGroupName] =
+        lastActive.buttons[buttonGroupName] || {}
       for (let b = 0; b < this.order.button[bg].length; b++) {
         const buttonName = this.order.button[bg][b]
         const buttonInst = inst.buttons[buttonGroupName][buttonName]
         if (!buttonInst || buttonInst.constructor !== Object) { continue }
         this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.clear, null, null)
         this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.off, null, null)
+        lastActive.buttons[buttonGroupName][buttonName] = timeOrigin
       }
     }
   }

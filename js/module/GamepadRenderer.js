@@ -422,13 +422,14 @@ class GamepadRenderer {
       const skinSlot = this.skinSlot[gamepadIndex]
       /** @type {processedGamepadChange} */
       const gamepadChange = this._e[gamepadIndex]
-      
-      // skinSlot already exists
+  
       if (skinSlot) {
-        // it's the same slot used before
+        // skinSlot already exists
         if (skinSlot.gamepadId === gamepadChange.id.gamepadId) {
+          // it's the same slot used before
           this.render(gamepadIndex)
-        } else { // the gamepad for the slot is changed
+        } else {
+          // the gamepad for the slot is changed
           this.removeSkinFromSlot(gamepadIndex)
           this.applySkinToSlot(
             this.skinMapping[gamepadChange.id.gamepadId],
@@ -442,7 +443,8 @@ class GamepadRenderer {
             this.renderFrame(gamepadIndex)
           }
         }
-      } else { // skinSlot isn't made
+      } else {
+        // skinSlot isn't made
         // find skin for the gamepad
         const newSkinDirname =
           this.skinMapping[gamepadChange.id.gamepadId] ||

@@ -78,12 +78,12 @@
     </span>
   </div>
   <div class="option half-width no-divider" data-name="fade">
-    <h1>Fade Out</h1>
+    <h1>Fade-out</h1>
     <label>
       <span>Time: </span>
       <input type="text" placeholder="8,16,32">
     </label>
-    <span class="description">seconds for each fade level</span><br>
+    <span class="description">seconds for each fade-out level</span><br>
     <label>
       <span>Opacity: </span>
       <input type="text" placeholder="0.5,0.1,0">
@@ -93,7 +93,7 @@
       <span>Duration: </span>
       <input type="text" placeholder="4">
     </label>
-    <span class="description">transition time of fade effect</span>
+    <span class="description">transition time of fade-out effect</span>
   </div>
   <div class="option top-divider" data-name="management">
     <h1>Export & Import</h1>
@@ -145,7 +145,7 @@
     assignment: 'dynamicButtons',
     layout: 'selectFromList',
     displayWidth: 'slider',
-    fade: 'textArray',
+    fadeout: 'textArray',
     management: 'buttons'
   }, [
     'gamepadconnected', 'gamepaddisconnected'
@@ -172,18 +172,18 @@
     }
   )
   
-  cpPanel.fade.assign(
+  cpPanel.fadeout.assign(
     cpDom.querySelector(
       'div[data-name="fade"]'
     ),
-    Renderer.setFadeOptionFromArray
+    Renderer.setFadeoutOptionFromArray
   )
-  if (!cpPanel.fade.panelValue) {
-    cpPanel.fade.receivePanelValue(
-      Renderer.getFadeOptionAsTextArray()
+  if (!cpPanel.fadeout.panelValue) {
+    cpPanel.fadeout.receivePanelValue(
+      Renderer.getFadeoutOptionAsTextArray()
     )
-    cpPanel.fade.updatePanelValue(
-      cpPanel.fade.panelValue
+    cpPanel.fadeout.updatePanelValue(
+      cpPanel.fadeout.panelValue
     )
   }
 

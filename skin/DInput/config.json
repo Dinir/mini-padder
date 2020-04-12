@@ -16,6 +16,12 @@
 	"sticks": {
 		"layer": 0,
 		"left": {
+			"fadeout": [
+				{
+					"instruction": "fadeoutRect",
+					"x": 0, "y": 0, "width": 96, "height": 96
+				}
+			],
 			"clear": [
 				{
 					"instruction": "clearRect",
@@ -40,6 +46,12 @@
 			]
 		},
 		"right": {
+			"fadeout": [
+				{
+					"instruction": "fadeoutRect",
+					"x": 160, "y": 0, "width": 96, "height": 96
+				}
+			],
 			"clear": [
 				{
 					"instruction": "clearRect",
@@ -68,6 +80,12 @@
 		"layer": 1,
 		"dpad": {
 			"up": {
+				"fadeout": [
+					{
+						"instruction": "fadeoutPolygon",
+						"path": [36, 44, 60, 44, 60, 66, 48, 78, 36, 66]
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearPolygon",
@@ -88,6 +106,12 @@
 				]
 			},
 			"down": {
+				"fadeout":[
+					{
+						"instruction": "fadeoutPolygon",
+						"path": [48, 82, 60, 94, 60, 116, 36, 116, 36, 94]
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearPolygon",
@@ -108,6 +132,12 @@
 				]
 			},
 			"left": {
+				"fadeout":[
+					{
+						"instruction": "fadeoutPolygon",
+						"path": [12, 68, 34, 68, 46, 80, 34, 92, 12, 92]
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearPolygon",
@@ -128,6 +158,12 @@
 				]
 			},
 			"right": {
+				"fadeout":[
+					{
+						"instruction": "fadeoutPolygon",
+						"path": [62, 68, 84, 68, 84, 92, 62, 92, 50, 80]
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearPolygon",
@@ -150,6 +186,12 @@
 		},
 		"face": {
 			"down": {
+				"fadeout":  [
+					{
+						"instruction": "fadeoutRect",
+						"x": 194, "y": 92, "width": 28, "height": 28
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearRect",
@@ -170,6 +212,12 @@
 				]
 			},
 			"right": {
+				"fadeout": [
+					{
+						"instruction": "fadeoutRect",
+						"x": 220, "y": 66, "width": 28, "height": 28
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearRect",
@@ -190,6 +238,12 @@
 				]
 			},
 			"left": {
+				"fadeout": [
+					{
+						"instruction": "fadeoutRect",
+						"x": 168, "y": 66, "width": 28, "height": 28
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearRect",
@@ -210,6 +264,12 @@
 				]
 			},
 			"up": {
+				"fadeout": [
+					{
+						"instruction": "fadeoutRect",
+						"x": 194, "y": 40, "width": 28, "height": 28
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearRect",
@@ -230,6 +290,12 @@
 				]
 			},
 			"select": {
+				"fadeout": [
+					{
+						"instruction": "fadeoutRect",
+						"x": 92, "y": 27, "width": 19, "height": 29
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearRect",
@@ -254,6 +320,12 @@
 				]
 			},
 			"start": {
+				"fadeout": [
+					{
+						"instruction": "fadeoutPolygon",
+						"path": [143, 27, 166, 27, 166, 56, 146, 56, 146, 31, 143, 31]
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearPolygon",
@@ -278,6 +350,12 @@
 				]
 			},
 			"home": {
+				"fadeout": [
+					{
+						"instruction": "fadeoutRect",
+						"x": 120, "y": 112, "width": 16, "height": 16
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearRect",
@@ -298,6 +376,12 @@
 				]
 			},
 			"touchpad": {
+				"fadeout": [
+					{
+						"instruction": "fadeoutRect",
+						"x": 112, "y": 32, "width": 32, "height": 16
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearRect",
@@ -320,6 +404,12 @@
 		},
 		"shoulder": {
 			"l1": {
+				"fadeout": [
+					{
+						"instruction": "fadeoutPolygon",
+						"path": [62, 0, 92, 0, 92, 24, 38, 24]
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearPolygon",
@@ -340,6 +430,12 @@
 				]
 			},
 			"r1": {
+				"fadeout": [
+					{
+						"instruction": "fadeoutPolygon",
+						"path": [164, 0, 194, 0, 218, 24, 164, 24]
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearPolygon",
@@ -360,6 +456,12 @@
 				]
 			},
 			"l2": {
+				"fadeout": [
+					{
+						"instruction": "fadeoutPolygon",
+						"path": [4, 0, 58, 0, 34, 24, 4, 24]
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearPolygon",
@@ -387,6 +489,12 @@
 				]
 			},
 			"r2": {
+				"fadeout": [
+					{
+						"instruction": "fadeoutPolygon",
+						"path": [198, 0, 252, 0, 252, 24, 222, 24]
+					}
+				],
 				"clear": [
 					{
 						"instruction": "clearPolygon",

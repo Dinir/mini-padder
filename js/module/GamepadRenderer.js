@@ -65,25 +65,20 @@ class GamepadRenderer {
     this.canvas = canvasArray
     // I give it default values I used when it was 'XBoxPadViewer'.
     /**
-     * @typedef {Object} fadeOption
+     * @typedef {Object} fadeoutOption
      * @description
-     * Configuration values for fade effect.
-     * @property {Number[]} time Seconds for each fade out level.
+     * Configuration values for fade-out effect.
+     * @property {Number[]} time Seconds for each fade-out level.
      * @property {Number[]} opacity Transparency values for each level.
-     * @property {Number} duration Transition time of fade effect.
+     * @property {Number} duration Transition time of fade-out effect.
      */
-    this.fade = {
+    this.fadeout = {
       time: [8,16,32],
       opacity: [0.5,0.1,0],
       duration: 4
     }
-    /**
-     * @type {DOMHighResTimeStamp}
-     * @description Contains a timestamp at the moment `renderAll` just started running.
-     */
-    this._timestamp = null
   
-    this.loadFadeOption()
+    this.loadFadeoutOption()
     /**
      * Contains skin data obtained from each `config.json` in their directories. Key value is their directory names.
      * @type {Object.<string, Object>}
@@ -117,7 +112,7 @@ class GamepadRenderer {
     window.addEventListener('processedGamepadChange', this.requestRender)
     
     this.setSkinMappingInBulk = this.setSkinMappingInBulk.bind(this)
-    this.setFadeOptionFromArray = this.setFadeOptionFromArray.bind(this)
+    this.setFadeoutOptionFromArray = this.setFadeoutOptionFromArray.bind(this)
   }
   
   static isDirnameOkay (dirname) {
@@ -138,35 +133,74 @@ class GamepadRenderer {
   }
   
   /**
-   * Convert fade options given in input elements
+   * Set option values for fade-out effect from
+   * an object of properties with the matching type,
+   * and create some values based on them,
+   * then call `saveFadeoutOption` to save the values to the local storage.
+   *
+   * If `optionObj` is not given, it will try to save the default values
+   * declared in the constructor instead.
+   *
+   * All the other variations of this method should eventually call this method.
+   *
+   * @param {?Object} optionObj
+   * @param {number[]} optionObj.time Seconds for each fade-out level.
+   * @param {number[]} optionObj.opacity Transparency values for each level.
+   * @param {number} optionObj.duration Transition time of fade-out effect.
+   */
+  setFadeoutOption (optionObj) {
+    if (optionObj) {
+      this.fadeout.time = optionObj.time || [0]
+      this.fadeout.opacity = optionObj.opacity || [1]
+      this.fadeout.duration = Number(optionObj.duration) || 0
+    }
+    const opacityOrder = this.fadeout.opacity
+    const fadeoutFps = 30
+    const deltaOpacity = []
+    for (let i = 0; i < opacityOrder.length; i++) {
+      if (opacityOrder[i] >= 1) {
+        deltaOpacity.push(0)
+        continue
+      } else if (opacityOrder[i] <= 0) {
+        deltaOpacity.push(1)
+        continue
+      }
+      const pastValue = opacityOrder[i-1] || 1
+      const diffRate = opacityOrder[i] / pastValue
+      deltaOpacity.push( diffRate**( 1/fadeoutFps ) )
+    }
+    this.fadeout.deltaOpacity = deltaOpacity
+    
+    this.saveFadeoutOption()
+  }
+  /**
+   * Convert fade-out options given in input elements
    * into a number array / number and save the converted value to the instance.
    *
-   * `time` and `opacity` is a string with numbers separated by commas. `duration` is one number.
-   *
    * @param {Object.<string, string>} optionObj
-   * @param {string} optionObj.time Seconds for each fade level.
+   * @param {string} optionObj.time Seconds for each fade-out level.
+   * A string made of numbers and separating commas.
    * @param {string} optionObj.opacity Transparency values for each level.
-   * @param {string} optionObj.duration Transition time of fade effect.
+   * A string made of numbers and separating commas.
+   * @param {string} optionObj.duration Transition time of fade-out effect.
+   * One number value in string type.
    */
-  setFadeOption (optionObj) {
+  setFadeoutOptionFromStringObject (optionObj) {
     const convertIntoArray =
       v => v.split(',')
         .map(v => Number(v))
         .filter(v => !isNaN(v))
-    this.fade.time = convertIntoArray(optionObj.time || '0')
-    this.fade.opacity = convertIntoArray(optionObj.opacity || '1')
-    this.fade.duration = Number(optionObj.duration) || 0
     
-    this.saveFadeOption()
+    this.setFadeoutOption({
+      time: convertIntoArray(optionObj.time || '0'),
+      opacity: convertIntoArray(optionObj.opacity || '1'),
+      duration: Number(optionObj.duration) || 0
+    })
   }
-  setFadeOptionWithoutConversion (optionObj) {
-    this.fade.time = optionObj.time || [0]
-    this.fade.opacity = optionObj.opacity || [1]
-    this.fade.duration = Number(optionObj.duration) || 0
-  }
-  setFadeOptionFromArray (optionArray) {
+  setFadeoutOptionFromArray (optionArray) {
     if (!optionArray) {
-      this.saveFadeOption()
+      // set as the default values declared in the constructor instead
+      this.setFadeoutOption()
       return false
     }
     const optionObj = {
@@ -174,22 +208,22 @@ class GamepadRenderer {
       opacity: optionArray[1],
       duration: optionArray[2]
     }
-    this.setFadeOption(optionObj)
+    this.setFadeoutOptionFromStringObject(optionObj)
   }
-  getFadeOptionAsTextArray () {
+  getFadeoutOptionAsTextArray () {
     return [
-      this.fade.time.join(','),
-      this.fade.opacity.join(','),
-      this.fade.duration.toString()
+      this.fadeout.time.join(','),
+      this.fadeout.opacity.join(','),
+      this.fadeout.duration.toString()
     ]
   }
-  saveFadeOption () {
-    const optionJSON = JSON.stringify(this.fade)
+  saveFadeoutOption () {
+    const optionJSON = JSON.stringify(this.fadeout)
     window.localStorage.setItem('fadeOption', optionJSON)
   }
-  loadFadeOption () {
+  loadFadeoutOption () {
     const fadeOutOption = JSON.parse(window.localStorage.getItem('fadeOption'))
-    this.setFadeOptionWithoutConversion(fadeOutOption || this.fade || {})
+    this.setFadeoutOption(fadeOutOption || this.fadeout || {})
   }
   
   setSkinMapping (gamepadId, skinDirname) {
@@ -296,10 +330,6 @@ class GamepadRenderer {
     const skinSlot = this.skinSlot[slot]
     
     skinSlot.gamepadId = gamepadId
-    skinSlot.stickButtonState = {
-      left: false,
-      right: false
-    }
     skinSlot.src = skin.src
     skinSlot.layer = []
     skinSlot.ctx = []
@@ -307,7 +337,22 @@ class GamepadRenderer {
       sticks: skin.config.sticks,
       buttons: skin.config.buttons
     }
-    // contains timestamp for the last time a part is active
+    /**
+     * Stores the last seen states of sticks and buttons.
+     *
+     * Value is boolean, the structure follows that of the skin config,
+     * and a stick value represents the state of its button.
+     * - it's very hard to put a stick to a perfect stop outside of it's
+     * centre position.
+     *
+     * @type {Object}
+     */
+    skinSlot.activeState = {}
+    /**
+     * Contains timestamp the last time a stick or a button is active.
+     *
+     * @type {Object}
+     */
     skinSlot.lastActive = {}
     
     for (let l = 0; l < config.layer.length; l++) {
@@ -359,8 +404,13 @@ class GamepadRenderer {
   }
   renderAll (timestamp) {
     this.renderPending = false
-    this._timestamp = timestamp || performance.now()
     if (!this._e) { return false }
+    
+    /**
+     * @type {DOMHighResTimeStamp}
+     * @description Contains a timestamp at the moment `renderAll` just started running.
+     */
+    this._timestamp = timestamp || performance.now()
     
     for (
       let gamepadIndex = 0;
@@ -416,10 +466,14 @@ class GamepadRenderer {
         }
       }
     }
+    
     this._e = null
+    this._timestamp = null
+    window.dispatchEvent(new CustomEvent('lastActiveChange', {
+      detail: this.skinSlot[0].activeState
+    }))
   }
   render (gamepadIndex) {
-    const stickButtonState = this.skinSlot[gamepadIndex].stickButtonState
     const src = this.skinSlot[gamepadIndex].src
     const ctx = this.skinSlot[gamepadIndex].ctx
     const inst = this.skinSlot[gamepadIndex].instruction
@@ -431,12 +485,41 @@ class GamepadRenderer {
       return false
     }
   
-    const lastActive = this.skinSlot[gamepadIndex].lastActive
-    const timeOrigin = this._timestamp || performance.now()
+    const activeState = this.skinSlot[gamepadIndex].activeState
     
     /** @type {{left: ?stickChange, right: ?stickChange}} */
     const sticks = this._e[gamepadIndex].sticks
     const stickLayerIndex = inst.sticks.layer
+    
+    // give instructions for sticks
+    for (let s = 0; s < this.order.stick.length; s++) {
+      const stickName = this.order.stick[s]
+      
+      // only proceed to render when stick change is found
+      if (sticks[stickName]) {
+        const values = sticks[stickName]
+        
+        // update active state last seen
+        activeState.sticks[stickName][0] = values.active
+        if (values.pressed !== null) {
+          // only update button state when a change is found,
+          // otherwise keep the last seen state
+          activeState.sticks[stickName][1] = values.pressed
+        }
+        
+        const stickInst = inst.sticks[stickName]
+        // skip if the referred instruction is not made
+        if (!stickInst || stickInst.constructor !== Object) { continue }
+  
+        this.followInstructions(ctx[stickLayerIndex], src, stickInst.clear, null, null, null)
+        if (activeState.sticks[stickName][1]) {
+          this.followInstructions(ctx[stickLayerIndex], src, stickInst.on, values.value, null, values.delta)
+        } else {
+          this.followInstructions(ctx[stickLayerIndex], src, stickInst.off, values.value, null, values.delta)
+        }
+      }
+    }
+    
     /**
      *  @type {Object}
      *  @property {?Object.<string, ?(buttonChange|basicButtonChange)>} dpad
@@ -446,61 +529,57 @@ class GamepadRenderer {
     const buttons = this._e[gamepadIndex].buttons
     const buttonLayerIndex = inst.buttons.layer
     
-    // give instructions for sticks
-    for (let s = 0; s < this.order.stick.length; s++) {
-      // sticks in the change will always exist
-      const stickName = this.order.stick[s]
-      if (!sticks[stickName]) { continue }
-      const values = sticks[stickName]
-      // update last seen stick button state when a change is found
-      if (values.pressed !== null) {
-        stickButtonState[stickName] = values.pressed
-      }
-      const stickInst = inst.sticks[stickName]
-      // skip if the referred instruction is not made
-      if (!stickInst || stickInst.constructor !== Object) { continue }
-      
-      this.followInstructions(ctx[stickLayerIndex], src, stickInst.clear, null, null)
-      if (stickButtonState[stickName]) {
-        this.followInstructions(ctx[stickLayerIndex], src, stickInst.on, values.value, values.delta)
-      } else {
-        this.followInstructions(ctx[stickLayerIndex], src, stickInst.off, values.value, values.delta)
-      }
-      if (values.active || stickButtonState[stickName]) {
-        lastActive.sticks[stickName] = timeOrigin
-      } else {
-        // TODO: apply the transparent erase
-      }
-    }
-    
     // give instructions for buttons
     for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
       const buttonGroupName = this.order.buttonGroup[bg]
-      // dpad will be null on non 'axisdpad' gamepads when there's no change
-      if (!buttons[buttonGroupName]) { continue }
       
+      // check for changes for a button group
+      if (!buttons[buttonGroupName]) {
+        continue
+      }
+      
+      // changes for a button group is confirmed
       for (let b = 0; b < this.order.button[bg].length; b++) {
         const buttonName = this.order.button[bg][b]
-        if (!buttons[buttonGroupName][buttonName]) { continue }
+        // check if there was a change on the button
+        if (!buttons[buttonGroupName][buttonName]) {
+          continue
+        }
         
-        // at this point the existence of the button input is confirmed
+        // change for the button is confirmed
         const value = buttons[buttonGroupName][buttonName].value
         const buttonInst = inst.buttons[buttonGroupName][buttonName]
         // skip if the referred instruction is not made
         if (!buttonInst || buttonInst.constructor !== Object) { continue }
         
-        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.clear, null, null)
+        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.clear, null, null, null)
         // comparing to 0 so that analog buttons with non-zero value
         // will be drawn with 'on' instruction
         if (value === 0) {
-          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.off, null, null)
-          // TODO: apply the transparent erase
+          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.off, null, null, null)
+          activeState.buttons[buttonGroupName][buttonName] = false
         } else {
-          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.on, value, null)
-          lastActive.buttons[buttonGroupName][buttonName] = timeOrigin
+          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.on, value, null, null)
+          activeState.buttons[buttonGroupName][buttonName] = true
         }
       }
     }
+  }
+  renderFadeout (gamepadIndex, timestamp) {
+    const src = this.skinSlot[gamepadIndex].src
+    const ctx = this.skinSlot[gamepadIndex].ctx
+    const inst = this.skinSlot[gamepadIndex].instruction
+    if (!src || !ctx || !inst) {
+      GamepadRenderer.announceMessage({
+        message: 'Renderer is ready to draw but tools are somehow missing.',
+        skinSlot: this.skinSlot[gamepadIndex]
+      }, 'error')
+      return false
+    }
+  
+    const activeState = this.skinSlot[gamepadIndex].activeState
+    const lastActive = this.skinSlot[gamepadIndex].lastActive
+    const timestampAtStart = this._timestamp || performance.now()
   }
   
   /**
@@ -520,38 +599,53 @@ class GamepadRenderer {
       return false
     }
   
+    const activeState = this.skinSlot[gamepadIndex].activeState
     const lastActive = this.skinSlot[gamepadIndex].lastActive
-    const timeOrigin = this._timestamp || performance.now()
+    const timestampAtStart = this._timestamp || performance.now()
     
     const stickLayerIndex = inst.sticks.layer
     const buttonLayerIndex = inst.buttons.layer
     
+    activeState.sticks = activeState.sticks || {}
     lastActive.sticks = lastActive.sticks || {}
+    
     for (let s = 0; s < this.order.stick.length; s++) {
-      const stickInst = inst.sticks[this.order.stick[s]]
+      const stickName = this.order.stick[s]
+      const stickInst = inst.sticks[stickName]
       if (!stickInst || stickInst.constructor !== Object) { continue }
-      this.followInstructions(ctx[stickLayerIndex], src, stickInst.clear, null, null)
-      this.followInstructions(ctx[stickLayerIndex], src, stickInst.off, [0, 0, null], [0, 0, null])
-      lastActive.sticks[stickName] = timeOrigin
+      this.followInstructions(ctx[stickLayerIndex], src, stickInst.clear, null, null, null)
+      this.followInstructions(ctx[stickLayerIndex], src, stickInst.off, [0, 0, null], null, [0, 0, null])
+      
+      // for stick movement and stick button
+      activeState.sticks[stickName] = [false, false]
+      lastActive.sticks[stickName] = timestampAtStart
     }
     
+    activeState.buttons = activeState.buttons || {}
     lastActive.buttons = lastActive.buttons || {}
+    
     for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
       const buttonGroupName = this.order.buttonGroup[bg]
+      
+      activeState.buttons[buttonGroupName] =
+        activeState.buttons[buttonGroupName] || {}
       lastActive.buttons[buttonGroupName] =
         lastActive.buttons[buttonGroupName] || {}
+        
       for (let b = 0; b < this.order.button[bg].length; b++) {
         const buttonName = this.order.button[bg][b]
         const buttonInst = inst.buttons[buttonGroupName][buttonName]
         if (!buttonInst || buttonInst.constructor !== Object) { continue }
-        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.clear, null, null)
-        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.off, null, null)
-        lastActive.buttons[buttonGroupName][buttonName] = timeOrigin
+        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.clear, null, null, null)
+        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.off, null, null, null)
+        
+        activeState.buttons[buttonGroupName][buttonName] = false
+        lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
       }
     }
   }
   
-  followInstructions (ctx, src, inst, value, additionalValue, alpha) {
+  followInstructions (ctx, src, inst, value, alpha, additionalValue) {
     // `this` is bound as `GamepadRenderer` in the constructor
     for (let i = 0; i < inst.length; i++) {
       const instName = inst[i].instruction
@@ -578,7 +672,7 @@ class GamepadRenderer {
             }
         }
       }
-      this.instruction[instName](...instArgs)
+      this.instruction[instName](...instArgs, additionalValue)
     }
   }
   
@@ -588,6 +682,8 @@ class GamepadRenderer {
    */
   loadInstructions () {
     this.instructionParameters = {
+      fadeoutRect: ['ctx', 'x', 'y', 'width', 'height', 'alpha'],
+      fadeoutPolygon: ['ctx', 'path', 'alpha'],
       clearRect: ['ctx', 'x', 'y', 'width', 'height'],
       clearPolygon: ['ctx', 'path'],
       drawImage: ['ctx', 'src', 'coord', 'alpha'],
@@ -598,6 +694,34 @@ class GamepadRenderer {
       clearParallelogramByValue: ['ctx', 'value', 'areaWidth', 'xMin', 'xMax', 'yMin', 'height', 'skewAway', 'vertical']
     }
     this.instruction = {
+      // 'fadeout*' methods are used several time in a row,
+      // so the context state management should be done outside of them!
+      fadeoutRect: function (
+        ctx, x, y, width, height, alpha
+      ) {
+        // ctx.save() // do this before
+        // ctx.globalCompositeOperation = 'destination-out' // do this before
+        ctx.globalAlpha = alpha
+        
+        ctx.fillRect(x, y, width, height)
+        // ctx.restore() // do this after finishing fadeout chain
+      },
+      fadeoutPolygon: function (
+        ctx, path
+      ) {
+        // ctx.save() // do this before
+        // ctx.globalCompositeOperation = 'destination-out' // do this before
+        ctx.globalAlpha = alpha
+  
+        ctx.beginPath()
+        for (let p = 0; p < path.length; p=p+2) {
+          if (typeof path[p+1] === 'undefined') { continue }
+          ctx.lineTo(path[p], path[p+1])
+        }
+        ctx.closePath()
+        ctx.fill()
+        // ctx.restore() // do this after finishing fadeout chain
+      },
       clearRect: function (
         ctx, x, y, width, height
       ) {

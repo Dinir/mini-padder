@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="./css/OnBrowserTextEditor.css">
 </head>
 
+<script src="./js/module/ErrorLogCollector.js"></script>
 <script src="./js/module/GamepadWatcher.js"></script>
 <script src="./js/module/MappingManager.js"></script>
 <script src="./js/module/GamepadRenderer.js"></script>
@@ -100,6 +101,7 @@
     <button data-name="mappings">Gamepad Mappings</button>
     <button data-name="skinMapping">Skin Mapping</button>
     <button data-name="controlPanel">Control Panel Settings</button>
+    <button data-name="errorLog">Error Log</button>
     <br>
     <span class="description">
       You can copy JSON of the data to save in a text file, or paste from such text file and store them in the local storage of this web page.
@@ -119,6 +121,8 @@
 </script>
 
 <script>
+  // store error logs
+  const Logger = new ErrorLogCollector()
   // get gamepad viewer messages on console
   window.addEventListener('GPVMessage', e => {
     if (e.detail.type === 'error') {
@@ -211,6 +215,14 @@
             'Control Panel Configuration',
             Cp.panelValues,
             Cp.setPanelValuesInBulk
+          )
+          break
+        case 'errorLog':
+          Obte.changeFocus(
+            'Error Log',
+            Logger.errorLog,
+            null,
+            true
           )
           break
       }

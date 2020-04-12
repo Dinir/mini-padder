@@ -25,10 +25,12 @@ class OnBrowserTextEditor {
     this.dataTitle = ''
     this.reference = {
       data: null,
-      callback: null
+      callback: null,
+      raw: false
     }
     this.makeDomStructure()
     
+    this.buttonProtectionDuration = 500
     this.visibilityTimerID = 0
     this.buttonProtectionTimerID = 0
   }
@@ -105,7 +107,7 @@ class OnBrowserTextEditor {
           buttons.forEach(b => {
             b.removeAttribute('disabled')
           })
-        }, 500, buttons)
+        }, this.buttonProtectionDuration, buttons)
     }
   }
   
@@ -134,12 +136,19 @@ class OnBrowserTextEditor {
    * If it failed to follow it, the 'load button' of the editor will load the data
    * before it is changed by the callback, until the editor get to 'change the focus' again
    * and to update the reference stored in it.
+   * @param {boolean} raw Display data without converting it to JSON if set to true.
    */
-  changeFocus (title, dataRef, callback) {
+  changeFocus (title, dataRef, callback, raw = false) {
     this.dataTitle = title
     this.dom.title.innerText = title
     this.reference.data = dataRef
     this.reference.callback = callback
+    this.reference.raw = raw
+    if (!callback) {
+      setTimeout(() => {
+        this.dom.saveButton.setAttribute('disabled', '')
+      }, this.buttonProtectionDuration + 1)
+    }
     this.loadToEditor()
     this.visibility = true
   }
@@ -171,7 +180,9 @@ class OnBrowserTextEditor {
   loadToEditor () {
     OnBrowserTextEditor.announceMessage(`Loading ${this.dataTitle} to the editor...`)
     try {
-      this.dom.textarea.value = JSON.stringify(this.reference.data, null, 2)
+      this.dom.textarea.value = this.reference.raw ?
+        this.reference.data :
+        JSON.stringify(this.reference.data, null, 2)
       this.notify('Data are loaded.')
       OnBrowserTextEditor.announceMessage(`Loaded ${this.dataTitle} to the editor.`)
     } catch (e) {

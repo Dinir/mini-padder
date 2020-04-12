@@ -49,6 +49,7 @@
 /**
  *
  * @class
+ * @listens MappingManager#processedGamepadChange
  */
 class GamepadRenderer {
   /**
@@ -56,6 +57,7 @@ class GamepadRenderer {
    * @param {HTMLDivElement[]} canvasArray contains divs for each set of canvas
    */
   constructor (canvasArray) {
+    // true when it's not ready to render
     this.renderPending = true
     
     this.loadOrders()
@@ -68,9 +70,14 @@ class GamepadRenderer {
      * @typedef {Object} fadeoutOption
      * @description
      * Configuration values for fade-out effect.
-     * @property {Number[]} time Seconds for each fade-out level.
+     * @property {Number[]} time Milliseconds for each fade-out level.
+     * It's in milliseconds to compare with DOMHighResTimestamp values.
      * @property {Number[]} opacity Transparency values for each level.
-     * @property {Number} duration Transition time of fade-out effect.
+     * @property {Number} duration Transition time of fade-out effect in milliseconds.
+     * It's in milliseconds to compare with DOMHighResTimestamp values.
+     * @property {Number[]} deltaOpacity Amount of alpha value to apply
+     * for each frame, to eventually get to the intended opacity of next level.
+     * It should be calculated when setting new values.
      */
     this.fadeout = {
       time: [8,16,32],
@@ -108,8 +115,11 @@ class GamepadRenderer {
     
     this.requestRender = this.requestRender.bind(this)
     this.renderAll = this.renderAll.bind(this)
+    this.requestRender()
     
-    window.addEventListener('processedGamepadChange', this.requestRender)
+    window.addEventListener('processedGamepadChange', e => {
+      this._processedGamepadChange = e.detail
+    })
     
     this.setSkinMappingInBulk = this.setSkinMappingInBulk.bind(this)
     this.setFadeoutOptionFromArray = this.setFadeoutOptionFromArray.bind(this)
@@ -132,6 +142,7 @@ class GamepadRenderer {
     }))
   }
   
+  // TODO: my assumption is that this is making one problem that prevents it having a smooth fade-out effect... the delta opacity is way too small.
   /**
    * Set option values for fade-out effect from
    * an object of properties with the matching type,
@@ -150,24 +161,27 @@ class GamepadRenderer {
    */
   setFadeoutOption (optionObj) {
     if (optionObj) {
-      this.fadeout.time = optionObj.time || [0]
+      this.fadeout.time = optionObj.time.map(v => 1000*v) || [0]
       this.fadeout.opacity = optionObj.opacity || [1]
-      this.fadeout.duration = Number(optionObj.duration) || 0
+      this.fadeout.duration = 1000*Number(optionObj.duration) || 0
     }
     const opacityOrder = this.fadeout.opacity
-    const fadeoutFps = 30
+    const duration = this.fadeout.duration
+    const fadeoutFps = 60
     const deltaOpacity = []
     for (let i = 0; i < opacityOrder.length; i++) {
       if (opacityOrder[i] >= 1) {
         deltaOpacity.push(0)
         continue
-      } else if (opacityOrder[i] <= 0) {
+      } else if (opacityOrder[i] <= 0 || duration === 0) {
         deltaOpacity.push(1)
         continue
       }
+      
       const pastValue = opacityOrder[i-1] || 1
       const diffRate = opacityOrder[i] / pastValue
-      deltaOpacity.push( diffRate**( 1/fadeoutFps ) )
+      const frames = fadeoutFps * duration
+      deltaOpacity.push( 1 - diffRate**( 1/frames ) )
     }
     this.fadeout.deltaOpacity = deltaOpacity
     
@@ -212,9 +226,9 @@ class GamepadRenderer {
   }
   getFadeoutOptionAsTextArray () {
     return [
-      this.fadeout.time.join(','),
+      this.fadeout.time.map(v => v/1000).join(','),
       this.fadeout.opacity.join(','),
-      this.fadeout.duration.toString()
+      (this.fadeout.duration/1000).toString()
     ]
   }
   saveFadeoutOption () {
@@ -382,29 +396,17 @@ class GamepadRenderer {
   
   /**
    *
-   * @param {MappingManager#processedGamepadChange} e
-   * @listens MappingManager#processedGamepadChange
    * @returns {boolean} `true` if the render could be started,
    * instead of already being started at the time of request.
    */
-  requestRender (e) {
+  requestRender () {
     if (this.renderPending) { return false }
-    if (!e.detail) {
-      GamepadRenderer.announceMessage(
-        'Type of the received `processedGamepadChange` event is different.',
-        'error'
-      )
-      return false
-    }
-    this._e = e.detail
+    
     this.renderPending = true
     requestAnimationFrame(this.renderAll)
-    
-    return true
   }
   renderAll (timestamp) {
     this.renderPending = false
-    if (!this._e) { return false }
     
     /**
      * @type {DOMHighResTimeStamp}
@@ -414,67 +416,86 @@ class GamepadRenderer {
     
     for (
       let gamepadIndex = 0;
-      gamepadIndex < this._e.length;
+      gamepadIndex < 4;
       gamepadIndex++
     ) {
-      if (!this._e[gamepadIndex]) { continue }
       
       const skinSlot = this.skinSlot[gamepadIndex]
-      /** @type {processedGamepadChange} */
-      const gamepadChange = this._e[gamepadIndex]
-  
-      if (skinSlot) {
-        // skinSlot already exists
-        if (skinSlot.gamepadId === gamepadChange.id.gamepadId) {
-          // it's the same slot used before
-          this.render(gamepadIndex)
+      /** @type {?ProcessedGamepadChange} */
+      const gamepadChange = this._processedGamepadChange ?
+        this._processedGamepadChange[gamepadIndex] : null
+      
+      if (gamepadChange) {
+        // changes are received, work on rendering them
+        if (skinSlot) {
+          // skinSlot already exists
+          if (skinSlot.gamepadId === gamepadChange.id.gamepadId) {
+            // it's the same slot used before
+            this.render(gamepadIndex)
+          } else {
+            // the gamepad for the slot is changed
+            this.removeSkinFromSlot(gamepadIndex)
+            this.applySkinToSlot(
+              this.skinMapping[gamepadChange.id.gamepadId],
+              gamepadIndex,
+              gamepadChange.id.gamepadId
+            )
+            if (
+              this.skins[this.skinMapping[gamepadChange.id.gamepadId]] &&
+              this.skins[this.skinMapping[gamepadChange.id.gamepadId]].loaded
+            ) {
+              this.renderFrame(gamepadIndex)
+            }
+          }
         } else {
-          // the gamepad for the slot is changed
-          this.removeSkinFromSlot(gamepadIndex)
+          // skinSlot isn't made
+          // find skin for the gamepad
+          const newSkinDirname =
+            this.skinMapping[gamepadChange.id.gamepadId] ||
+            (/XInput/i.test(gamepadChange.id.gamepadId) ? 'XInput' : 'DInput')
+          if (!newSkinDirname) {
+            GamepadRenderer.announceMessage({
+              message: 'Can\'t assign a skin directory name for the gamepad.',
+              ProcessedGamepadChange: gamepadChange
+            }, 'error')
+            continue
+          }
+          this.setSkinMapping(gamepadChange.id.gamepadId, newSkinDirname)
           this.applySkinToSlot(
-            this.skinMapping[gamepadChange.id.gamepadId],
-            gamepadIndex,
-            gamepadChange.id.gamepadId
+            newSkinDirname, gamepadIndex, gamepadChange.id.gamepadId
           )
           if (
-            this.skins[this.skinMapping[gamepadChange.id.gamepadId]] &&
-            this.skins[this.skinMapping[gamepadChange.id.gamepadId]].loaded
+            this.skins[newSkinDirname] &&
+            this.skins[newSkinDirname].loaded
           ) {
             this.renderFrame(gamepadIndex)
           }
         }
-      } else {
-        // skinSlot isn't made
-        // find skin for the gamepad
-        const newSkinDirname =
-          this.skinMapping[gamepadChange.id.gamepadId] ||
-          (/XInput/i.test(gamepadChange.id.gamepadId) ? 'XInput' : 'DInput')
-        if (!newSkinDirname) {
-          GamepadRenderer.announceMessage({
-            message: 'Can\'t assign a skin directory name for the gamepad.',
-            processedGamepadChange: gamepadChange
-          }, 'error')
-          continue
-        }
-        this.setSkinMapping(gamepadChange.id.gamepadId, newSkinDirname)
-        this.applySkinToSlot(
-          newSkinDirname, gamepadIndex, gamepadChange.id.gamepadId
-        )
-        if (
-          this.skins[newSkinDirname] &&
-          this.skins[newSkinDirname].loaded
-        ) {
-          this.renderFrame(gamepadIndex)
-        }
+      } else if (skinSlot) {
+        // no changes are received, but skin slot for the index exists
+        this.renderFadeout(gamepadIndex)
       }
-    }
+    } // for loop of gamepadIndex
     
-    this._e = null
+    this._processedGamepadChange = null
     this._timestamp = null
-    window.dispatchEvent(new CustomEvent('lastActiveChange', {
-      detail: this.skinSlot[0].activeState
-    }))
+    
+    this.requestRender()
+    if (this.skinSlot[0]) {
+      window.dispatchEvent(new CustomEvent('lastActiveChange', {
+        detail: this.skinSlot[0].lastActive
+      }))
+    }
   }
+  
+  // TODO: and why is this working in that when only one button in a group is held the other ones goes away while the button is keep being displayed but I DIDN'T MADE IT WORKING LIKE THAT YET
+  /**
+   * Render the changes of gamepads,
+   * and for unchanged sticks/buttons on a gamepad that made changes
+   * calculate and render the fade-out effect.
+   * @param {number} gamepadIndex
+   * @returns {boolean}
+   */
   render (gamepadIndex) {
     const src = this.skinSlot[gamepadIndex].src
     const ctx = this.skinSlot[gamepadIndex].ctx
@@ -488,9 +509,11 @@ class GamepadRenderer {
     }
   
     const activeState = this.skinSlot[gamepadIndex].activeState
+    const lastActive = this.skinSlot[gamepadIndex].lastActive
+    const timestampAtStart = this._timestamp || performance.now()
     
     /** @type {{left: ?stickChange, right: ?stickChange}} */
-    const sticks = this._e[gamepadIndex].sticks
+    const sticks = this._processedGamepadChange[gamepadIndex].sticks
     const stickLayerIndex = inst.sticks.layer
     
     // give instructions for sticks
@@ -508,16 +531,26 @@ class GamepadRenderer {
           // otherwise keep the last seen state
           activeState.sticks[stickName][1] = values.pressed
         }
+        // update last active time
+        if (
+          activeState.sticks[stickName][0] ||
+          activeState.sticks[stickName][1]
+        ) {
+          lastActive.sticks[stickName] = timestampAtStart
+        }
         
         const stickInst = inst.sticks[stickName]
         // skip if the referred instruction is not made
         if (!stickInst || stickInst.constructor !== Object) { continue }
   
-        this.followInstructions(ctx[stickLayerIndex], src, stickInst.clear, null, null, null)
+        this.followInstructions(ctx[stickLayerIndex], src, stickInst.clear,
+          null, null, null)
         if (activeState.sticks[stickName][1]) {
-          this.followInstructions(ctx[stickLayerIndex], src, stickInst.on, values.value, null, values.delta)
+          this.followInstructions(ctx[stickLayerIndex], src, stickInst.on,
+            values.value, null, values.delta)
         } else {
-          this.followInstructions(ctx[stickLayerIndex], src, stickInst.off, values.value, null, values.delta)
+          this.followInstructions(ctx[stickLayerIndex], src, stickInst.off,
+            values.value, null, values.delta)
         }
       }
     }
@@ -528,7 +561,7 @@ class GamepadRenderer {
      *  @property {?Object.<string, ?buttonChange>} face
      *  @property {?Object.<string, ?buttonChange>} shoulder
      */
-    const buttons = this._e[gamepadIndex].buttons
+    const buttons = this._processedGamepadChange[gamepadIndex].buttons
     const buttonLayerIndex = inst.buttons.layer
     
     // give instructions for buttons
@@ -554,20 +587,32 @@ class GamepadRenderer {
         // skip if the referred instruction is not made
         if (!buttonInst || buttonInst.constructor !== Object) { continue }
         
-        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.clear, null, null, null)
+        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.clear,
+          null, null, null)
         // comparing to 0 so that analog buttons with non-zero value
         // will be drawn with 'on' instruction
         if (value === 0) {
-          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.off, null, null, null)
+          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.off,
+            null, null, null)
           activeState.buttons[buttonGroupName][buttonName] = false
         } else {
-          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.on, value, null, null)
+          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.on,
+            value, null, null)
           activeState.buttons[buttonGroupName][buttonName] = true
+          lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
         }
       }
     }
   }
-  renderFadeout (gamepadIndex, timestamp) {
+  
+  /**
+   * Calculate and render the fade-out effect to every stick/button,
+   * when the whole gamepad has not made any changes.
+   *
+   * @param {number} gamepadIndex
+   * @returns {boolean}
+   */
+  renderFadeout (gamepadIndex) {
     const src = this.skinSlot[gamepadIndex].src
     const ctx = this.skinSlot[gamepadIndex].ctx
     const inst = this.skinSlot[gamepadIndex].instruction
@@ -578,10 +623,133 @@ class GamepadRenderer {
       }, 'error')
       return false
     }
+    const fadeoutOption = this.fadeout
+    const totalTime =
+      fadeoutOption.time[fadeoutOption.time.length - 1] +
+      fadeoutOption.duration
   
     const activeState = this.skinSlot[gamepadIndex].activeState
     const lastActive = this.skinSlot[gamepadIndex].lastActive
     const timestampAtStart = this._timestamp || performance.now()
+  
+    // start of fade-out animations
+    for (let c = 0; c < ctx.length; c++) {
+      ctx[c].save()
+      ctx[c].globalCompositeOperation = 'destination-out'
+    }
+  
+    // sticks
+    const stickLayerIndex = inst.sticks.layer
+    
+    for (let s = 0; s < this.order.stick.length; s++) {
+      const stickName = this.order.stick[s]
+      const stickInst = inst.sticks[stickName]
+      if (!stickInst || stickInst.constructor !== Object) { continue }
+      
+      // if it's actually active, update the lastActive time instead
+      if (
+        activeState.sticks[stickName][0] ||
+        activeState.sticks[stickName][1]
+      ) {
+        lastActive.sticks[stickName] = timestampAtStart
+        continue
+      }
+      
+      const timeInactive =
+        timestampAtStart - lastActive.sticks[stickName]
+      if (timeInactive > totalTime) { continue }
+      
+      // findout which level the inactivity is in
+      /*
+      time |      |-->|      |-->|      |-->|                  duration
+           | ---- 0 -------- 1 -------- 2 ------------------- threshold
+           | loop at l===0                                        level
+           |   V  :                    didn't reach level 0        -1
+           |      | V :                passed level 0, fading-out   0
+           |          | V    :         finished level 0 fade-out    0
+           | loop at l===1
+           |          |    V :         didn't reach level 1         0
+           |                 | V :     passed level 1, fading-out   1
+           |                     |  V  finished level 1 fade-out    1
+      
+      V : time at the loop, | : inclusive border, : : exclusive border
+       */
+      let inactivityLevel = -1
+      let fadingOut = false
+      for (let l = 0; l < fadeoutOption.time.length; l++) {
+        const timePastThreshold = timeInactive - fadeoutOption.time[l]
+        if (timePastThreshold < 0) {
+          // didn't reach level l
+          inactivityLevel = l - 1
+          break
+        } else if (timePastThreshold < fadeoutOption.duration) {
+          // passed level l, fading-out
+          inactivityLevel = l
+          fadingOut = true
+          break
+        }
+        // finished level l fade-out
+      }
+      if (!fadingOut) { continue }
+      
+      // the inactive time is in the range of fade-out duration
+      this.followInstructions(
+        ctx[stickLayerIndex], src, stickInst.fadeout,
+        null, fadeoutOption.deltaOpacity[inactivityLevel], null
+      )
+    }
+  
+    // buttons
+    const buttonLayerIndex = inst.buttons.layer
+    
+    for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
+      const buttonGroupName = this.order.buttonGroup[bg]
+      for (let b = 0; b < this.order.button[bg].length; b++) {
+        const buttonName = this.order.button[bg][b]
+        const buttonInst = inst.buttons[buttonGroupName][buttonName]
+        if (!buttonInst || buttonInst.constructor !== Object) { continue }
+  
+        // if it's actually active, update the lastActive time instead
+        if (activeState.buttons[buttonGroupName][buttonName]) {
+          lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
+          continue
+        }
+  
+        const timeInactive =
+          timestampAtStart - lastActive.buttons[buttonGroupName][buttonName]
+        if (timeInactive > totalTime) { continue }
+  
+        // findout which level the inactivity is in
+        let inactivityLevel = -1
+        let fadingOut = false
+        for (let l = 0; l < fadeoutOption.time.length; l++) {
+          const timePastThreshold = timeInactive - fadeoutOption.time[l]
+          if (timePastThreshold < 0) {
+            // didn't reach level l
+            inactivityLevel = l - 1
+            break
+          } else if (timePastThreshold < fadeoutOption.duration) {
+            // passed level l, fading-out
+            inactivityLevel = l
+            fadingOut = true
+            break
+          }
+          // finished level l fade-out
+        }
+        if (!fadingOut) { continue }
+  
+        // the inactive time is in the range of fade-out duration
+        this.followInstructions(
+          ctx[buttonLayerIndex], src, buttonInst.fadeout,
+          null, fadeoutOption.deltaOpacity[inactivityLevel], null
+        )
+      }
+    }
+    
+    // end of fade-out animations
+    for (let c = 0; c < ctx.length; c++) {
+      ctx[c].restore()
+    }
   }
   
   /**
@@ -605,18 +773,24 @@ class GamepadRenderer {
     const lastActive = this.skinSlot[gamepadIndex].lastActive
     const timestampAtStart = this._timestamp || performance.now()
     
-    const stickLayerIndex = inst.sticks.layer
-    const buttonLayerIndex = inst.buttons.layer
-    
     activeState.sticks = activeState.sticks || {}
     lastActive.sticks = lastActive.sticks || {}
+  
+    const stickLayerIndex = inst.sticks.layer
     
     for (let s = 0; s < this.order.stick.length; s++) {
       const stickName = this.order.stick[s]
       const stickInst = inst.sticks[stickName]
       if (!stickInst || stickInst.constructor !== Object) { continue }
-      this.followInstructions(ctx[stickLayerIndex], src, stickInst.clear, null, null, null)
-      this.followInstructions(ctx[stickLayerIndex], src, stickInst.off, [0, 0, null], null, [0, 0, null])
+      
+      this.followInstructions(
+        ctx[stickLayerIndex], src, stickInst.clear,
+        null, null, null
+      )
+      this.followInstructions(
+        ctx[stickLayerIndex], src, stickInst.off,
+        [0, 0, null], null, [0, 0, null]
+      )
       
       // for stick movement and stick button
       activeState.sticks[stickName] = [false, false]
@@ -625,6 +799,8 @@ class GamepadRenderer {
     
     activeState.buttons = activeState.buttons || {}
     lastActive.buttons = lastActive.buttons || {}
+  
+    const buttonLayerIndex = inst.buttons.layer
     
     for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
       const buttonGroupName = this.order.buttonGroup[bg]
@@ -638,8 +814,15 @@ class GamepadRenderer {
         const buttonName = this.order.button[bg][b]
         const buttonInst = inst.buttons[buttonGroupName][buttonName]
         if (!buttonInst || buttonInst.constructor !== Object) { continue }
-        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.clear, null, null, null)
-        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.off, null, null, null)
+        
+        this.followInstructions(
+          ctx[buttonLayerIndex], src, buttonInst.clear,
+          null, null, null
+        )
+        this.followInstructions(
+          ctx[buttonLayerIndex], src, buttonInst.off,
+          null, null, null
+        )
         
         activeState.buttons[buttonGroupName][buttonName] = false
         lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
@@ -709,7 +892,7 @@ class GamepadRenderer {
         // ctx.restore() // do this after finishing fadeout chain
       },
       fadeoutPolygon: function (
-        ctx, path
+        ctx, path, alpha
       ) {
         // ctx.save() // do this before
         // ctx.globalCompositeOperation = 'destination-out' // do this before

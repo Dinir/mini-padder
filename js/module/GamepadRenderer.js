@@ -300,19 +300,19 @@ class GamepadRenderer {
     
     // findout which level the inactivity is in
     /*
-		time |      |-->|      |-->|      |-->|                  duration
-				 | ---- 0 -------- 1 -------- 2 ------------------- threshold
-				 | loop at l===0                                        level
-				 |   V  :                    didn't reach level 0        -1
-				 |      | V :                passed level 0, fading-out   0
-				 |          | V    :         finished level 0 fade-out    0
-				 | loop at l===1
-				 |          |    V :         didn't reach level 1         0
-				 |                 | V :     passed level 1, fading-out   1
-				 |                     |  V  finished level 1 fade-out    1
-		
-		V : time at the loop, | : inclusive border, : : exclusive border
-		 */
+     * time |      |-->|      |-->|      |-->|                  duration
+     *      | ---- 0 -------- 1 -------- 2 ------------------- threshold
+     *      | loop at l===0                                        level
+     *      |   V  :                    didn't reach level 0        -1
+     *      |      | V :                passed level 0, fading-out   0
+     *      |          | V    :         finished level 0 fade-out    0
+     *      | loop at l===1
+     *      |          |    V :         didn't reach level 1         0
+     *      |                 | V :     passed level 1, fading-out   1
+     *      |                     |  V  finished level 1 fade-out    1
+     *
+     *  V - time at the loop, | - inclusive border, : - exclusive border
+     */
     for (let l = 0; l < fadeoutOpt.time.length; l++) {
       const timePastThreshold = timeInactive - fadeoutOpt.time[l]
       if (timePastThreshold < 0) {

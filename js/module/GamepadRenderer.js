@@ -60,6 +60,13 @@ class GamepadRenderer {
     // true when it's not ready to render
     this.renderPending = true
     
+    // count these with `tickFpsCounter` everytime rAF is called
+    this.counterFor30fps = false
+    this.counterFor20fps = 2
+    this.counterFor15fps = 3
+    
+    this.fadeoutFps = 20
+    
     this.loadOrders()
     this.loadInstructions()
     this.followInstructions.bind(this)
@@ -142,6 +149,21 @@ class GamepadRenderer {
     }))
   }
   
+  tickFpsCounter () {
+    this.counterFor30fps = !this.counterFor30fps
+    this.counterFor20fps = (this.counterFor20fps + 1) % 3
+    this.counterFor15fps = (this.counterFor15fps + 1) % 4
+  }
+  timingForFps (fps) {
+    switch (fps) {
+      case 60: return true
+      case 30: return this.counterFor30fps
+      case 20: return this.counterFor20fps === 0
+      case 15:
+      default: return this.counterFor15fps === 0
+    }
+  }
+  
   // TODO: my assumption is that this is making one problem that prevents it having a smooth fade-out effect... the delta opacity is way too small.
   /**
    * Set option values for fade-out effect from
@@ -166,24 +188,36 @@ class GamepadRenderer {
       this.fadeout.duration = 1000*Number(optionObj.duration) || 0
     }
     const opacityOrder = this.fadeout.opacity
-    const duration = this.fadeout.duration
-    const fadeoutFps = 60
+    const duration = this.fadeout.duration/1000
+    /*
+    if duration is longer than 2 seconds on 60fps,
+    the deltaOpacity becomes too small that result of one full animation
+    doesn't reach the target opacity.
+    I'll try to reduce the fadeout speed to compensate.
+     */
+    const fadeoutFps = this.fadeoutFps
     const deltaOpacity = []
     for (let i = 0; i < opacityOrder.length; i++) {
       if (opacityOrder[i] >= 1) {
         deltaOpacity.push(0)
         continue
       } else if (opacityOrder[i] <= 0 || duration === 0) {
-        deltaOpacity.push(1)
+        // 0.1 deltaOpacity puts the picture on 9/255 alpha over 35 frames.
+        // that's quick enough for human eyes.
+        deltaOpacity.push(0.1)
         continue
       }
       
       const pastValue = opacityOrder[i-1] || 1
-      const diffRate = opacityOrder[i] / pastValue
+      const diffRate = opacityOrder[i]// / pastValue
       const frames = fadeoutFps * duration
-      deltaOpacity.push( 1 - diffRate**( 1/frames ) )
+      const delta = ( 1 - diffRate**( 1/frames ) )
+      deltaOpacity.push(delta)
     }
     this.fadeout.deltaOpacity = deltaOpacity
+    this.fadeout.totalTime =
+      this.fadeout.time[this.fadeout.time.length - 1] +
+      this.fadeout.duration
     
     this.saveFadeoutOption()
   }
@@ -238,6 +272,61 @@ class GamepadRenderer {
   loadFadeoutOption () {
     const fadeOutOption = JSON.parse(window.localStorage.getItem('fadeOption'))
     this.setFadeoutOption(fadeOutOption || this.fadeout || {})
+  }
+  
+  getFadeoutState (timeInactive) {
+    let fadingOut = false
+    let inactivityLevel = -1
+    let deltaOpacity = 0
+    const fadeoutOpt = this.fadeout
+    
+    const timePastTotalTime =
+      timeInactive - fadeoutOpt.totalTime
+    if (timePastTotalTime > 0) {
+      // all fade-out is done
+      if (
+        timePastTotalTime <= 70 &&
+        fadeoutOpt.opacity[fadeoutOpt.opacity.length - 1] === 0
+      ) {
+        // just one last tick to completely hide the picture
+        fadingOut = true
+        deltaOpacity = 1
+      }
+      return [fadingOut, deltaOpacity]
+    }
+    
+    // findout which level the inactivity is in
+    /*
+		time |      |-->|      |-->|      |-->|                  duration
+				 | ---- 0 -------- 1 -------- 2 ------------------- threshold
+				 | loop at l===0                                        level
+				 |   V  :                    didn't reach level 0        -1
+				 |      | V :                passed level 0, fading-out   0
+				 |          | V    :         finished level 0 fade-out    0
+				 | loop at l===1
+				 |          |    V :         didn't reach level 1         0
+				 |                 | V :     passed level 1, fading-out   1
+				 |                     |  V  finished level 1 fade-out    1
+		
+		V : time at the loop, | : inclusive border, : : exclusive border
+		 */
+    for (let l = 0; l < fadeoutOpt.time.length; l++) {
+      const timePastThreshold = timeInactive - fadeoutOpt.time[l]
+      if (timePastThreshold < 0) {
+        // didn't reach level l
+        inactivityLevel = l - 1
+        break
+      } else if (timePastThreshold < fadeoutOpt.duration) {
+        // passed level l, fading-out
+        inactivityLevel = l
+        fadingOut = true
+        break
+      }
+      // finished level l fade-out
+    }
+    deltaOpacity = fadeoutOpt.deltaOpacity[inactivityLevel]
+    
+    return [fadingOut, deltaOpacity]
   }
   
   setSkinMapping (gamepadId, skinDirname) {
@@ -403,6 +492,7 @@ class GamepadRenderer {
     if (this.renderPending) { return false }
     
     this.renderPending = true
+    this.tickFpsCounter()
     requestAnimationFrame(this.renderAll)
   }
   renderAll (timestamp) {
@@ -473,7 +563,9 @@ class GamepadRenderer {
         }
       } else if (skinSlot) {
         // no changes are received, but skin slot for the index exists
-        this.renderFadeout(gamepadIndex)
+        if (this.timingForFps(this.fadeoutFps)) {
+          this.renderFadeout(gamepadIndex)
+        }
       }
     } // for loop of gamepadIndex
     
@@ -488,7 +580,6 @@ class GamepadRenderer {
     }
   }
   
-  // TODO: and why is this working in that when only one button in a group is held the other ones goes away while the button is keep being displayed but I DIDN'T MADE IT WORKING LIKE THAT YET
   /**
    * Render the changes of gamepads,
    * and for unchanged sticks/buttons on a gamepad that made changes
@@ -624,9 +715,6 @@ class GamepadRenderer {
       return false
     }
     const fadeoutOption = this.fadeout
-    const totalTime =
-      fadeoutOption.time[fadeoutOption.time.length - 1] +
-      fadeoutOption.duration
   
     const activeState = this.skinSlot[gamepadIndex].activeState
     const lastActive = this.skinSlot[gamepadIndex].lastActive
@@ -657,45 +745,15 @@ class GamepadRenderer {
       
       const timeInactive =
         timestampAtStart - lastActive.sticks[stickName]
-      if (timeInactive > totalTime) { continue }
-      
-      // findout which level the inactivity is in
-      /*
-      time |      |-->|      |-->|      |-->|                  duration
-           | ---- 0 -------- 1 -------- 2 ------------------- threshold
-           | loop at l===0                                        level
-           |   V  :                    didn't reach level 0        -1
-           |      | V :                passed level 0, fading-out   0
-           |          | V    :         finished level 0 fade-out    0
-           | loop at l===1
-           |          |    V :         didn't reach level 1         0
-           |                 | V :     passed level 1, fading-out   1
-           |                     |  V  finished level 1 fade-out    1
-      
-      V : time at the loop, | : inclusive border, : : exclusive border
-       */
-      let inactivityLevel = -1
-      let fadingOut = false
-      for (let l = 0; l < fadeoutOption.time.length; l++) {
-        const timePastThreshold = timeInactive - fadeoutOption.time[l]
-        if (timePastThreshold < 0) {
-          // didn't reach level l
-          inactivityLevel = l - 1
-          break
-        } else if (timePastThreshold < fadeoutOption.duration) {
-          // passed level l, fading-out
-          inactivityLevel = l
-          fadingOut = true
-          break
-        }
-        // finished level l fade-out
-      }
+  
+      let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
+  
       if (!fadingOut) { continue }
-      
       // the inactive time is in the range of fade-out duration
+  
       this.followInstructions(
         ctx[stickLayerIndex], src, stickInst.fadeout,
-        null, fadeoutOption.deltaOpacity[inactivityLevel], null
+        null, deltaOpacity, null
       )
     }
   
@@ -717,31 +775,15 @@ class GamepadRenderer {
   
         const timeInactive =
           timestampAtStart - lastActive.buttons[buttonGroupName][buttonName]
-        if (timeInactive > totalTime) { continue }
   
-        // findout which level the inactivity is in
-        let inactivityLevel = -1
-        let fadingOut = false
-        for (let l = 0; l < fadeoutOption.time.length; l++) {
-          const timePastThreshold = timeInactive - fadeoutOption.time[l]
-          if (timePastThreshold < 0) {
-            // didn't reach level l
-            inactivityLevel = l - 1
-            break
-          } else if (timePastThreshold < fadeoutOption.duration) {
-            // passed level l, fading-out
-            inactivityLevel = l
-            fadingOut = true
-            break
-          }
-          // finished level l fade-out
-        }
+        let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
+  
         if (!fadingOut) { continue }
-  
         // the inactive time is in the range of fade-out duration
+        
         this.followInstructions(
           ctx[buttonLayerIndex], src, buttonInst.fadeout,
-          null, fadeoutOption.deltaOpacity[inactivityLevel], null
+          null, deltaOpacity, null
         )
       }
     }
@@ -884,6 +926,7 @@ class GamepadRenderer {
       fadeoutRect: function (
         ctx, x, y, width, height, alpha
       ) {
+        if (alpha === 0) { return }
         // ctx.save() // do this before
         // ctx.globalCompositeOperation = 'destination-out' // do this before
         ctx.globalAlpha = alpha
@@ -894,6 +937,7 @@ class GamepadRenderer {
       fadeoutPolygon: function (
         ctx, path, alpha
       ) {
+        if (alpha === 0) { return }
         // ctx.save() // do this before
         // ctx.globalCompositeOperation = 'destination-out' // do this before
         ctx.globalAlpha = alpha

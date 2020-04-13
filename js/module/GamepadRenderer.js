@@ -66,6 +66,7 @@ class GamepadRenderer {
     this.counterFor15fps = 3
     
     this.fadeoutFps = 60
+    this.fadeoutOpacityPrecision = 4
     
     this.loadOrders()
     this.loadInstructions()
@@ -649,7 +650,11 @@ class GamepadRenderer {
             timestampAtStart - lastActive.sticks[stickName]
           let [fadingOut, deltaOpacity] = this.getFadeoutState(timeInactive)
           if (fadingOut) {
-            alpha.sticks[stickName] *= deltaOpacity
+            alpha.sticks[stickName] =
+              Math.floor(
+                alpha.sticks[stickName] * deltaOpacity *
+                10**this.fadeoutOpacityPrecision
+              ) / 10**this.fadeoutOpacityPrecision
           }
         }
         
@@ -693,7 +698,11 @@ class GamepadRenderer {
           // check if it needs to be fading-out
           if (!fadingOut) { continue }
   
-          alpha.sticks[stickName] *= deltaOpacity
+          alpha.sticks[stickName] =
+            Math.floor(
+              alpha.sticks[stickName] * deltaOpacity *
+              10**this.fadeoutOpacityPrecision
+            ) / 10**this.fadeoutOpacityPrecision
   
           if (alpha.sticks[stickName] !== 1) {
             ctx[stickLayerIndex].save()
@@ -767,7 +776,11 @@ class GamepadRenderer {
               // check if it needs to be fading-out
               if (!fadingOut) { continue }
   
-              alpha.buttons[buttonGroupName][buttonName] *= deltaOpacity
+              alpha.buttons[buttonGroupName][buttonName] =
+                Math.floor(
+                  alpha.buttons[buttonGroupName][buttonName] * deltaOpacity *
+                  10**this.fadeoutOpacityPrecision
+                ) / 10**this.fadeoutOpacityPrecision
   
               this.followInstructions(
                 ctx[buttonLayerIndex], src, buttonInst.clear,
@@ -799,7 +812,11 @@ class GamepadRenderer {
             // check if it needs to be fading-out
             if (!fadingOut) { continue }
   
-            alpha.buttons[buttonGroupName][buttonName] *= deltaOpacity
+            alpha.buttons[buttonGroupName][buttonName] =
+              Math.floor(
+                alpha.buttons[buttonGroupName][buttonName] * deltaOpacity *
+                10**this.fadeoutOpacityPrecision
+              ) / 10**this.fadeoutOpacityPrecision
   
             this.followInstructions(
               ctx[buttonLayerIndex], src, buttonInst.clear,
@@ -866,7 +883,11 @@ class GamepadRenderer {
       // check if it needs to be fading-out
       if (!fadingOut) { continue }
       
-      alpha.sticks[stickName] *= deltaOpacity
+      alpha.sticks[stickName] =
+        Math.floor(
+          alpha.sticks[stickName] * deltaOpacity *
+          10**this.fadeoutOpacityPrecision
+        ) / 10**this.fadeoutOpacityPrecision
   
       this.followInstructions(
         ctx[stickLayerIndex], src, stickInst.fadeout,
@@ -899,7 +920,11 @@ class GamepadRenderer {
         // check if it needs to be fading-out
         if (!fadingOut) { continue }
   
-        alpha.buttons[buttonGroupName][buttonName] *= deltaOpacity
+        alpha.buttons[buttonGroupName][buttonName] =
+          Math.floor(
+            alpha.buttons[buttonGroupName][buttonName] * deltaOpacity *
+            10**this.fadeoutOpacityPrecision
+          ) / 10**this.fadeoutOpacityPrecision
   
         this.followInstructions(
           ctx[buttonLayerIndex], src, buttonInst.clear,

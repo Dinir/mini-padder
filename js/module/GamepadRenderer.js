@@ -202,15 +202,17 @@ class GamepadRenderer {
       if (opacityOrder[i] >= 1) {
         deltaOpacity.push(1)
         continue
-      } else if (opacityOrder[i] <= 0 || duration === 0) {
+      } else if (duration === 0) {
         // 0.1 deltaOpacity puts the picture on 9/255 alpha over 35 frames.
-        // that's quick enough for human eyes.
+        // that's instant enough for human eyes.
         deltaOpacity.push(0.1)
         continue
       }
       
       const pastValue = opacityOrder[i-1] || 1
-      const diffRate = opacityOrder[i] / pastValue
+      const diffRate = opacityOrder[i] <= 0 ?
+        10 ** ( -1 * ( this.fadeoutOpacityPrecision ) ) :
+        opacityOrder[i] / pastValue
       const frames = fadeoutFps * duration
       const delta = diffRate**( 1/frames )
       deltaOpacity.push(delta)
@@ -591,11 +593,6 @@ class GamepadRenderer {
     this._timestamp = null
     
     this.requestRender()
-    if (this.skinSlot[0]) {
-      window.dispatchEvent(new CustomEvent('lastActiveChange', {
-        detail: this.skinSlot[0].alpha
-      }))
-    }
   }
   
   /**
@@ -636,6 +633,8 @@ class GamepadRenderer {
       if (sticks[stickName]) {
         // change for the stick is confirmed
         const values = sticks[stickName]
+        let fadingOut = false
+        let deltaOpacity = 1
         
         // update active state last seen
         activeState.sticks[stickName][0] = values.active
@@ -654,7 +653,7 @@ class GamepadRenderer {
         } else if (this.timingForFps(this.fadeoutFps)) {
           const timeInactive =
             timestampAtStart - lastActive.sticks[stickName]
-          let [fadingOut, deltaOpacity] = this.getFadeoutState(timeInactive)
+          ;[fadingOut, deltaOpacity] = this.getFadeoutState(timeInactive)
           if (fadingOut) {
             alpha.sticks[stickName] = this.getMultipliedAlpha(
               alpha.sticks[stickName], deltaOpacity
@@ -664,27 +663,18 @@ class GamepadRenderer {
         
         this.followInstructions(
           ctx[stickLayerIndex], src, stickInst.clear,
-          null, null, null
+          null, alpha.sticks[stickName], null
         )
         if (activeState.sticks[stickName][1]) {
           this.followInstructions(
             ctx[stickLayerIndex], src, stickInst.on,
-            values.value, null, values.delta
+            values.value, alpha.sticks[stickName], values.delta
           )
         } else {
           this.followInstructions(
             ctx[stickLayerIndex], src, stickInst.off,
-            values.value, null, values.delta
+            values.value, alpha.sticks[stickName], values.delta
           )
-        }
-        if (alpha.sticks[stickName] !== 1) {
-          ctx[stickLayerIndex].save()
-          ctx[stickLayerIndex].globalCompositeOperation = 'destination-out'
-          this.followInstructions(
-            ctx[stickLayerIndex], src, stickInst.fadeout,
-            null, 1 - alpha.sticks[stickName], null
-          )
-          ctx[stickLayerIndex].restore()
         }
       } else {
         // if stick change isn't found, apply fade-out route
@@ -699,22 +689,18 @@ class GamepadRenderer {
             timestampAtStart - lastActive.sticks[stickName]
           let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
   
-          // check if it needs to be fading-out
-          if (!fadingOut) { continue }
-  
           alpha.sticks[stickName] = this.getMultipliedAlpha(
             alpha.sticks[stickName], deltaOpacity
           )
   
-          if (alpha.sticks[stickName] !== 1) {
-            ctx[stickLayerIndex].save()
-            ctx[stickLayerIndex].globalCompositeOperation = 'destination-out'
-            this.followInstructions(
-              ctx[stickLayerIndex], src, stickInst.fadeout,
-              null, 1 - alpha.sticks[stickName], null
-            )
-            ctx[stickLayerIndex].restore()
-          }
+          this.followInstructions(
+            ctx[stickLayerIndex], src, stickInst.clear,
+            null, alpha.sticks[stickName], null
+          )
+          this.followInstructions(
+            ctx[stickLayerIndex], src, stickInst.off,
+            [0, 0, null], alpha.sticks[stickName], [0, 0, null]
+          )
         }
       }
     }
@@ -853,17 +839,15 @@ class GamepadRenderer {
     const lastActive = this.skinSlot[gamepadIndex].lastActive
     const alpha = this.skinSlot[gamepadIndex].alpha
     const timestampAtStart = this._timestamp || performance.now()
-  
-  
+    
     // sticks
     const stickLayerIndex = inst.sticks.layer
-    ctx[stickLayerIndex].save()
-    ctx[stickLayerIndex].globalCompositeOperation = 'destination-out'
     
     for (let s = 0; s < this.order.stick.length; s++) {
       const stickName = this.order.stick[s]
       const stickInst = inst.sticks[stickName]
       if (!stickInst || stickInst.constructor !== Object) { continue }
+      
       
       // if it's actually active, update the lastActive time instead
       if (
@@ -886,12 +870,14 @@ class GamepadRenderer {
       )
   
       this.followInstructions(
-        ctx[stickLayerIndex], src, stickInst.fadeout,
-        null, 1 - alpha.sticks[stickName], null
+        ctx[stickLayerIndex], src, stickInst.clear,
+        null, alpha.sticks[stickName], null
+      )
+      this.followInstructions(
+        ctx[stickLayerIndex], src, stickInst.off,
+        [0, 0, null], alpha.sticks[stickName], [0, 0, null]
       )
     }
-    
-    ctx[stickLayerIndex].restore()
   
     // buttons
     const buttonLayerIndex = inst.buttons.layer
@@ -919,7 +905,7 @@ class GamepadRenderer {
         alpha.buttons[buttonGroupName][buttonName] = this.getMultipliedAlpha(
           alpha.buttons[buttonGroupName][buttonName], deltaOpacity
         )
-  
+        
         this.followInstructions(
           ctx[buttonLayerIndex], src, buttonInst.clear,
           null, null, null

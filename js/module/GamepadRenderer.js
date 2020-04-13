@@ -65,7 +65,7 @@ class GamepadRenderer {
     this.counterFor20fps = 2
     this.counterFor15fps = 3
     
-    this.fadeoutFps = 20
+    this.fadeoutFps = 60
     
     this.loadOrders()
     this.loadInstructions()
@@ -164,7 +164,6 @@ class GamepadRenderer {
     }
   }
   
-  // TODO: my assumption is that this is making one problem that prevents it having a smooth fade-out effect... the delta opacity is way too small.
   /**
    * Set option values for fade-out effect from
    * an object of properties with the matching type,
@@ -178,7 +177,8 @@ class GamepadRenderer {
    *
    * @param {?Object} optionObj
    * @param {number[]} optionObj.time Seconds for each fade-out level.
-   * @param {number[]} optionObj.opacity Transparency values for each level.
+   * @param {number[]} optionObj.opacity Opacity values for each level.
+   * 1 is maximum opacity, 0 is maximum transparency.
    * @param {number} optionObj.duration Transition time of fade-out effect.
    */
   setFadeoutOption (optionObj) {
@@ -199,7 +199,7 @@ class GamepadRenderer {
     const deltaOpacity = []
     for (let i = 0; i < opacityOrder.length; i++) {
       if (opacityOrder[i] >= 1) {
-        deltaOpacity.push(0)
+        deltaOpacity.push(1)
         continue
       } else if (opacityOrder[i] <= 0 || duration === 0) {
         // 0.1 deltaOpacity puts the picture on 9/255 alpha over 35 frames.
@@ -209,9 +209,9 @@ class GamepadRenderer {
       }
       
       const pastValue = opacityOrder[i-1] || 1
-      const diffRate = opacityOrder[i]// / pastValue
+      const diffRate = opacityOrder[i] / pastValue
       const frames = fadeoutFps * duration
-      const delta = ( 1 - diffRate**( 1/frames ) )
+      const delta = diffRate**( 1/frames )
       deltaOpacity.push(delta)
     }
     this.fadeout.deltaOpacity = deltaOpacity
@@ -277,7 +277,7 @@ class GamepadRenderer {
   getFadeoutState (timeInactive) {
     let fadingOut = false
     let inactivityLevel = -1
-    let deltaOpacity = 0
+    let deltaOpacity = 1
     const fadeoutOpt = this.fadeout
     
     const timePastTotalTime =
@@ -285,12 +285,12 @@ class GamepadRenderer {
     if (timePastTotalTime > 0) {
       // all fade-out is done
       if (
-        timePastTotalTime <= 70 &&
+        timePastTotalTime <= 100 &&
         fadeoutOpt.opacity[fadeoutOpt.opacity.length - 1] === 0
       ) {
         // just one last tick to completely hide the picture
         fadingOut = true
-        deltaOpacity = 1
+        deltaOpacity = 0
       }
       return [fadingOut, deltaOpacity]
     }
@@ -324,7 +324,7 @@ class GamepadRenderer {
       }
       // finished level l fade-out
     }
-    deltaOpacity = fadeoutOpt.deltaOpacity[inactivityLevel]
+    deltaOpacity = fadeoutOpt.deltaOpacity[inactivityLevel] || 1
     
     return [fadingOut, deltaOpacity]
   }
@@ -444,9 +444,8 @@ class GamepadRenderer {
      * Stores the last seen states of sticks and buttons.
      *
      * Value is boolean, the structure follows that of the skin config,
-     * and a stick value represents the state of its button.
-     * - it's very hard to put a stick to a perfect stop outside of it's
-     * centre position.
+     * and a stick value is an array containing two booleans -
+     * one for stick movement and one for stick button press.
      *
      * @type {Object}
      */
@@ -454,9 +453,19 @@ class GamepadRenderer {
     /**
      * Contains timestamp the last time a stick or a button is active.
      *
+     * The structure follows that of the skin config.
+     *
      * @type {Object}
      */
     skinSlot.lastActive = {}
+    /**
+     * Contains alpha values for sticks and buttons.
+     *
+     * The structure follows that of the skin config.
+     *
+     * @type {Object}
+     */
+    skinSlot.alpha = {}
     
     for (let l = 0; l < config.layer.length; l++) {
       const layer = document.createElement('canvas')
@@ -472,7 +481,9 @@ class GamepadRenderer {
   }
   removeSkinFromSlot (slot) {
     delete this.skinSlot[slot].gamepadId
-    delete this.skinSlot[slot].stickButtonState
+    delete this.skinSlot[slot].activeState
+    delete this.skinSlot[slot].lastActive
+    delete this.skinSlot[slot].alpha
     delete this.skinSlot[slot].src
     delete this.skinSlot[slot].layer
     delete this.skinSlot[slot].ctx
@@ -575,7 +586,7 @@ class GamepadRenderer {
     this.requestRender()
     if (this.skinSlot[0]) {
       window.dispatchEvent(new CustomEvent('lastActiveChange', {
-        detail: this.skinSlot[0].lastActive
+        detail: this.skinSlot[0].alpha
       }))
     }
   }
@@ -601,6 +612,7 @@ class GamepadRenderer {
   
     const activeState = this.skinSlot[gamepadIndex].activeState
     const lastActive = this.skinSlot[gamepadIndex].lastActive
+    const alpha = this.skinSlot[gamepadIndex].alpha
     const timestampAtStart = this._timestamp || performance.now()
     
     /** @type {{left: ?stickChange, right: ?stickChange}} */
@@ -610,9 +622,12 @@ class GamepadRenderer {
     // give instructions for sticks
     for (let s = 0; s < this.order.stick.length; s++) {
       const stickName = this.order.stick[s]
+      const stickInst = inst.sticks[stickName]
+      // skip if the referred instruction is not made
+      if (!stickInst || stickInst.constructor !== Object) { continue }
       
-      // only proceed to render when stick change is found
       if (sticks[stickName]) {
+        // change for the stick is confirmed
         const values = sticks[stickName]
         
         // update active state last seen
@@ -622,26 +637,73 @@ class GamepadRenderer {
           // otherwise keep the last seen state
           activeState.sticks[stickName][1] = values.pressed
         }
-        // update last active time
+        // update last active time (if active) and alpha value
         if (
           activeState.sticks[stickName][0] ||
           activeState.sticks[stickName][1]
         ) {
           lastActive.sticks[stickName] = timestampAtStart
+          alpha.sticks[stickName] = 1
+        } else if (this.timingForFps(this.fadeoutFps)) {
+          const timeInactive =
+            timestampAtStart - lastActive.sticks[stickName]
+          let [fadingOut, deltaOpacity] = this.getFadeoutState(timeInactive)
+          if (fadingOut) {
+            alpha.sticks[stickName] *= deltaOpacity
+          }
         }
         
-        const stickInst = inst.sticks[stickName]
-        // skip if the referred instruction is not made
-        if (!stickInst || stickInst.constructor !== Object) { continue }
-  
-        this.followInstructions(ctx[stickLayerIndex], src, stickInst.clear,
-          null, null, null)
+        this.followInstructions(
+          ctx[stickLayerIndex], src, stickInst.clear,
+          null, null, null
+        )
         if (activeState.sticks[stickName][1]) {
-          this.followInstructions(ctx[stickLayerIndex], src, stickInst.on,
-            values.value, null, values.delta)
+          this.followInstructions(
+            ctx[stickLayerIndex], src, stickInst.on,
+            values.value, null, values.delta
+          )
         } else {
-          this.followInstructions(ctx[stickLayerIndex], src, stickInst.off,
-            values.value, null, values.delta)
+          this.followInstructions(
+            ctx[stickLayerIndex], src, stickInst.off,
+            values.value, null, values.delta
+          )
+        }
+        if (alpha.sticks[stickName] !== 1) {
+          ctx[stickLayerIndex].save()
+          ctx[stickLayerIndex].globalCompositeOperation = 'destination-out'
+          this.followInstructions(
+            ctx[stickLayerIndex], src, stickInst.fadeout,
+            null, 1 - alpha.sticks[stickName], null
+          )
+          ctx[stickLayerIndex].restore()
+        }
+      } else {
+        // if stick change isn't found, apply fade-out route
+        // if it's actually active, update the lastActive time instead
+        if (
+          activeState.sticks[stickName][0] ||
+          activeState.sticks[stickName][1]
+        ) {
+          lastActive.sticks[stickName] = timestampAtStart
+        } else if (this.timingForFps(this.fadeoutFps)) {
+          const timeInactive =
+            timestampAtStart - lastActive.sticks[stickName]
+          let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
+  
+          // check if it needs to be fading-out
+          if (!fadingOut) { continue }
+  
+          alpha.sticks[stickName] *= deltaOpacity
+  
+          if (alpha.sticks[stickName] !== 1) {
+            ctx[stickLayerIndex].save()
+            ctx[stickLayerIndex].globalCompositeOperation = 'destination-out'
+            this.followInstructions(
+              ctx[stickLayerIndex], src, stickInst.fadeout,
+              null, 1 - alpha.sticks[stickName], null
+            )
+            ctx[stickLayerIndex].restore()
+          }
         }
       }
     }
@@ -660,37 +722,94 @@ class GamepadRenderer {
       const buttonGroupName = this.order.buttonGroup[bg]
       
       // check for changes for a button group
-      if (!buttons[buttonGroupName]) {
-        continue
-      }
+      if (buttons[buttonGroupName]) {
+        // changes for a button group is confirmed
+        for (let b = 0; b < this.order.button[bg].length; b++) {
+          const buttonName = this.order.button[bg][b]
+          const buttonInst = inst.buttons[buttonGroupName][buttonName]
+          // skip if the referred instruction is not made
+          if (!buttonInst || buttonInst.constructor !== Object) { continue }
+    
+          if (buttons[buttonGroupName][buttonName]) {
+            // change for the button is confirmed
+            const value = buttons[buttonGroupName][buttonName].value
       
-      // changes for a button group is confirmed
-      for (let b = 0; b < this.order.button[bg].length; b++) {
-        const buttonName = this.order.button[bg][b]
-        // check if there was a change on the button
-        if (!buttons[buttonGroupName][buttonName]) {
-          continue
+            this.followInstructions(
+              ctx[buttonLayerIndex], src, buttonInst.clear,
+              null, null, null
+            )
+      
+            if (value === 0) {
+              this.followInstructions(
+                ctx[buttonLayerIndex], src, buttonInst.off,
+                null, null, null
+              )
+              activeState.buttons[buttonGroupName][buttonName] = false
+            } else {
+              this.followInstructions(
+                ctx[buttonLayerIndex], src, buttonInst.on,
+                value, null, null
+              )
+              activeState.buttons[buttonGroupName][buttonName] = true
+              lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
+              alpha.buttons[buttonGroupName][buttonName] = 1
+            }
+          } else {
+            // for unchanged buttons in a changed group
+            // if it's actually active, update the lastActive time instead
+            if (activeState.buttons[buttonGroupName][buttonName]) {
+              lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
+            } else if (this.timingForFps(this.fadeoutFps)) {
+              const timeInactive =
+                timestampAtStart - lastActive.buttons[buttonGroupName][buttonName]
+              let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
+              
+              // check if it needs to be fading-out
+              if (!fadingOut) { continue }
+  
+              alpha.buttons[buttonGroupName][buttonName] *= deltaOpacity
+  
+              this.followInstructions(
+                ctx[buttonLayerIndex], src, buttonInst.clear,
+                null, null, null
+              )
+              this.followInstructions(
+                ctx[buttonLayerIndex], src, buttonInst.off,
+                null, alpha.buttons[buttonGroupName][buttonName], null
+              )
+            }
+          }
         }
-        
-        // change for the button is confirmed
-        const value = buttons[buttonGroupName][buttonName].value
-        const buttonInst = inst.buttons[buttonGroupName][buttonName]
-        // skip if the referred instruction is not made
-        if (!buttonInst || buttonInst.constructor !== Object) { continue }
-        
-        this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.clear,
-          null, null, null)
-        // comparing to 0 so that analog buttons with non-zero value
-        // will be drawn with 'on' instruction
-        if (value === 0) {
-          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.off,
-            null, null, null)
-          activeState.buttons[buttonGroupName][buttonName] = false
-        } else {
-          this.followInstructions(ctx[buttonLayerIndex], src, buttonInst.on,
-            value, null, null)
-          activeState.buttons[buttonGroupName][buttonName] = true
-          lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
+      } else {
+        // for unchanged button groups in a changed gamepad
+        for (let b = 0; b < this.order.button[bg].length; b++) {
+          const buttonName = this.order.button[bg][b]
+          const buttonInst = inst.buttons[buttonGroupName][buttonName]
+          // skip if the referred instruction is not made
+          if (!buttonInst || buttonInst.constructor !== Object) { continue }
+  
+          // if it's actually active, update the lastActive time instead
+          if (activeState.buttons[buttonGroupName][buttonName]) {
+            lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
+          } else if (this.timingForFps(this.fadeoutFps)) {
+            const timeInactive =
+              timestampAtStart - lastActive.buttons[buttonGroupName][buttonName]
+            let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
+  
+            // check if it needs to be fading-out
+            if (!fadingOut) { continue }
+  
+            alpha.buttons[buttonGroupName][buttonName] *= deltaOpacity
+  
+            this.followInstructions(
+              ctx[buttonLayerIndex], src, buttonInst.clear,
+              null, null, null
+            )
+            this.followInstructions(
+              ctx[buttonLayerIndex], src, buttonInst.off,
+              null, alpha.buttons[buttonGroupName][buttonName], null
+            )
+          }
         }
       }
     }
@@ -714,20 +833,17 @@ class GamepadRenderer {
       }, 'error')
       return false
     }
-    const fadeoutOption = this.fadeout
   
     const activeState = this.skinSlot[gamepadIndex].activeState
     const lastActive = this.skinSlot[gamepadIndex].lastActive
+    const alpha = this.skinSlot[gamepadIndex].alpha
     const timestampAtStart = this._timestamp || performance.now()
   
-    // start of fade-out animations
-    for (let c = 0; c < ctx.length; c++) {
-      ctx[c].save()
-      ctx[c].globalCompositeOperation = 'destination-out'
-    }
   
     // sticks
     const stickLayerIndex = inst.sticks.layer
+    ctx[stickLayerIndex].save()
+    ctx[stickLayerIndex].globalCompositeOperation = 'destination-out'
     
     for (let s = 0; s < this.order.stick.length; s++) {
       const stickName = this.order.stick[s]
@@ -745,17 +861,20 @@ class GamepadRenderer {
       
       const timeInactive =
         timestampAtStart - lastActive.sticks[stickName]
-  
       let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
-  
+      
+      // check if it needs to be fading-out
       if (!fadingOut) { continue }
-      // the inactive time is in the range of fade-out duration
+      
+      alpha.sticks[stickName] *= deltaOpacity
   
       this.followInstructions(
         ctx[stickLayerIndex], src, stickInst.fadeout,
-        null, deltaOpacity, null
+        null, 1 - alpha.sticks[stickName], null
       )
     }
+    
+    ctx[stickLayerIndex].restore()
   
     // buttons
     const buttonLayerIndex = inst.buttons.layer
@@ -775,22 +894,22 @@ class GamepadRenderer {
   
         const timeInactive =
           timestampAtStart - lastActive.buttons[buttonGroupName][buttonName]
-  
         let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
-  
-        if (!fadingOut) { continue }
-        // the inactive time is in the range of fade-out duration
         
+        // check if it needs to be fading-out
+        if (!fadingOut) { continue }
+  
+        alpha.buttons[buttonGroupName][buttonName] *= deltaOpacity
+  
         this.followInstructions(
-          ctx[buttonLayerIndex], src, buttonInst.fadeout,
-          null, deltaOpacity, null
+          ctx[buttonLayerIndex], src, buttonInst.clear,
+          null, null, null
+        )
+        this.followInstructions(
+          ctx[buttonLayerIndex], src, buttonInst.off,
+          null, alpha.buttons[buttonGroupName][buttonName], null
         )
       }
-    }
-    
-    // end of fade-out animations
-    for (let c = 0; c < ctx.length; c++) {
-      ctx[c].restore()
     }
   }
   
@@ -813,10 +932,12 @@ class GamepadRenderer {
   
     const activeState = this.skinSlot[gamepadIndex].activeState
     const lastActive = this.skinSlot[gamepadIndex].lastActive
+    const alpha = this.skinSlot[gamepadIndex].alpha
     const timestampAtStart = this._timestamp || performance.now()
     
     activeState.sticks = activeState.sticks || {}
     lastActive.sticks = lastActive.sticks || {}
+    alpha.sticks = alpha.sticks || {}
   
     const stickLayerIndex = inst.sticks.layer
     
@@ -837,10 +958,12 @@ class GamepadRenderer {
       // for stick movement and stick button
       activeState.sticks[stickName] = [false, false]
       lastActive.sticks[stickName] = timestampAtStart
+      alpha.sticks[stickName] = 1
     }
     
     activeState.buttons = activeState.buttons || {}
     lastActive.buttons = lastActive.buttons || {}
+    alpha.buttons = alpha.buttons || {}
   
     const buttonLayerIndex = inst.buttons.layer
     
@@ -851,6 +974,8 @@ class GamepadRenderer {
         activeState.buttons[buttonGroupName] || {}
       lastActive.buttons[buttonGroupName] =
         lastActive.buttons[buttonGroupName] || {}
+      alpha.buttons[buttonGroupName] =
+        alpha.buttons[buttonGroupName] || {}
         
       for (let b = 0; b < this.order.button[bg].length; b++) {
         const buttonName = this.order.button[bg][b]
@@ -868,6 +993,7 @@ class GamepadRenderer {
         
         activeState.buttons[buttonGroupName][buttonName] = false
         lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
+        alpha.buttons[buttonGroupName][buttonName] = 1
       }
     }
   }

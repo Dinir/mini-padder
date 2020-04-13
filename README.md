@@ -41,7 +41,7 @@ A local web page is not allowed to read files from the computer, so these progre
 I tried to make this project to prove to myself that I can make and *complete* making a thing. Also that I can use it for my own streams.
 
 [DInput Default Skin]: ./images/DInput-Skin.gif '(38.14kB) DInput Default Skin'
-[DInput ROCKETSROCKETSROCKETS]: ./images/DInput-R3.gif '(2.04MB) Mild Button Mash'
+[DInput ROCKETSROCKETSROCKETS]: ./images/DInput-R3.gif '(2.15MB) Mild Button Mash'
 [DInput Lightfield]: ./images/DInput-LF.gif '(1.55MB) Single Button Usage'
 
 [hosted webpage]: https://dinir.github.io/gamepad-viewer/gamepadviewer.html

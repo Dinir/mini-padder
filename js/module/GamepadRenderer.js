@@ -329,6 +329,12 @@ class GamepadRenderer {
     
     return [fadingOut, deltaOpacity]
   }
+  getMultipliedAlpha (alpha, deltaOpacity) {
+    if (alpha === 0) return alpha
+    return Math.floor(
+      alpha * deltaOpacity * 10 ** this.fadeoutOpacityPrecision
+    ) / 10 ** this.fadeoutOpacityPrecision
+  }
   
   setSkinMapping (gamepadId, skinDirname) {
     if (!GamepadRenderer.isDirnameOkay(skinDirname)) { return false }
@@ -650,11 +656,9 @@ class GamepadRenderer {
             timestampAtStart - lastActive.sticks[stickName]
           let [fadingOut, deltaOpacity] = this.getFadeoutState(timeInactive)
           if (fadingOut) {
-            alpha.sticks[stickName] =
-              Math.floor(
-                alpha.sticks[stickName] * deltaOpacity *
-                10**this.fadeoutOpacityPrecision
-              ) / 10**this.fadeoutOpacityPrecision
+            alpha.sticks[stickName] = this.getMultipliedAlpha(
+              alpha.sticks[stickName], deltaOpacity
+            )
           }
         }
         
@@ -698,11 +702,9 @@ class GamepadRenderer {
           // check if it needs to be fading-out
           if (!fadingOut) { continue }
   
-          alpha.sticks[stickName] =
-            Math.floor(
-              alpha.sticks[stickName] * deltaOpacity *
-              10**this.fadeoutOpacityPrecision
-            ) / 10**this.fadeoutOpacityPrecision
+          alpha.sticks[stickName] = this.getMultipliedAlpha(
+            alpha.sticks[stickName], deltaOpacity
+          )
   
           if (alpha.sticks[stickName] !== 1) {
             ctx[stickLayerIndex].save()
@@ -776,11 +778,9 @@ class GamepadRenderer {
               // check if it needs to be fading-out
               if (!fadingOut) { continue }
   
-              alpha.buttons[buttonGroupName][buttonName] =
-                Math.floor(
-                  alpha.buttons[buttonGroupName][buttonName] * deltaOpacity *
-                  10**this.fadeoutOpacityPrecision
-                ) / 10**this.fadeoutOpacityPrecision
+              alpha.buttons[buttonGroupName][buttonName] = this.getMultipliedAlpha(
+                alpha.buttons[buttonGroupName][buttonName], deltaOpacity
+              )
   
               this.followInstructions(
                 ctx[buttonLayerIndex], src, buttonInst.clear,
@@ -812,11 +812,9 @@ class GamepadRenderer {
             // check if it needs to be fading-out
             if (!fadingOut) { continue }
   
-            alpha.buttons[buttonGroupName][buttonName] =
-              Math.floor(
-                alpha.buttons[buttonGroupName][buttonName] * deltaOpacity *
-                10**this.fadeoutOpacityPrecision
-              ) / 10**this.fadeoutOpacityPrecision
+            alpha.buttons[buttonGroupName][buttonName] = this.getMultipliedAlpha(
+              alpha.buttons[buttonGroupName][buttonName], deltaOpacity
+            )
   
             this.followInstructions(
               ctx[buttonLayerIndex], src, buttonInst.clear,
@@ -883,11 +881,9 @@ class GamepadRenderer {
       // check if it needs to be fading-out
       if (!fadingOut) { continue }
       
-      alpha.sticks[stickName] =
-        Math.floor(
-          alpha.sticks[stickName] * deltaOpacity *
-          10**this.fadeoutOpacityPrecision
-        ) / 10**this.fadeoutOpacityPrecision
+      alpha.sticks[stickName] = this.getMultipliedAlpha(
+        alpha.sticks[stickName], deltaOpacity
+      )
   
       this.followInstructions(
         ctx[stickLayerIndex], src, stickInst.fadeout,
@@ -920,11 +916,9 @@ class GamepadRenderer {
         // check if it needs to be fading-out
         if (!fadingOut) { continue }
   
-        alpha.buttons[buttonGroupName][buttonName] =
-          Math.floor(
-            alpha.buttons[buttonGroupName][buttonName] * deltaOpacity *
-            10**this.fadeoutOpacityPrecision
-          ) / 10**this.fadeoutOpacityPrecision
+        alpha.buttons[buttonGroupName][buttonName] = this.getMultipliedAlpha(
+          alpha.buttons[buttonGroupName][buttonName], deltaOpacity
+        )
   
         this.followInstructions(
           ctx[buttonLayerIndex], src, buttonInst.clear,

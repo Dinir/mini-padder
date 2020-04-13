@@ -157,6 +157,7 @@ class MappingManager {
   
   static validateMappings (mappings) {
     if (
+      !mappings ||
       mappings.constructor !== Object ||
       Object.keys(mappings).length === 0
     ) { return false }

@@ -13,7 +13,9 @@ class ErrorLogCollector {
   write (message, url, lineNo, columnNo, error) {
     const timestamp =
       (Math.floor(1000*performance.now())/1000).toFixed(3)
-    this.errorLog[0] += `[${timestamp}] ${error.stack}\n`
+    this.errorLog[0] += `[${timestamp}] `
+    this.errorLog[0] += error ? error.stack : message
+    this.errorLog[0] += '\n'
     return false
   }
 }

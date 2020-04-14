@@ -1040,8 +1040,6 @@ class GamepadRenderer {
    */
   loadInstructions () {
     this.instructionParameters = {
-      fadeoutRect: ['ctx', 'x', 'y', 'width', 'height', 'alpha'],
-      fadeoutPolygon: ['ctx', 'path', 'alpha'],
       clearRect: ['ctx', 'x', 'y', 'width', 'height'],
       clearPolygon: ['ctx', 'path'],
       drawImage: ['ctx', 'src', 'coord', 'alpha'],
@@ -1052,36 +1050,6 @@ class GamepadRenderer {
       clearParallelogramByValue: ['ctx', 'value', 'areaWidth', 'xMin', 'xMax', 'yMin', 'height', 'skewAway', 'vertical']
     }
     this.instruction = {
-      // 'fadeout*' methods are used several time in a row,
-      // so the context state management should be done outside of them!
-      fadeoutRect: function (
-        ctx, x, y, width, height, alpha
-      ) {
-        if (alpha === 0) { return }
-        // ctx.save() // do this before
-        // ctx.globalCompositeOperation = 'destination-out' // do this before
-        ctx.globalAlpha = alpha
-        
-        ctx.fillRect(x, y, width, height)
-        // ctx.restore() // do this after finishing fadeout chain
-      },
-      fadeoutPolygon: function (
-        ctx, path, alpha
-      ) {
-        if (alpha === 0) { return }
-        // ctx.save() // do this before
-        // ctx.globalCompositeOperation = 'destination-out' // do this before
-        ctx.globalAlpha = alpha
-  
-        ctx.beginPath()
-        for (let p = 0; p < path.length; p=p+2) {
-          if (typeof path[p+1] === 'undefined') { continue }
-          ctx.lineTo(path[p], path[p+1])
-        }
-        ctx.closePath()
-        ctx.fill()
-        // ctx.restore() // do this after finishing fadeout chain
-      },
       clearRect: function (
         ctx, x, y, width, height
       ) {

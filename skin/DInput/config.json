@@ -41,7 +41,7 @@
 			"on": [
 				{
 					"instruction": "drawImageByPos",
-					"areaSize": [24, 24], "src": 1, "coord": [332, 0, 48, 48, [24,24,true,true], 48, 48]
+					"areaSize": [24, 24], "src": 1, "coord": [333, 0, 48, 48, [24,24,true,true], 48, 48]
 				}
 			]
 		},
@@ -71,7 +71,7 @@
 			"on": [
 				{
 					"instruction": "drawImageByPos",
-					"areaSize": [24, 24], "src": 1, "coord": [380, 0, 48, 48, [184,24,true,true], 48, 48]
+					"areaSize": [24, 24], "src": 1, "coord": [382, 0, 48, 48, [184,24,true,true], 48, 48]
 				}
 			]
 		}
@@ -101,7 +101,7 @@
 				"on": [
 					{
 						"instruction": "drawImage",
-						"src": 1, "coord": [428, 0, 24, 32, 36, 44, 24, 32]
+						"src": 1, "coord": [431, 0, 24, 32, 36, 44, 24, 32]
 					}
 				]
 			},
@@ -127,7 +127,7 @@
 				"on": [
 					{
 						"instruction": "drawImage",
-						"src": 1, "coord": [452, 0, 24, 32, 36, 84, 24, 32]
+						"src": 1, "coord": [455, 0, 24, 32, 36, 84, 24, 32]
 					}
 				]
 			},
@@ -153,7 +153,7 @@
 				"on": [
 					{
 						"instruction": "drawImage",
-						"src": 1, "coord": [476, 0, 32, 24, 12, 68, 32, 24]
+						"src": 1, "coord": [479, 0, 32, 24, 12, 68, 32, 24]
 					}
 				]
 			},
@@ -179,7 +179,7 @@
 				"on": [
 					{
 						"instruction": "drawImage",
-						"src": 1, "coord": [508, 0, 32, 24, 52, 68, 32, 24]
+						"src": 1, "coord": [511, 0, 32, 24, 52, 68, 32, 24]
 					}
 				]
 			}
@@ -371,7 +371,7 @@
 				"on": [
 					{
 						"instruction": "drawImage",
-						"src": 1, "coord": [540, 0, 16, 16, 120, 112, 16, 16]
+						"src": 1, "coord": [543, 0, 16, 16, 120, 112, 16, 16]
 					}
 				]
 			},
@@ -397,7 +397,7 @@
 				"on": [
 					{
 						"instruction": "drawImage",
-						"src": 1, "coord": [556, 0, 32, 16, 112, 32, 32, 16]
+						"src": 1, "coord": [559, 0, 32, 16, 112, 32, 32, 16]
 					}
 				]
 			}

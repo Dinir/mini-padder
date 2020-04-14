@@ -65,7 +65,7 @@
 			"off": [
 				{
 					"instruction": "drawImageByPos",
-					"areaSize": [24, 24], "src": 1, "coord": [48, 48, 48, 48, [184,24,true,true], 48, 48]
+					"areaSize": [24, 24], "src": 1, "coord": [49, 48, 48, 48, [184,24,true,true], 48, 48]
 				}
 			],
 			"on": [

@@ -10,7 +10,11 @@ To use the old one that worked on only handful kind of gamepads, checkout the [1
 
 ---
 
-![DInput Default Skin] ![DInput ROCKETSROCKETSROCKETS] ![DInput Lightfield]
+| ![DInput Default and Joystick Default] | ![DInput ROCKETSROCKETSROCKETS] <br> ![DInput Lightfield] |
+| :---: | :---: |
+| multiple gamepads with different layouts | displaying over game screens |
+
+
 
 Simple gamepad input overlay for streaming, with default skins that keep a good readability even in tough encoding situations.
 
@@ -40,7 +44,7 @@ A local web page is not allowed to read files from the computer, so these progre
 
 I tried to make this project to prove to myself that I can make and *complete* making a thing. Also that I can use it for my own streams.
 
-[DInput Default Skin]: ./images/DInput-Skin.gif '(38.14kB) DInput Default Skin'
+[DInput Default and Joystick Default]: ./images/DS4-and-Joystick.gif '(539.9kB) Dinput Default Skin and Joystick Default Skin'
 [DInput ROCKETSROCKETSROCKETS]: ./images/DInput-R3.gif '(2.15MB) Mild Button Mash'
 [DInput Lightfield]: ./images/DInput-LF.gif '(1.55MB) Single Button Usage'
 

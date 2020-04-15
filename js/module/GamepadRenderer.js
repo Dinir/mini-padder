@@ -1053,6 +1053,7 @@ class GamepadRenderer {
       clearPolygon: ['ctx', 'path'],
       drawImage: ['ctx', 'src', 'coord', 'alpha'],
       drawImageByPos: ['ctx', 'src', 'pos', 'areaSize', 'coord', 'alpha'],
+      drawImageInEightPos: ['ctx', 'src', 'pos', 'length', 'lengthDiagonal', 'coord', 'alpha'],
       drawImageInPolygon: ['ctx', 'src', 'path', 'coord', 'alpha'],
       drawImageInPolygonByValue: ['ctx', 'src', 'value', 'areaWidth', 'path', 'coord', 'alpha'],
       clearParallelogram: ['ctx', 'xMin', 'xMax', 'yMin', 'height', 'skewAway', 'vertical'],
@@ -1102,6 +1103,7 @@ class GamepadRenderer {
           fixedPos.push(pos[a] * areaSize[a])
         }
         const fixedCoord = []
+        
         for (let p = 0; p < coord.length; p++) {
           if (coord[p].constructor === Array) {
             for (let a = 0; a < 2; a++) {
@@ -1113,6 +1115,31 @@ class GamepadRenderer {
             fixedCoord.push(coord[p])
           }
         }
+        this.drawImage(
+          ctx, src, fixedCoord, alpha
+        )
+      },
+      drawImageInEightPos: function (
+        ctx, src,
+        pos, length, lengthDiagonal, coord,
+        alpha = 1
+      ) {
+        const fixedLength = Math.abs(pos[0]) !== 1 || Math.abs(pos[1]) !== 1 ?
+          length : lengthDiagonal || ( length * Math.sin(Math.PI*0.75) )
+        const fixedCoord = []
+        
+        for (let p = 0; p < coord.length; p++) {
+          if (coord[p].constructor === Array) {
+            for (let a = 0; a < 2; a++) {
+              fixedCoord.push(
+                fixedLength * pos[a] + coord[p][a]
+              )
+            }
+          } else {
+            fixedCoord.push(coord[p])
+          }
+        }
+        
         this.drawImage(
           ctx, src, fixedCoord, alpha
         )

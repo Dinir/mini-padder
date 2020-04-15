@@ -1,0 +1,290 @@
+{
+	"name": "Joystick Default",
+	"src": [
+		"frame.png", "active.png"
+	],
+	"layer": [
+		{
+			"name": "button", "src": 0,
+			"x": 15, "y": 16, "width": 227, "height": 112
+		}
+	],
+	"sticks": {
+		"layer": 0,
+		"left": {
+			"clear": [
+				{
+					"instruction": "clearRect",
+					"x": 0, "y": 24, "width": 88, "height": 88
+				},
+				{
+					"instruction": "drawImage",
+					"src": 0, "coord": [0, 36, 88, 88, 0, 24, 88, 88]
+				}
+			],
+			"off": [
+				{
+					"instruction": "drawImageInEightPos",
+					"length": 28, "lengthDiagonal": 20, "src": 1, "coord": [0, 36, 32, 32, [28, 52], 32, 32]
+				}
+			],
+			"on": [
+				{
+					"instruction": "drawImageInEightPos",
+					"length": 28, "lengthDiagonal": 20, "src": 1, "coord": [0, 36, 32, 32, [28, 52], 32, 32]
+				},
+				{
+					"instruction": "drawImage",
+					"src": 1, "coord": [0, 84, 16, 16, 124, 0, 16, 16]
+				}
+			]
+		}
+	},
+	"buttons": {
+		"layer": 0,
+		"face": {
+			"down": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 96, "y": 84, "width": 28, "height": 28
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [0, 0, 28, 28, 96, 84, 28, 28]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [0, 0, 28, 28, 96, 84, 28, 28]
+					}
+				]
+			},
+			"right": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 127, "y": 72, "width": 28, "height": 28
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [0, 0, 28, 28, 127, 72, 28, 28]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [0, 0, 28, 28, 127, 72, 28, 28]
+					}
+				]
+			},
+			"left": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 103, "y": 49, "width": 28, "height": 28
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [0, 0, 28, 28, 103, 49, 28, 28]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [0, 0, 28, 28, 103, 49, 28, 28]
+					}
+				]
+			},
+			"up": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 133, "y": 37, "width": 28, "height": 28
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [0, 0, 28, 28, 133, 37, 28, 28]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [0, 0, 28, 28, 133, 37, 28, 28]
+					}
+				]
+			},
+			"select": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 164, "y": 0, "width": 28, "height": 16
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [28, 0, 28, 16, 164, 0, 28, 16]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [28, 0, 28, 16, 164, 0, 28, 16]
+					}
+				]
+			},
+			"start": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 196, "y": 0, "width": 28, "height": 16
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [56, 0, 28, 16, 196, 0, 28, 16]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [56, 0, 28, 16, 196, 0, 28, 16]
+					}
+				]
+			},
+			"home": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 84, "y": 0, "width": 16, "height": 16
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [116, 0, 16, 16, 84, 0, 16, 16]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [116, 0, 16, 16, 84, 0, 16, 16]
+					}
+				]
+			},
+			"touchpad": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 104, "y": 0, "width": 16, "height": 16
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [132, 0, 16, 16, 104, 0, 16, 16]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [132, 0, 16, 16, 104, 0, 16, 16]
+					}
+				]
+			}
+		},
+		"shoulder": {
+			"l1": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 199, "y": 37, "width": 28, "height": 28
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [0, 0, 28, 28, 199, 37, 28, 28]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [0, 0, 28, 28, 199, 37, 28, 28]
+					}
+				]
+			},
+			"r1": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 166, "y": 37, "width": 28, "height": 28
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [0, 0, 28, 28, 166, 37, 28, 28]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [0, 0, 28, 28, 166, 37, 28, 28]
+					}
+				]
+			},
+			"l2": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 193, "y": 72, "width": 28, "height": 28
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [0, 0, 28, 28, 193, 72, 28, 28]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [0, 0, 28, 28, 193, 72, 28, 28]
+					}
+				]
+			},
+			"r2": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 160, "y": 72, "width": 28, "height": 28
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [0, 0, 28, 28, 160, 72, 28, 28]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [0, 0, 28, 28, 160, 72, 28, 28]
+					}
+				]
+			}
+		}
+	}
+}

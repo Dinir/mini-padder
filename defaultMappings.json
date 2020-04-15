@@ -52,7 +52,7 @@
 	},
 	"0f30": {
 		"name": "Qanba Joystick",
-		"properties": ["axisdpad"],
+		"properties": ["axisdpad", "nodpad"],
 		"sticks": {
 			"deadzone": 0.5,
 			"left": {
@@ -76,37 +76,9 @@
 			}
 		}
 	},
-	"0738": {
-		"name": "Mad Catz Joystick",
-		"properties": ["axisdpad"],
-		"sticks": {
-			"deadzone": 0.5,
-			"left": {
-				"x": 0, "y": 1, "button": 10
-			},
-			"right": {
-				"x": 2, "y": 5, "button": 11
-			}
-		},
-		"buttons": {
-			"dpad": {
-				"axis": 9,
-				"precision": 0.1,
-				"up": -1, "upright": -0.8, "right": -0.5, "downright": -0.2,
-				"down": 0.1, "downleft": 0.4, "left": 0.7, "upleft": 1
-			},
-			"face": {
-				"left": 0, "down": 1, "right": 2, "up": 3,
-				"select": 8, "start": 9
-			},
-			"shoulder": {
-				"l1": 4, "r1": 5, "l2": 6, "r2": 7
-			}
-		}
-	},
 	"0f0d": {
-		"name": "Hori Joystick?",
-		"properties": ["axisdpad"],
+		"name": "Hori Joystick",
+		"properties": ["axisdpad", "nodpad"],
 		"sticks": {
 			"deadzone": 0.5,
 			"left": {
@@ -132,8 +104,36 @@
 			}
 		}
 	},
-	"2dc86001": {
-		"name": "8BitDo SN30 Pro (DInput)",
+	"0738": {
+		"name": "Mad Catz Joystick",
+		"properties": ["axisdpad", "nodpad"],
+		"sticks": {
+			"deadzone": 0.5,
+			"left": {
+				"x": 0, "y": 1, "button": 10
+			},
+			"right": {
+				"x": 2, "y": 5, "button": 11
+			}
+		},
+		"buttons": {
+			"dpad": {
+				"axis": 9,
+				"precision": 0.1,
+				"up": -1, "upright": -0.8, "right": -0.5, "downright": -0.2,
+				"down": 0.1, "downleft": 0.4, "left": 0.7, "upleft": 1
+			},
+			"face": {
+				"left": 0, "down": 1, "right": 2, "up": 3,
+				"select": 8, "start": 9
+			},
+			"shoulder": {
+				"l1": 4, "r1": 5, "l2": 6, "r2": 7
+			}
+		}
+	},
+	"2dc8": {
+		"name": "8BitDo Gamepad (DInput)",
 		"properties": ["axisdpad"],
 		"sticks": {
 			"deadzone": 0.02,
@@ -158,32 +158,6 @@
 			},
 			"shoulder": {
 				"l1": 6, "r1": 7, "l2": 8, "r2": 9
-			}
-		}
-	},
-	"0f301012": {
-		"name": "Q4RAF (DInput - PS3.PC)",
-		"properties": ["axisdpad"],
-		"sticks": {
-			"deadzone": 0.5,
-			"left": {
-				"x": 0, "y": 1, "button": null
-			},
-			"right": null
-		},
-		"buttons": {
-			"dpad": {
-				"axis": 9,
-				"precision": 0.1,
-				"up": -1, "upright": -0.8, "right": -0.5, "downright": -0.2,
-				"down": 0.1, "downleft": 0.4, "left": 0.7, "upleft": 1
-			},
-			"face": {
-				"down": 0, "right": 1, "left": 2, "up": 3,
-				"select": 8, "start": 9
-			},
-			"shoulder": {
-				"r1": 4, "l1": 5, "r2": 6, "l2": 7
 			}
 		}
 	}

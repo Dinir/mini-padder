@@ -717,6 +717,8 @@ class GamepadRenderer {
     // give instructions for buttons
     for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
       const buttonGroupName = this.order.buttonGroup[bg]
+      // skip the button group if the skin doesn't include it
+      if (!inst.buttons[buttonGroupName]) { continue }
       
       // check for changes for a button group
       if (buttons[buttonGroupName]) {
@@ -884,6 +886,9 @@ class GamepadRenderer {
     
     for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
       const buttonGroupName = this.order.buttonGroup[bg]
+      // skip the button group if the skin doesn't include it
+      if (!inst.buttons[buttonGroupName]) { continue }
+      
       for (let b = 0; b < this.order.button[bg].length; b++) {
         const buttonName = this.order.button[bg][b]
         const buttonInst = inst.buttons[buttonGroupName][buttonName]
@@ -974,6 +979,8 @@ class GamepadRenderer {
     
     for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
       const buttonGroupName = this.order.buttonGroup[bg]
+      // skip the button group if the skin doesn't include it
+      if (!inst.buttons[buttonGroupName]) { continue }
       
       activeState.buttons[buttonGroupName] =
         activeState.buttons[buttonGroupName] || {}
@@ -985,6 +992,8 @@ class GamepadRenderer {
       for (let b = 0; b < this.order.button[bg].length; b++) {
         const buttonName = this.order.button[bg][b]
         const buttonInst = inst.buttons[buttonGroupName][buttonName]
+        // if the instruction is not made and therefore not an Object,
+        // the loop will skip the button meant for the instruction
         if (!buttonInst || buttonInst.constructor !== Object) { continue }
         
         this.followInstructions(

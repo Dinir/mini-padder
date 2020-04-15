@@ -356,9 +356,12 @@ class MappingManager {
       const properties = mapping.properties
       
       // sticks.left and sticks.right
-      processedChange.sticks = MappingManager.processSticks(
-        mapping.sticks, change.axes, change.buttons
-      )
+      if (properties.indexOf('nosticks') === -1) {
+        // 'nosticks' : no analog sticks on the gamepad
+        processedChange.sticks = MappingManager.processSticks(
+          mapping.sticks, change.axes, change.buttons
+        )
+      }
       
       // buttons.dpad
       if (properties.indexOf('axisdpad') !== -1) {

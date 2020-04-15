@@ -42,6 +42,88 @@
 	},
 	"buttons": {
 		"layer": 0,
+		"dpad-unusable": {
+			"up": {
+				"clear": [
+					{
+						"instruction": "clearPolygon",
+						"path": [32, 32, 56, 32, 56, 54, 44, 66, 32, 54]
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [148, 0, 24, 32, 32, 32, 24, 32]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [148, 0, 24, 32, 32, 32, 24, 32]
+					}
+				]
+			},
+			"down": {
+				"clear": [
+					{
+						"instruction": "clearPolygon",
+						"path": [44, 70, 56, 82, 56, 104, 32, 104, 32, 82]
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [172, 0, 24, 32, 32, 72, 24, 32]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [172, 0, 24, 32, 32, 72, 24, 32]
+					}
+				]
+			},
+			"left": {
+				"clear": [
+					{
+						"instruction": "clearPolygon",
+						"path": [8, 56, 30, 56, 42, 68, 30, 80, 8, 80]
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [196, 0, 32, 24, 8, 56, 32, 24]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [196, 0, 32, 24, 8, 56, 32, 24]
+					}
+				]
+			},
+			"right": {
+				"clear": [
+					{
+						"instruction": "clearPolygon",
+						"path": [58, 56, 80, 56, 80, 80, 58, 80, 46, 68]
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [228, 0, 32, 24, 48, 56, 32, 24]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [228, 0, 32, 24, 48, 56, 32, 24]
+					}
+				]
+			}
+		},
 		"face": {
 			"down": {
 				"clear": [

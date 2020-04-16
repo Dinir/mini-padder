@@ -62,7 +62,7 @@ class MappingInterface extends MappingManager {
       },
       "0f30": {
         "name": "Qanba Joystick",
-        "properties": ["axisdpad", "nodpad"],
+        "properties": ["joystick"],
         "sticks": {
           "deadzone": 0.5,
           "left": {
@@ -72,10 +72,7 @@ class MappingInterface extends MappingManager {
         },
         "buttons": {
           "dpad": {
-            "axis": 9,
-            "precision": 0.1,
-            "up": -1, "upright": -0.8, "right": -0.5, "downright": -0.2,
-            "down": 0.1, "downleft": 0.4, "left": 0.7, "upleft": 1
+            "axis": 9
           },
           "face": {
             "down": 0, "right": 1, "left": 2, "up": 3,
@@ -88,7 +85,7 @@ class MappingInterface extends MappingManager {
       },
       "0f0d": {
         "name": "Hori Joystick",
-        "properties": ["axisdpad", "nodpad"],
+        "properties": ["joystick"],
         "sticks": {
           "deadzone": 0.5,
           "left": {
@@ -100,10 +97,7 @@ class MappingInterface extends MappingManager {
         },
         "buttons": {
           "dpad": {
-            "axis": 9,
-            "precision": 0.1,
-            "up": -1, "upright": -0.8, "right": -0.5, "downright": -0.2,
-            "down": 0.1, "downleft": 0.4, "left": 0.7, "upleft": 1
+            "axis": 9
           },
           "face": {
             "down": 0, "right": 1, "left": 2, "up": 3,
@@ -116,7 +110,7 @@ class MappingInterface extends MappingManager {
       },
       "0738": {
         "name": "Mad Catz Joystick",
-        "properties": ["axisdpad", "nodpad"],
+        "properties": ["joystick"],
         "sticks": {
           "deadzone": 0.5,
           "left": {
@@ -128,10 +122,7 @@ class MappingInterface extends MappingManager {
         },
         "buttons": {
           "dpad": {
-            "axis": 9,
-            "precision": 0.1,
-            "up": -1, "upright": -0.8, "right": -0.5, "downright": -0.2,
-            "down": 0.1, "downleft": 0.4, "left": 0.7, "upleft": 1
+            "axis": 9
           },
           "face": {
             "left": 0, "down": 1, "right": 2, "up": 3,
@@ -156,10 +147,7 @@ class MappingInterface extends MappingManager {
         },
         "buttons": {
           "dpad": {
-            "axis": 9,
-            "precision": 0.1,
-            "up": -1, "upright": -0.8, "right": -0.5, "downright": -0.2,
-            "down": 0.1, "downleft": 0.4, "left": 0.7, "upleft": 1
+            "axis": 9
           },
           "face": {
             "right": 0, "down": 1, "up": 3, "left": 4,

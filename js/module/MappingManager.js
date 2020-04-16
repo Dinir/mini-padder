@@ -364,30 +364,34 @@ class MappingManager {
       }
       
       // buttons.dpad
-      if (properties.indexOf('axisdpad') !== -1) {
-        // 'axisdpad': axis is dpad - certain axes represent dpad
-        if (properties.indexOf('nodpad') !== -1) {
-          // 'nodpad': no dpad on gamepad - signal is probably coming from a physical stick
-          processedChange.buttons.dpad = null
-          if (
-            (processedChange.sticks.left && processedChange.sticks.left.active) ||
-            (processedChange.sticks.right && processedChange.sticks.right.active)
-          ) {
-            // An active signal was interpreted already. Nothing to do here.
-          } else {
-            // No way to know if the stick signal is sent as that of left/right stick,
-            // but both sticks are read as inactive at the moment
-            // so maybe I can try reading a dpad axis signal as that of left stick.
-            processedChange.sticks.left = MappingManager.processDpadAsLeftStick(
-              mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis]
-            )
-          }
-        } else {
-          // this is a weird gamepad
-          processedChange.buttons.dpad = MappingManager.processAxisDpad(
+      if (processedChange.properties.indexOf('joystick') !== -1) {
+        // 'joystick': this is a joystick - only one of the three is active: LS, RS, or Dpad.
+        /*
+         This property is intended to be a simpler one for 'axisdpad' + 'nodpad'.
+         Since only the changes on a gamepad are received,
+         signal of non-axis dpad can't be converted into a stick signal.
+         */
+        processedChange.buttons.dpad = null
+        // check if there's already an active signal received as any of the sticks on the mapping
+        if (
+          (!processedChange.sticks.left || !processedChange.sticks.left.active) &&
+          (!processedChange.sticks.right || !processedChange.sticks.right.active)
+        ) {
+          /*
+           No way to know if the stick signal is being sent as that of left/right stick,
+           but both sticks are seen as inactive at the moment
+           so maybe I can try reading a dpad axis signal as that of left stick.
+           */
+          processedChange.sticks.left = MappingManager.processAxisDpadAsLeftStick(
             mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis]
           )
         }
+      } else if (processedChange.properties.indexOf('axisdpad') !== -1) {
+        // 'axisdpad': axis is dpad - certain axes represent dpad
+        // this is a weird gamepad
+        processedChange.buttons.dpad = MappingManager.processAxisDpad(
+          mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis]
+        )
       } else {
         // dpad is reasonably found as simple and clean four buttons
         processedChange.buttons.dpad = MappingManager.processDpadSimple(
@@ -466,12 +470,24 @@ class MappingManager {
     return processedChangeSticks
   }
   
+  /**
+   * Convert axis dpad value as stick value for stickChange or
+   * an array of four direction values.
+   * @param {number} value
+   * @param {boolean} asStick
+   * @param {number[]} directionValues
+   * @param {number} precision
+   * @returns {number[]}
+   * If `asStick` is true, values of x-axis, y-axis,
+   * and null as the stick button state.
+   * If not `asStick`, then value of up, down, left, and right.
+   */
   static convertAxisDpadValue (
-    value, asAxis = true,
+    value, asStick = true,
     directionValues = [-1, -0.8, -0.5, -0.2, 0.1, 0.4, 0.7, 1],
     precision = 0.1
   ) {
-    const conversionTable = asAxis ? [
+    const conversionTable = asStick ? [
       [ 0, -1, null],
       [ 1, -1, null],
       [ 1,  0, null],
@@ -481,14 +497,14 @@ class MappingManager {
       [-1,  0, null],
       [-1, -1, null]
     ] : [
-      [1,0,0,0],
-      [1,0,0,1],
-      [0,0,0,1],
-      [0,1,0,1],
-      [0,1,0,0],
-      [0,1,1,0],
-      [0,0,1,0],
-      [1,0,1,0]
+      [1, 0, 0, 0],
+      [1, 0, 0, 1],
+      [0, 0, 0, 1],
+      [0, 1, 0, 1],
+      [0, 1, 0, 0],
+      [0, 1, 1, 0],
+      [0, 0, 1, 0],
+      [1, 0, 1, 0]
     ]
     
     const directionIndex = directionValues.findIndex( d =>
@@ -500,6 +516,12 @@ class MappingManager {
     return conversionTable[directionIndex]
   }
   
+  /**
+   * Dpad (single axis) => Mapped Dpad (four buttons)
+   * @param {Object.<string, number>} mappingDpad dpad mapping
+   * @param {axisChange} changeAxis axis of the dpad
+   * @returns {Object.<string, buttonChange>}
+   */
   static processAxisDpad (mappingDpad, changeAxis) {
     if (!changeAxis) { return null }
     
@@ -553,8 +575,13 @@ class MappingManager {
     
     return processedChangeButtonsDpad
   }
-  
-  static processDpadAsLeftStick (mappingDpad, changeAxis) {
+  /**
+   * Dpad (single axis) => Mapped Stick (two axis)
+   * @param {Object.<string, number>} mappingDpad dpad mapping
+   * @param {axisChange} changeAxis axis of the dpad
+   * @returns {?stickChange}
+   */
+  static processAxisDpadAsLeftStick (mappingDpad, changeAxis) {
     if (!changeAxis) { return null }
     
     const value = changeAxis.value

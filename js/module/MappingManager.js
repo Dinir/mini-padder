@@ -353,7 +353,7 @@ class MappingManager {
         this.mappings[processedChange.id.gamepadId] ||
         this.mappings[processedChange.id.gamepadId.slice(0,4)] ||
         this.mappings['DInput']
-      const properties = mapping.properties
+      processedChange.properties = mapping.properties
       
       // sticks.left and sticks.right
       if (processedChange.properties.indexOf('nosticks') !== -1) {} else {

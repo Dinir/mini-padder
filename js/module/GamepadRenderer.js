@@ -136,6 +136,13 @@ class GamepadRenderer {
   static isDirnameOkay (dirname) {
     return !/[^0-9a-zA-Z_\-]/.test(dirname)
   }
+  static findDefaultSkin (gamepadId, mappingProperties) {
+    const defaultSkin = ['DInput', 'XInput', 'Joystick']
+    if (mappingProperties.indexOf('joystick') !== -1) { return defaultSkin[2] }
+    // when it's a standard XInput gamepad, the gamepadId is just 'xinput'.
+    if (/XInput/i.test(gamepadId)) { return defaultSkin[1] }
+    return defaultSkin[0]
+  }
   static announceMessage (message, type) {
     const messageType = {
       log: 'log',
@@ -560,16 +567,10 @@ class GamepadRenderer {
         } else {
           // skinSlot isn't made
           // find skin for the gamepad
-          const newSkinDirname =
-            this.skinMapping[gamepadChange.id.gamepadId] ||
-            (/XInput/i.test(gamepadChange.id.gamepadId) ? 'XInput' : 'DInput')
-          if (!newSkinDirname) {
-            GamepadRenderer.announceMessage({
-              message: 'Can\'t assign a skin directory name for the gamepad.',
-              ProcessedGamepadChange: gamepadChange
-            }, 'error')
-            continue
-          }
+          const newSkinDirname = this.skinMapping[gamepadChange.id.gamepadId] ||
+            GamepadRenderer.findDefaultSkin(
+              gamepadChange.id.gamepadId, gamepadChange.properties
+            )
           this.setSkinMapping(gamepadChange.id.gamepadId, newSkinDirname)
           this.applySkinToSlot(
             newSkinDirname, gamepadIndex, gamepadChange.id.gamepadId

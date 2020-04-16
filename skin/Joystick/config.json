@@ -32,10 +32,6 @@
 				{
 					"instruction": "drawImageInEightPos",
 					"length": 28, "lengthDiagonal": 20, "src": 1, "coord": [0, 36, 32, 32, [28, 52], 32, 32]
-				},
-				{
-					"instruction": "drawImage",
-					"src": 1, "coord": [0, 84, 16, 16, 124, 0, 16, 16]
 				}
 			]
 		}
@@ -242,6 +238,46 @@
 					{
 						"instruction": "drawImage",
 						"src": 1, "coord": [56, 0, 28, 16, 196, 0, 28, 16]
+					}
+				]
+			},
+			"l3": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 124, "y": 0, "width": 16, "height": 16
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [84, 0, 16, 16, 124, 0, 16, 16]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [84, 0, 16, 16, 124, 0, 16, 16]
+					}
+				]
+			},
+			"r3": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 144, "y": 0, "width": 16, "height": 16
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "coord": [100, 0, 16, 16, 144, 0, 16, 16]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "coord": [100, 0, 16, 16, 144, 0, 16, 16]
 					}
 				]
 			},

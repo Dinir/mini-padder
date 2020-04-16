@@ -659,7 +659,7 @@ class MappingManager {
     const buttonSide = ['face', 'shoulder']
     const buttonIndex = [
       [
-        'down', 'right', 'left', 'up', 'select', 'start', 'home', 'touchpad'
+        'down', 'right', 'left', 'up', 'select', 'start', 'l3', 'r3', 'home', 'touchpad'
       ],
       [
         'l1', 'r1', 'l2', 'r2'

@@ -66,7 +66,7 @@ class MappingInterface extends MappingManager {
         "sticks": {
           "deadzone": 0.5,
           "left": {
-            "x": 0, "y": 1, "button": null
+            "x": 0, "y": 1, "button": 10
           },
           "right": null
         },
@@ -76,7 +76,7 @@ class MappingInterface extends MappingManager {
           },
           "face": {
             "down": 0, "right": 1, "left": 2, "up": 3,
-            "select": 8, "start": 9
+            "select": 8, "start": 9, "l3": 10, "r3": 11, "home": 12, "touchpad": 13
           },
           "shoulder": {
             "r1": 4, "l1": 5, "r2": 6, "l2": 7
@@ -101,7 +101,7 @@ class MappingInterface extends MappingManager {
           },
           "face": {
             "down": 0, "right": 1, "left": 2, "up": 3,
-            "select": 8, "start": 9
+            "select": 8, "start": 9, "l3": 10, "r3": 11
           },
           "shoulder": {
             "r1": 4, "l1": 5, "r2": 6, "l2": 7
@@ -126,7 +126,7 @@ class MappingInterface extends MappingManager {
           },
           "face": {
             "left": 0, "down": 1, "right": 2, "up": 3,
-            "select": 8, "start": 9
+            "select": 8, "start": 9, "l3": 10, "r3": 11, "home": 12, "touchpad": 13
           },
           "shoulder": {
             "l1": 4, "r1": 5, "l2": 6, "r2": 7

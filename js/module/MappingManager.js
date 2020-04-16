@@ -592,32 +592,36 @@ class MappingManager {
     // active value can be negative or 1, and not 0.
     const active = value !== 0 && value <= 1
   
-    // find the direction
-    /*
-    converting up ~ upleft to 0 ~ 7,
-    in a clockwise order.
-    if I can be certain every dinput dpad value works in the same way I could make this much simpler...
-     */
-    const directions = [
-      mappingDpad.up,
-      mappingDpad.upright,
-      mappingDpad.right,
-      mappingDpad.downright,
-      mappingDpad.down,
-      mappingDpad.downleft,
-      mappingDpad.left,
-      mappingDpad.upleft,
-    ]
     const neutralValues = [0, 0, null]
   
-    const stickValues = active ? MappingManager.convertAxisDpadValue(
-      value, true, directions, mappingDpad.precision
-    ) || neutralValues : neutralValues
+    const conversionArgs = [[value], [delta]]
+    // the mapping declared its own dpad values and comparison precision
+    if (mappingDpad.hasOwnProperty('upright')) {
+      for (let i = 0; i < 2; i++) {
+        conversionArgs[i].push(
+          true,
+          [
+            mappingDpad.up,
+            mappingDpad.upright,
+            mappingDpad.right,
+            mappingDpad.downright,
+            mappingDpad.down,
+            mappingDpad.downleft,
+            mappingDpad.left,
+            mappingDpad.upleft,
+          ],
+          mappingDpad.precision
+        )
+      }
+    }
+    
+    const stickValues = active ?
+      MappingManager.convertAxisDpadValue(...conversionArgs[0]) || neutralValues :
+      neutralValues
   
     const stickPreviousValues = previousValue !== 0 && previousValue <= 1 ?
-      MappingManager.convertAxisDpadValue(
-        delta, true, directions, mappingDpad.precision
-      ) || neutralValues : neutralValues
+      MappingManager.convertAxisDpadValue(...conversionArgs[1]) || neutralValues :
+      neutralValues
     
     const deltaValues = [
       stickValues[0] - stickPreviousValues[0],

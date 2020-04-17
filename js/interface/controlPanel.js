@@ -183,23 +183,21 @@ class ControlPanel {
           case true:
             const id = ControlPanel.getGamepadId(e.gamepad.id)
             const label = `${id.name}<br><span>${id.gamepadId}</span>`
-            this.changeLabel(e.gamepad.index, label)
+            this.changeLabel(e.gamepad.index, id, label)
             this.buttons[e.gamepad.index].classList.remove('inactive')
             break;
           case false:
-            this.changeLabel(e.gamepad.index, '-')
+            this.changeLabel(e.gamepad.index, null, '-')
             this.buttons[e.gamepad.index].classList.add('inactive')
             break;
         }
         
       },
-      changeLabel: function (index, newText) {
-        if (
-          typeof newText === 'string' &&
-          newText.length
-        ) {
-          this.buttons[index].innerHTML = newText
-        }
+      changeLabel: function (index, id, newText) {
+        if (typeof newText !== 'string' || !newText.length) { return }
+        this.buttons[index].dataset.name = id ? id.name : ''
+        this.buttons[index].dataset.gamepadId = id ? id.gamepadId : ''
+        this.buttons[index].innerHTML = newText
       }
     }
   }

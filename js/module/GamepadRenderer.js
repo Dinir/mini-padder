@@ -448,6 +448,7 @@ class GamepadRenderer {
     /** @type {SkinSlot} */
     const skinSlot = this.skinSlot[slot]
     
+    skinSlot.dirname = dirname
     skinSlot.gamepadId = gamepadId
     skinSlot.src = skin.src
     skinSlot.layer = []
@@ -546,7 +547,9 @@ class GamepadRenderer {
         // changes are received, work on rendering them
         if (skinSlot) {
           // skinSlot already exists
-          if (skinSlot.gamepadId === gamepadChange.id.gamepadId) {
+          if (
+            skinSlot.dirname === this.skinMapping[gamepadChange.id.gamepadId]
+          ) {
             // it's the same slot used before
             this.render(gamepadIndex)
           } else {

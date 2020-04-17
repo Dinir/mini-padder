@@ -551,7 +551,7 @@ class GamepadRenderer {
             skinSlot.dirname === this.skinMapping[gamepadChange.id.gamepadId]
           ) {
             // it's the same slot used before
-            this.render(gamepadIndex)
+            this.render(gamepadIndex, gamepadChange)
           } else {
             // the gamepad for the slot is changed
             this.removeSkinFromSlot(gamepadIndex)
@@ -604,9 +604,10 @@ class GamepadRenderer {
    * and for unchanged sticks/buttons on a gamepad that made changes
    * calculate and render the fade-out effect.
    * @param {number} gamepadIndex
+   * @param {ProcessedGamepadChange} gamepadChange
    * @returns {boolean}
    */
-  render (gamepadIndex) {
+  render (gamepadIndex, gamepadChange) {
     const src = this.skinSlot[gamepadIndex].src
     const ctx = this.skinSlot[gamepadIndex].ctx
     const inst = this.skinSlot[gamepadIndex].instruction
@@ -624,7 +625,7 @@ class GamepadRenderer {
     const timestampAtStart = this._timestamp || performance.now()
     
     /** @type {{left: ?stickChange, right: ?stickChange}} */
-    const sticks = this._processedGamepadChange[gamepadIndex].sticks
+    const sticks = gamepadChange.sticks
     const stickLayerIndex = inst.sticks.layer
     
     // give instructions for sticks
@@ -715,7 +716,7 @@ class GamepadRenderer {
      *  @property {?Object.<string, ?buttonChange>} face
      *  @property {?Object.<string, ?buttonChange>} shoulder
      */
-    const buttons = this._processedGamepadChange[gamepadIndex].buttons
+    const buttons = gamepadChange.buttons
     const buttonLayerIndex = inst.buttons.layer
     
     // give instructions for buttons
@@ -820,6 +821,8 @@ class GamepadRenderer {
         }
       }
     }
+    
+    return true
   }
   
   /**

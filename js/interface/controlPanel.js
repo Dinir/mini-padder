@@ -154,11 +154,19 @@ class ControlPanel {
   getControlForDynamicButtons (name) {
     return {
       name: name,
-      assign: function (buttonDomArray, callbackOnClick) {
-        this.buttons = buttonDomArray
-        this.buttons.forEach((v, i) => {
-          v.dataset.index = i
-          v.addEventListener('click', callbackOnClick)
+      assign: function (buttonContainer, customCallback) {
+        this.container = buttonContainer
+        this.buttons = Array.from(
+          buttonContainer.querySelectorAll('button')
+        )
+        this.callback = customCallback
+        for (let i = 0; i < this.buttons.length; i++) {
+          this.buttons[i].dataset.index = i
+        }
+        this.container.addEventListener('click', e => {
+          if (e.target.tagName !== 'BUTTON') return
+          const index = e.target.dataset.index
+          this.callback(index)
         })
       },
       globalEventCallback: function (e) {
@@ -205,11 +213,18 @@ class ControlPanel {
   getControlForButtons (name) {
     return {
       name: name,
-      assign: function (buttonDomArray, callbackOnClick) {
-        this.buttons = buttonDomArray
-        this.buttons.forEach((v, i) => {
-          v.dataset.index = i
-          v.addEventListener('click', callbackOnClick)
+      assign: function (buttonContainer, custonCallback) {
+        this.container = buttonContainer
+        this.buttons = Array.from(
+          buttonContainer.querySelectorAll('button')
+        )
+        this.callback = custonCallback
+        for (let i = 0; i < this.buttons.length; i++) {
+          this.buttons[i].dataset.index = i
+        }
+        this.container.addEventListener('click', e => {
+          if (e.target.tagName !== 'BUTTON') return
+          this.callback(e)
         })
       }
     }

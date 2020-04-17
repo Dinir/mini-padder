@@ -157,8 +157,8 @@
   cpPanel = Cp.panel
   
   cpPanel.assignment.assign(
-    cpDom.querySelectorAll(
-      'div[data-name="assignment"] button'
+    cpDom.querySelector(
+      'div[data-name="assignment"]'
     ), e => {
       console.log('Mapper mapping function goes here', e)
     }
@@ -192,8 +192,8 @@
   }
 
   cpPanel.management.assign(
-    cpDom.querySelectorAll(
-      'div[data-name="management"] button'
+    cpDom.querySelector(
+      'div[data-name="management"]'
     ), e => {
       switch (e.target.dataset.name) {
         case 'mappings':

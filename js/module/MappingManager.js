@@ -225,7 +225,19 @@ class MappingManager {
   // these are methods made for
   // making changes without losing the reference to mappings
   addOrUpdate (gamepadId, mappingObj) {
-    this.mappings[gamepadId] = mappingObj
+    if (mappingObj && mappingObj.name) {
+      this.mappings[gamepadId] = mappingObj
+      MappingManager.announceMessage(
+        `Loaded the mapping for ${mappingObj.name}.`
+      )
+    } else {
+      MappingManager.announceMessage(
+        new Error(
+          'There\'s a problem in the new mapping.\n' +
+          JSON.stringify(mappingObj, null, 2)
+        ), 'error'
+      )
+    }
   }
   remove (gamepadId) {
     delete this.mappings[gamepadId]

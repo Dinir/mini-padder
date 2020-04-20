@@ -167,14 +167,12 @@ class OnBrowserTextEditor {
         this.notify('Data are saved.')
         OnBrowserTextEditor.announceMessage(`Saved ${this.dataTitle} from the editor.`)
       } else {
-        this.notify('Data aren\'t saved.')
-        if (result !== false) {
-          OnBrowserTextEditor.announceMessage(result, 'error')
-        }
+        this.notify('Data weren\'t accepted! Check the error log.')
+        OnBrowserTextEditor.announceMessage(new Error(result), 'error')
       }
     } catch (e) {
-      this.notify('Data can\'t be read.', true)
-      OnBrowserTextEditor.announceMessage({name: e.name, message: e.message}, 'error')
+      this.notify('Data can\'t be saved. Check the error log.', true)
+      OnBrowserTextEditor.announceMessage(e, 'error')
     }
   }
   loadToEditor () {
@@ -186,8 +184,8 @@ class OnBrowserTextEditor {
       this.notify('Data are loaded.')
       OnBrowserTextEditor.announceMessage(`Loaded ${this.dataTitle} to the editor.`)
     } catch (e) {
-      this.notify('Data can\'t be read.', true)
-      OnBrowserTextEditor.announceMessage({name: e.name, message: e.message}, 'error')
+      this.notify('Data can\'t be read! Check the error log.', true)
+      OnBrowserTextEditor.announceMessage(e, 'error')
     }
   }
   

@@ -130,7 +130,7 @@ class GamepadRenderer {
     })
     
     this.setSkinMappingInBulk = this.setSkinMappingInBulk.bind(this)
-    this.setFadeoutOptionFromArray = this.setFadeoutOptionFromArray.bind(this)
+    this.setFadeoutOptionFromTextArray = this.setFadeoutOptionFromTextArray.bind(this)
   }
   
   static isDirnameOkay (dirname) {
@@ -255,7 +255,7 @@ class GamepadRenderer {
       duration: Number(optionObj.duration) || 0
     })
   }
-  setFadeoutOptionFromArray (optionArray) {
+  setFadeoutOptionFromTextArray (optionArray) {
     if (!optionArray) {
       // set as the default values declared in the constructor instead
       this.setFadeoutOption()

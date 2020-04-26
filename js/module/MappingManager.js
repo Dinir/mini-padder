@@ -142,6 +142,18 @@ class MappingManager {
    */
   constructor (newMappings) {
     this.mappings = {}
+    
+    /**
+     * Remember the whole state of dpad for each gamepad.
+     * This makes it possible to convert separate dpad button inputs into
+     * one axis input.
+     * @type {number[][]}
+     */
+    this.dpadState = Array(4)
+    for (let i = 0; i < this.dpadState.length; i++) {
+      this.dpadState[i] = [0, 0]
+    }
+  
     this.import = this.import.bind(this)
     if (newMappings) {
       this.import(newMappings)
@@ -394,9 +406,20 @@ class MappingManager {
            but both sticks are seen as inactive at the moment
            so maybe I can try reading a dpad axis signal as that of left stick.
            */
-          processedChange.sticks.left = MappingManager.processAxisDpadAsLeftStick(
-            mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis]
-          )
+          if (mapping.buttons.dpad.axis) {
+            processedChange.sticks.left = MappingManager.processAxisDpadAsLeftStick(
+              mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis]
+            )
+          } else {
+            // we're trying to simulate a gamepad as a joystick here
+            processedChange.sticks.left =
+              MappingManager.convertDpadToLeftStick(
+                this.dpadState[i], mapping.buttons.dpad, change.buttons
+              )
+          }
+        } else {
+          // stick is active, reset the dpad state
+          this.dpadState[i] = [0, 0]
         }
       } else if (processedChange.properties.indexOf('axisdpad') !== -1) {
         // 'axisdpad': axis is dpad - certain axes represent dpad
@@ -663,6 +686,39 @@ class MappingManager {
       down:  values[1],
       left:  values[2],
       right: values[3]
+    }
+  }
+  /**
+   * Dpad (four buttons) => Mapped Stick (two axis)
+   * @param {number[][]} dpadState last seen dpad state
+   * @param {Object.<string, number>} mappingDpad dpad mapping
+   * @param  {?buttonChange[]} changeButtons
+   * @returns {stickChange}
+   */
+  static convertDpadToLeftStick (dpadState, mappingDpad, changeButtons) {
+    const directions = ['up', 'down', 'left', 'right']
+    
+    for (let d = 0; d < directions.length; d++) {
+      const buttonChange =
+        changeButtons[mappingDpad[directions[d]]] || null
+      if (buttonChange) {
+        /*
+         * d         |  0  1  2  3 | d
+         * direction | up dn le ri | directions[d]
+         * axis      |  0  0  1  1 | d > 1 ? 0 : 1
+         *           |  x  x  y  y |
+         * max value | -1  1 -1  1 | d % 2 ? 1 : -1
+         */
+        dpadState[ d > 1 ? 0 : 1 ] =
+          ( d % 2 ? 1 : -1 ) * buttonChange.value
+      }
+    }
+    
+    const active = !!dpadState[0] || !!dpadState[1]
+    
+    return {
+      value: [dpadState[0], dpadState[1]],
+      active: active
     }
   }
   

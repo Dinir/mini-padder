@@ -636,7 +636,7 @@ class MappingManager {
   }
   
   // these are methods made for
-  // making changes without losing the reference to mappings
+  // making changes without losing the reference to 'mappings' object
   addOrUpdate (gamepadId, mappingObj) {
     if (mappingObj && mappingObj.name) {
       this.mappings[gamepadId] = mappingObj
@@ -730,7 +730,7 @@ class MappingManager {
       this.addOrUpdate(gamepadId, mappingsFromStorage[gamepadId])
     }
     MappingManager.announceMessage(
-      Object.keys(this.mappings).length + ' mappings found.'
+      Object.keys(this.mappings).length + ' mappings are loaded.'
     )
     
     return true
@@ -764,7 +764,6 @@ class MappingManager {
       const change = changes[i]
       processedChanges[i] = {}
       const processedChange = processedChanges[i]
-      
       // copy the reference to the id property
       processedChange.id = change.id
       processedChange.sticks = {}
@@ -859,6 +858,13 @@ class MappingManager {
     }
   }
   
+  /**
+   *
+   * @param {Object.<string, (number|Object.<string, number>)>} mappingSticks
+   * @param {?axisChange[]} changeAxes
+   * @param {?buttonChange[]} changeButtons
+   * @returns {Object.<string, ?stickChange>}
+   */
   static processSticks (mappingSticks, changeAxes, changeButtons) {
     const processedChangeSticks = {}
     const deadzone = mappingSticks.deadzone || 0
@@ -1080,6 +1086,12 @@ class MappingManager {
     }
   }
   
+  /**
+   * Dpad (four buttons) => Mapped Dpad (four buttons)
+   * @param {Object.<string, number>} mappingDpad dpad mapping
+   * @param  {?buttonChange[]} changeButtons
+   * @returns {Object.<string, buttonChange>}
+   */
   static processDpadSimple (mappingDpad, changeButtons) {
     const directions = ['up', 'down', 'left', 'right']
     const values = Array(4).fill(null)

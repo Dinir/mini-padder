@@ -568,7 +568,9 @@ class MappingManager {
     in a clockwise order.
     if I can be certain every dinput dpad value works in the same way I could make this much simpler...
      */
-    const directions = [
+    // if `undefined` is passed to a parameter with a default value, the default will be used
+    // if `null` is passed, it's replaced by null.
+    const directions = mappingDpad.hasOwnProperty('upright') ? [
       mappingDpad.up,
       mappingDpad.upright,
       mappingDpad.right,
@@ -577,7 +579,8 @@ class MappingManager {
       mappingDpad.downleft,
       mappingDpad.left,
       mappingDpad.upleft,
-    ]
+    ] : undefined
+    const precision = mappingDpad.precision || undefined
     const neutralValues = [0, 0, 0, 0]
   
     // the value is 0 when connected and recognized,
@@ -585,12 +588,12 @@ class MappingManager {
     // active value can be negative or 1, and not 0.
     const dpadValues = (value > 1 || value === 0) ?
       neutralValues : MappingManager.convertAxisDpadValue(
-        value, false, directions, mappingDpad.precision
+        value, false, directions, precision
       ) || neutralValues
     
     const dpadPreviousValues = (previousValue > 1 || previousValue === 0) ?
       neutralValues : MappingManager.convertAxisDpadValue(
-        previousValue, false, directions, mappingDpad.precision
+        previousValue, false, directions, precision
       ) || neutralValues
   
     const processedChangeButtonsDpad =

@@ -142,6 +142,18 @@ class MappingManager {
    */
   constructor (newMappings) {
     this.mappings = {}
+    /**
+     * @typedef {Object} assignmentState
+     * @property {boolean} ongoing
+     * @property {number} index
+     * @property {?boolean} result
+     * @property {Object} data
+     * */
+    /** @type {assignmentState[]} */
+    this.assignmentState = Array(4)
+    for (let i = 0; i < this.assignmentState.length; i++) {
+      this.assignmentState[i] = { ongoing: false, index: -1, result: null }
+    }
     
     /**
      * Remember the whole state of dpad for each gamepad.
@@ -160,6 +172,8 @@ class MappingManager {
     } else {
       this.load()
     }
+    
+    this.startAssignment = this.startAssignment.bind(this)
     
     this.processGamepadChange = this.processGamepadChange.bind(this)
     window.addEventListener(
@@ -232,6 +246,393 @@ class MappingManager {
     window.dispatchEvent(new CustomEvent('processedGamepadChange', {
       detail: processedGamepadChange
     }))
+  }
+  
+  static get everyButtonInfo () {
+    return [
+      {
+        label: 'face-down (A/×)',
+        group: 'buttons',
+        virtualInput: { "face": { "down": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.face.down = i}
+      }, 
+      {
+        label: 'face-right (B/○)',
+        group: 'buttons',
+        virtualInput: { "face": { "right": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.face.right = i}
+      }, 
+      {
+        label: 'face-up (Y/Δ)',
+        group: 'buttons',
+        virtualInput: { "face": { "up": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.face.up = i}
+      }, 
+      {
+        label: 'face-left (X/□)',
+        group: 'buttons',
+        virtualInput: { "face": { "left": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.face.left = i}
+      },
+      {
+        label: 'dpad-down',
+        group: 'buttons',
+        virtualInput: { "dpad": { "down": { "value": 1 }, "value": [0,1] } },
+        mapInput: (m, i) => {m.buttons.dpad.down = i},
+        mapInputAxis: (m, i) => {m.buttons.dpad.axis = i}
+      }, 
+      {
+        label: 'dpad-left',
+        group: 'buttons',
+        virtualInput: { "dpad": { "left": { "value": 1 }, "value": [-1,0] } },
+        mapInput: (m, i) => {m.buttons.dpad.left = i}
+      }, 
+      {
+        label: 'dpad-up',
+        group: 'buttons',
+        virtualInput: { "dpad": { "up": { "value": 1 }, "value": [0,-1] } },
+        mapInput: (m, i) => {m.buttons.dpad.up = i}
+      }, 
+      {
+        label: 'dpad-right',
+        group: 'buttons',
+        virtualInput: { "dpad": { "right": { "value": 1 }, "value": [1,0] } },
+        mapInput: (m, i) => {m.buttons.dpad.right = i}
+      },
+      {
+        label: 'select',
+        group: 'buttons',
+        virtualInput: { "face": { "select": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.face.select = i}
+      }, 
+      {
+        label: 'start',
+        group: 'buttons',
+        virtualInput: { "face": { "start": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.face.start = i}
+      }, 
+      {
+        label: 'home',
+        group: 'buttons',
+        virtualInput:  { "face": { "home": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.face.home = i}
+      }, 
+      {
+        label: 'touchpad',
+        group: 'buttons',
+        virtualInput: { "face": { "touchpad": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.face.touchpad = i}
+      },
+      {
+        label: 'lb/l1',
+        group: 'buttons',
+        virtualInput: { "shoulder": { "l1": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.shoulder.l1 = i}
+      }, 
+      {
+        label: 'rb/r1',
+        group: 'buttons',
+        virtualInput:  { "shoulder": { "r1": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.shoulder.r1 = i}
+      }, 
+      {
+        label: 'lt/l2',
+        group: 'buttons',
+        virtualInput: { "shoulder": { "l2": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.shoulder.l2 = i}
+      }, 
+      {
+        label: 'rt/r2',
+        group: 'buttons',
+        virtualInput: { "shoulder": { "r2": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.shoulder.r2 = i}
+      },
+      {
+        label: 'stick-left to right',
+        group: 'axes',
+        virtualInput: { "left": {
+            "value": [1, 0, null],
+            "pressed": null,
+            "active": true
+        } },
+        mapInput: (m, i) => {m.sticks.left.x = i}
+      }, 
+      {
+        label: 'stick-left to down',
+        group: 'axes',
+        virtualInput: { "left": {
+            "value": [0, 1, null],
+            "pressed": null,
+            "active": true
+        } },
+        mapInput: (m, i) => {m.sticks.left.y = i}
+      }, 
+      {
+        label: 'stick-left-button',
+        group: 'buttons',
+        virtualInput: { "left": {
+            "value": [0, 0, 1],
+            "pressed": true,
+            "active": true
+        } },
+        mapInput: (m, i) => {m.sticks.left.button = i}
+      },
+      {
+        label: 'stick-right to right',
+        group: 'axes',
+        virtualInput: { "right": {
+            "value": [1, 0, null],
+            "pressed": null,
+            "active": true
+        } },
+        mapInput: (m, i) => {m.sticks.right.x = i}
+      }, 
+      {
+        label: 'stick-right to down',
+        group: 'axes',
+        virtualInput: { "right": {
+            "value": [0, 1, null],
+            "pressed": null,
+            "active": true
+        } },
+        mapInput: (m, i) => {m.sticks.right.y = i}
+      }, 
+      {
+        label: 'stick-right-button',
+        group: 'buttons',
+        virtualInput: { "right": {
+            "value": [0, 0, 1],
+            "pressed": true,
+            "active": true
+        } },
+        mapInput: (m, i) => {m.sticks.right.button = i}
+      }
+    ]
+  }
+  
+  startAssignment (gamepadIndex, name, gamepadId) {
+    this.assignmentState[gamepadIndex].ongoing = true
+    this.assignmentState[gamepadIndex].index = -1
+    this.assignmentState[gamepadIndex].result = null
+    // reference to this property won't be kept
+    this.assignmentState[gamepadIndex].data = {
+      gamepadId: gamepadId,
+      occupied: {
+        axes: [],
+        buttons: []
+      },
+      mapping: {
+        name: name,
+        properties: [],
+        sticks: {
+          deadzone: 0,
+          left: {},
+          right: {}
+        },
+        buttons: {
+          dpad: {},
+          face: {},
+          shoulder: {}
+        }
+      }
+    }
+  }
+  /**
+   *
+   * @param {number} gamepadIndex
+   * @param {GamepadChange} gamepadChange If called inside `processGamepadChange`, it will always have a change
+   * @param {ProcessedGamepadChange} processedGamepadChangeTemplate
+   * put 'this button is awaiting for input' signal to the change object in 'processGamepadChange' via the reference
+   */
+  assign (gamepadIndex, gamepadChange, processedGamepadChangeTemplate) {
+    const assignmentState = this.assignmentState[gamepadIndex]
+    processedGamepadChangeTemplate.properties = ['assigning']
+    
+    // assigning is finished
+    if (assignmentState.result !== null) {
+      assignmentState.ongoing = false
+      if (!assignmentState.result) {
+        // aborted
+        delete assignmentState.data
+        return
+      }
+      
+      // store the new mapping
+      this.addOrUpdate(assignmentState.data.gamepadId, assignmentState.data.mapping)
+      
+      return
+    }
+    
+    // assigning is in progress
+    let buttonInfo
+    if (assignmentState.index === -1) {
+      // initiating the routine for the first time
+      buttonInfo =
+        MappingManager.everyButtonInfo[++assignmentState.index]
+    } else {
+      // the routine is already on
+      
+      // bring the button information for the index,
+      // and index of inputs found on gamepad
+      buttonInfo =
+        MappingManager.everyButtonInfo[assignmentState.index]
+      // some axes are staying at -1, while most are at 0
+      // axisdpad will stay at ~3.2.
+      // Guess I won't use `Math.abs` for axes and instead go for just > 0.1.
+      // This will be broken if there's a gamepad with axis inverted by default.
+      const foundIndexes = [
+        gamepadChange.axes.findIndex(v => v && v.value > 0.1 && v.value <= 1),
+        gamepadChange.buttons.findIndex(v => v && Math.abs(v.value) > 0.5)
+      ]
+      const inputFound = foundIndexes.some(v => v !== -1)
+      
+      if (inputFound) {
+        // input is found
+        const axisNotAssigned =
+          assignmentState.data.occupied.axes.indexOf(foundIndexes[0]) === -1
+        const buttonNotAssigned =
+          assignmentState.data.occupied.buttons.indexOf(foundIndexes[1]) === -1
+        
+        let inputToBeSkipped = false, aborting = false
+        if (assignmentState.index > 1) {
+          inputToBeSkipped =
+            foundIndexes[1] === assignmentState.data.mapping.buttons.face.down
+          aborting =
+            foundIndexes[1] === assignmentState.data.mapping.buttons.face.right
+        }
+        
+        if (aborting) {
+          assignmentState.result = false
+        } else if (inputToBeSkipped) {
+          // update index
+          switch (assignmentState.index) {
+            case 4: // dpad-down
+            case 5: // dpad-left
+            case 6: // dpad-up
+            case 7: // dpad-right
+              assignmentState.index = 8
+              break
+            case 12: // lb/l1
+            case 14: // lt/l2
+              assignmentState.index = 16
+              break
+            case 16: // stick-left-x
+              assignmentState.index = 18
+              break
+            case 19: // stick-right-x
+              assignmentState.index = 21
+              break
+            default:
+              assignmentState.index++
+              break
+          }
+          // update buttonInfo with new index
+          buttonInfo =
+            MappingManager.everyButtonInfo[assignmentState.index]
+        } else if (assignmentState.index === 4) {
+          // own routine for dpad - the index is for dpad-down
+          if (
+            foundIndexes[0] !== -1 &&
+            axisNotAssigned
+          ) {
+            // it's axisdpad!
+            buttonInfo.mapInputAxis(
+              assignmentState.data.mapping, foundIndexes[0]
+            )
+            assignmentState.data.mapping.properties.push('axisdpad')
+            if (Math.abs(gamepadChange.axes[foundIndexes[0]].value - 0.1) < 0.1) {
+              // it's standard axisdpad!
+              assignmentState.data.occupied.axes.push(foundIndexes[0])
+              assignmentState.index += 4
+            } else {
+              // it's a weird axisdpad...
+              // work on this when such case is actually found. Below is a placeholder.
+              MappingManager.announceMessage(
+                new Error('I finally found a user of a rare dpad kind! Please contact me.'),
+                'error'
+              )
+              assignmentState.data.occupied.axes.push(foundIndexes[0])
+              assignmentState.index += 4
+              /*
+              function getFirstDigit (x) {
+                const position = Math.floor(Math.log10(x))
+                return Math.floor(x/10**position)*10**position
+              }
+               */
+            }
+          } else if (buttonNotAssigned) {
+            // it's four button dpad
+            buttonInfo.mapInput(
+              assignmentState.data.mapping, foundIndexes[1]
+            )
+            assignmentState.index++
+          }
+        } else {
+          // anything else than dpad-down (or whole dpad if it was axis)
+          const inputGroupIndex = buttonInfo.group === 'buttons' ? 1 : 0
+          const foundIndex = foundIndexes[inputGroupIndex]
+          if (
+            foundIndex !== -1 && (
+              (inputGroupIndex === 1 && buttonNotAssigned) ||
+              (inputGroupIndex === 0 && axisNotAssigned)
+            )
+          ) {
+            buttonInfo.mapInput(
+              assignmentState.data.mapping, foundIndex
+            )
+            assignmentState.data.occupied[buttonInfo.group].push(foundIndex)
+            assignmentState.index++
+          }
+        }
+      } else if (assignmentState.index > 20) {
+        // input is not found, let's define the deadzone value for sticks
+        const stickMappings = assignmentState.data.mapping.sticks
+        const maximumValueOnIdle = Math.max(
+          Math.abs(gamepadChange.axes[stickMappings.left.x].value),
+          Math.abs(gamepadChange.axes[stickMappings.left.y].value),
+          Math.abs(gamepadChange.axes[stickMappings.right.x].value),
+          Math.abs(gamepadChange.axes[stickMappings.right.y].value)
+        )
+        const deadzone = 10**(Math.floor(Math.log10(maximumValueOnIdle))+1)
+        stickMappings.deadzone = deadzone
+      }
+    }
+    
+    if (assignmentState.index >= MappingManager.everyButtonInfo.length) {
+      // assigning is done
+      assignmentState.result = true
+      processedGamepadChangeTemplate.properties.splice(
+        processedGamepadChangeTemplate.properties.indexOf('assigning'), 1
+      )
+    } else {
+      // make the guide message for next input
+      let message = ''
+      let messageLines = 0
+      if (assignmentState.index <= 15) {
+        // all buttons
+        message += `Press button for ${buttonInfo.label}.`
+      } else if (assignmentState.index === 18 || assignmentState.index === 21) {
+        // stick buttons
+        message += `Press the ${buttonInfo.label}.`
+      } else {
+        // sticks
+        message += `Push ${buttonInfo.label}.`
+      }
+      messageLines++
+      if (assignmentState.index > 1) {
+        // after assigning first two buttons,
+        // use them as a control on the assignment process
+        message += `\nA/× to skip this button` +
+                   `\nB/○ to abort assigning`
+        messageLines += 2
+      }
+      
+      processedGamepadChangeTemplate[buttonInfo.group] =
+        buttonInfo.virtualInput
+      processedGamepadChangeTemplate.message = {
+        text: message, lines: messageLines
+      }
+    }
   }
   
   // these are methods made for
@@ -368,6 +769,11 @@ class MappingManager {
       processedChange.id = change.id
       processedChange.sticks = {}
       processedChange.buttons = {}
+  
+      if (this.assignmentState[i].ongoing) {
+        this.assign(i, change, processedChange)
+        continue
+      }
   
       // if it's not one of two standards,
       // check vendor id, if still not known then assign DInput

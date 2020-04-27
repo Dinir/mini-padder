@@ -165,8 +165,11 @@ class ControlPanel {
         }
         this.container.addEventListener('click', e => {
           if (e.target.tagName !== 'BUTTON') return
-          const index = e.target.dataset.index
-          this.callback(index)
+          this.callback(
+            e.target.dataset.index,
+            e.target.dataset.name,
+            e.target.dataset.gamepadId
+          )
         })
       },
       globalEventCallback: function (e) {

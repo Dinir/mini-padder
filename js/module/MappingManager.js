@@ -869,8 +869,8 @@ class MappingManager {
           } else {
             // we're trying to simulate a gamepad as a joystick here
             processedChange.sticks.left =
-              MappingManager.convertDpadToLeftStick(
-                this.dpadState[i], mapping.buttons.dpad, change.buttons
+              MappingManager.processDpadAsLeftStick(
+                mapping.buttons.dpad, change.buttons, this.dpadState[i]
               )
           }
         } else {
@@ -886,7 +886,7 @@ class MappingManager {
       } else {
         // dpad is reasonably found as simple and clean four buttons
         processedChange.buttons.dpad = MappingManager.processDpadSimple(
-          mapping.buttons.dpad, change.buttons
+          mapping.buttons.dpad, change.buttons, this.dpadState[i]
         )
       }
       
@@ -1012,6 +1012,35 @@ class MappingManager {
     if (directionIndex === -1) { return null }
     
     return conversionTable[directionIndex]
+  }
+  /**
+   * update last seen dpad state using new button change data
+   * @param {number[][]} dpadState reference to last seen dpad state
+   * @param {Object.<string, number>} mappingDpad dpad mapping
+   * @param {?buttonChange[]} changeButtons
+   * @returns {?buttonChange[]} changes of up, down, left, and right dpad button
+   */
+  static updateDpadState (dpadState, mappingDpad, changeButtons) {
+    const directions = ['up', 'down', 'left', 'right']
+    const values = Array(4).fill(null)
+  
+    for (let d = 0; d < directions.length; d++) {
+      values[d] =
+        changeButtons[mappingDpad[directions[d]]] || null
+      if (values[d]) {
+        /*
+         * d         |  0  1  2  3 | d
+         * direction | up dn le ri | directions[d]
+         * axis      |  0  0  1  1 | d > 1 ? 0 : 1
+         *           |  x  x  y  y |
+         * max value | -1  1 -1  1 | d % 2 ? 1 : -1
+         */
+        dpadState[ d > 1 ? 0 : 1 ] =
+          ( d % 2 ? 1 : -1 ) * values[d].value
+      }
+    }
+    
+    return values
   }
   
   /**
@@ -1146,15 +1175,11 @@ class MappingManager {
    * Dpad (four buttons) => Mapped Dpad (four buttons)
    * @param {Object.<string, number>} mappingDpad dpad mapping
    * @param  {?buttonChange[]} changeButtons
-   * @returns {Object.<string, buttonChange>}
+   * @param {number[][]} dpadState reference to last seen dpad state
+   * @returns {?Object.<string, ?buttonChange>}
    */
-  static processDpadSimple (mappingDpad, changeButtons) {
-    const directions = ['up', 'down', 'left', 'right']
-    const values = Array(4).fill(null)
-    
-    for (let d = 0; d < directions.length; d++) {
-      values[d] = changeButtons[mappingDpad[directions[d]]] || null
-    }
+  static processDpadSimple (mappingDpad, changeButtons, dpadState) {
+    const values = MappingManager.updateDpadState(dpadState, mappingDpad, changeButtons)
     
     if (values.every(v => v === null)) { return null }
     
@@ -1167,35 +1192,16 @@ class MappingManager {
   }
   /**
    * Dpad (four buttons) => Mapped Stick (two axis)
-   * @param {number[][]} dpadState last seen dpad state
    * @param {Object.<string, number>} mappingDpad dpad mapping
    * @param  {?buttonChange[]} changeButtons
+   * @param {number[][]} dpadState reference to last seen dpad state
    * @returns {stickChange}
    */
-  static convertDpadToLeftStick (dpadState, mappingDpad, changeButtons) {
-    const directions = ['up', 'down', 'left', 'right']
-    
-    for (let d = 0; d < directions.length; d++) {
-      const buttonChange =
-        changeButtons[mappingDpad[directions[d]]] || null
-      if (buttonChange) {
-        /*
-         * d         |  0  1  2  3 | d
-         * direction | up dn le ri | directions[d]
-         * axis      |  0  0  1  1 | d > 1 ? 0 : 1
-         *           |  x  x  y  y |
-         * max value | -1  1 -1  1 | d % 2 ? 1 : -1
-         */
-        dpadState[ d > 1 ? 0 : 1 ] =
-          ( d % 2 ? 1 : -1 ) * buttonChange.value
-      }
-    }
-    
-    const active = !!dpadState[0] || !!dpadState[1]
-    
+  static processDpadAsLeftStick (mappingDpad, changeButtons, dpadState) {
+    MappingManager.updateDpadState(dpadState, mappingDpad, changeButtons)
     return {
       value: [dpadState[0], dpadState[1]],
-      active: active
+      active: !!dpadState[0] || !!dpadState[1]
     }
   }
   

@@ -350,6 +350,7 @@ class MappingManager {
       {
         label: 'stick-left to right',
         group: 'axes',
+        mappedGroup: 'sticks',
         virtualInput: { "left": {
             "value": [1, 0, null],
             "pressed": null,
@@ -360,6 +361,7 @@ class MappingManager {
       {
         label: 'stick-left to down',
         group: 'axes',
+        mappedGroup: 'sticks',
         virtualInput: { "left": {
             "value": [0, 1, null],
             "pressed": null,
@@ -370,6 +372,7 @@ class MappingManager {
       {
         label: 'stick-left-button',
         group: 'buttons',
+        mappedGroup: 'sticks',
         virtualInput: { "left": {
             "value": [0, 0, 1],
             "pressed": true,
@@ -380,6 +383,7 @@ class MappingManager {
       {
         label: 'stick-right to right',
         group: 'axes',
+        mappedGroup: 'sticks',
         virtualInput: { "right": {
             "value": [1, 0, null],
             "pressed": null,
@@ -390,6 +394,7 @@ class MappingManager {
       {
         label: 'stick-right to down',
         group: 'axes',
+        mappedGroup: 'sticks',
         virtualInput: { "right": {
             "value": [0, 1, null],
             "pressed": null,
@@ -400,6 +405,7 @@ class MappingManager {
       {
         label: 'stick-right-button',
         group: 'buttons',
+        mappedGroup: 'sticks',
         virtualInput: { "right": {
             "value": [0, 0, 1],
             "pressed": true,
@@ -459,12 +465,28 @@ class MappingManager {
       
       // store the new mapping
       this.addOrUpdate(assignmentState.data.gamepadId, assignmentState.data.mapping)
+      this.store()
       
       return
     }
+  
+    // find new input change
+    /*
+     some axes are staying at -1, while most are at 0
+     axisdpad will stay at ~3.2.
+     Guess I won't use `Math.abs` for axes and instead go for just > 0.1.
+     This will be broken if there's a gamepad with axis inverted by default.
+     */
+    const foundIndexes = [
+      gamepadChange.axes.findIndex(v => v && v.value > 0.1 && v.value <= 1),
+      gamepadChange.buttons.findIndex(v => v && Math.abs(v.value) > 0.5)
+    ]
+    const inputFound = foundIndexes.some(v => v !== -1)
     
     // assigning is in progress
     let buttonInfo
+    const allButtonMapped = assignmentState.index === MappingManager.everyButtonInfo.length
+    
     if (assignmentState.index === -1) {
       // initiating the routine for the first time
       buttonInfo =
@@ -476,15 +498,6 @@ class MappingManager {
       // and index of inputs found on gamepad
       buttonInfo =
         MappingManager.everyButtonInfo[assignmentState.index]
-      // some axes are staying at -1, while most are at 0
-      // axisdpad will stay at ~3.2.
-      // Guess I won't use `Math.abs` for axes and instead go for just > 0.1.
-      // This will be broken if there's a gamepad with axis inverted by default.
-      const foundIndexes = [
-        gamepadChange.axes.findIndex(v => v && v.value > 0.1 && v.value <= 1),
-        gamepadChange.buttons.findIndex(v => v && Math.abs(v.value) > 0.5)
-      ]
-      const inputFound = foundIndexes.some(v => v !== -1)
       
       if (inputFound) {
         // input is found
@@ -501,9 +514,13 @@ class MappingManager {
             foundIndexes[1] === assignmentState.data.mapping.buttons.face.right
         }
         
-        if (aborting) {
+        if (aborting && !allButtonMapped) {
           assignmentState.result = false
-        } else if (inputToBeSkipped) {
+          processedGamepadChangeTemplate.properties.splice(
+            processedGamepadChangeTemplate.properties.indexOf('assigning'), 1
+          )
+          processedGamepadChangeTemplate.message = ['Assignment Aborted.']
+        } else if (inputToBeSkipped && !allButtonMapped) {
           // update index
           switch (assignmentState.index) {
             case 4: // dpad-down
@@ -567,6 +584,30 @@ class MappingManager {
             )
             assignmentState.index++
           }
+        } else if (allButtonMapped) {
+          // get the input for the last question - is it joystick?
+          // inputToBeSkipped === A/× pressed === Answer is Gamepad
+          // aborting === B/○ pressed === Answer is Joystick
+          if (aborting) {
+            const mapping = assignmentState.data.mapping
+            // it is joystick, put 'joystick' to the properties array
+            const wasItAxisdpad = mapping.properties.indexOf('axisdpad')
+            if (wasItAxisdpad !== -1) {
+              mapping.properties.splice(
+                mapping.properties.indexOf('axisdpad'), 1, 'joystick'
+              )
+            } else if (mapping.properties.indexOf('joystick') === -1) {
+              mapping.properties.push('joystick')
+            }
+            // move l3 and r3 to buttons mapping
+            mapping.buttons.face.l3 = mapping.sticks.left.button || null
+            mapping.buttons.face.r3 = mapping.sticks.right.button || null
+          }
+          
+          if (inputToBeSkipped || aborting) {
+            // required input is found so increase the index and finish assignment
+            assignmentState.index++
+          }
         } else {
           // anything else than dpad-down (or whole dpad if it was axis)
           const inputGroupIndex = buttonInfo.group === 'buttons' ? 1 : 0
@@ -584,54 +625,64 @@ class MappingManager {
             assignmentState.index++
           }
         }
+        
       } else if (assignmentState.index > 20) {
         // input is not found, let's define the deadzone value for sticks
         const stickMappings = assignmentState.data.mapping.sticks
-        const maximumValueOnIdle = Math.max(
-          Math.abs(gamepadChange.axes[stickMappings.left.x].value),
-          Math.abs(gamepadChange.axes[stickMappings.left.y].value),
-          Math.abs(gamepadChange.axes[stickMappings.right.x].value),
-          Math.abs(gamepadChange.axes[stickMappings.right.y].value)
-        )
-        const deadzone = 10**(Math.floor(Math.log10(maximumValueOnIdle))+1)
-        stickMappings.deadzone = deadzone
+        if (stickMappings.left.x !== false && stickMappings.left.y !== false) {
+          const maximumValueOnIdle = Math.max(
+            Math.abs(gamepadChange.axes[stickMappings.left.x].value),
+            Math.abs(gamepadChange.axes[stickMappings.left.y].value)
+          )
+          stickMappings.deadzone =
+            10 ** (Math.floor(Math.log10(maximumValueOnIdle)) + 1)
+        }
       }
     }
     
-    if (assignmentState.index >= MappingManager.everyButtonInfo.length) {
+    if (assignmentState.index > MappingManager.everyButtonInfo.length) {
       // assigning is done
       assignmentState.result = true
       processedGamepadChangeTemplate.properties.splice(
         processedGamepadChangeTemplate.properties.indexOf('assigning'), 1
       )
-    } else {
+      const isJoystick = assignmentState.data.mapping.properties.indexOf('joystick') !== -1
+      processedGamepadChangeTemplate.message = [
+        `${isJoystick ? 'Joystick' : 'Gamepad'} assignment done!`
+      ]
+    } else if (!inputFound) {
       // make the guide message for next input
-      let message = ''
-      let messageLines = 0
+      let message = []
       if (assignmentState.index <= 15) {
         // all buttons
-        message += `Press button for ${buttonInfo.label}.`
+        message.push(`Press button for ${buttonInfo.label}.`)
       } else if (assignmentState.index === 18 || assignmentState.index === 21) {
         // stick buttons
-        message += `Press the ${buttonInfo.label}.`
+        message.push(`Press the ${buttonInfo.label}.`)
+      } else if (allButtonMapped) {
+        message.push('Is this a joystick?')
+        message.push(`A/× - Gamepad   B/○ - Joystick  `)
       } else {
         // sticks
-        message += `Push ${buttonInfo.label}.`
-      }
-      messageLines++
-      if (assignmentState.index > 1) {
-        // after assigning first two buttons,
-        // use them as a control on the assignment process
-        message += `\nA/× to skip this button` +
-                   `\nB/○ to abort assigning`
-        messageLines += 2
+        message.push(`Push ${buttonInfo.label}.`)
       }
       
-      processedGamepadChangeTemplate[buttonInfo.group] =
-        buttonInfo.virtualInput
-      processedGamepadChangeTemplate.message = {
-        text: message, lines: messageLines
+      if (
+        assignmentState.index > 1 &&
+        assignmentState.index < MappingManager.everyButtonInfo.length
+      ) {
+        // after assigning first two buttons,
+        // use them as a control on the assignment process
+        message.push(`A/× - Skip      B/○ - Abort     `)
       }
+      
+      if (buttonInfo) {
+        processedGamepadChangeTemplate[
+          buttonInfo.mappedGroup || buttonInfo.group
+        ] =
+          buttonInfo.virtualInput
+      }
+      processedGamepadChangeTemplate.message = message
     }
   }
   

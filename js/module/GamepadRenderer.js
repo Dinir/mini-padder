@@ -64,9 +64,14 @@ class GamepadRenderer {
     this.counterFor30fps = false
     this.counterFor20fps = 2
     this.counterFor15fps = 3
+  
+    // class-wise definition of maximum canvas size
+    this.maxCanvasSize = [256, 144]
     
     this.fadeoutFps = 60
     this.fadeoutOpacityPrecision = 4
+    
+    this.messageDisplayTimeInSeconds = 2
     
     this.loadOrders()
     this.loadInstructions()
@@ -133,16 +138,6 @@ class GamepadRenderer {
     this.setFadeoutOptionFromTextArray = this.setFadeoutOptionFromTextArray.bind(this)
   }
   
-  static isDirnameOkay (dirname) {
-    return !/[^0-9a-zA-Z_\-]/.test(dirname)
-  }
-  static findDefaultSkin (gamepadId, mappingProperties) {
-    const defaultSkin = ['DInput', 'XInput', 'Joystick']
-    if (mappingProperties.indexOf('joystick') !== -1) { return defaultSkin[2] }
-    // when it's a standard XInput gamepad, the gamepadId is just 'xinput'.
-    if (/XInput/i.test(gamepadId)) { return defaultSkin[1] }
-    return defaultSkin[0]
-  }
   static announceMessage (message, type) {
     const messageType = {
       log: 'log',
@@ -155,6 +150,26 @@ class GamepadRenderer {
         message: message
       }
     }))
+  }
+  
+  static isDirnameOkay (dirname) {
+    return !/[^0-9a-zA-Z_\-]/.test(dirname)
+  }
+  static findDefaultSkin (gamepadId, mappingProperties) {
+    const defaultSkin = ['DInput', 'XInput', 'Joystick']
+    if (mappingProperties.indexOf('joystick') !== -1) { return defaultSkin[2] }
+    // when it's a standard XInput gamepad, the gamepadId is just 'xinput'.
+    if (/XInput/i.test(gamepadId)) { return defaultSkin[1] }
+    return defaultSkin[0]
+  }
+  static newCanvasLayer (width, height, x, y) {
+    const layer = document.createElement('canvas')
+    layer.setAttribute('width', width)
+    layer.setAttribute('height', height)
+    layer.style.top = y + 'px'
+    layer.style.left = x + 'px'
+    
+    return layer
   }
   
   tickFpsCounter () {
@@ -483,17 +498,53 @@ class GamepadRenderer {
      * @type {Object}
      */
     skinSlot.alpha = {}
+    /**
+     * true when assignment is in process
+     * @type {boolean}
+     */
+    skinSlot.assigning = false
+    /**
+     * deduct at every frame, remove the message when it reaches 0, then deduct one more time.
+     * @type {number}
+     */
+    skinSlot.messageDisplayTimeLeft = -1
     
     for (let l = 0; l < config.layer.length; l++) {
-      const layer = document.createElement('canvas')
-      layer.setAttribute('width', config.layer[l].width)
-      layer.setAttribute('height', config.layer[l].height)
-      layer.style.top = config.layer[l].y + 'px'
-      layer.style.left = config.layer[l].x + 'px'
+      const layer = GamepadRenderer.newCanvasLayer(
+        config.layer[l].width,
+        config.layer[l].height,
+        config.layer[l].x,
+        config.layer[l].y
+      )
       
       skinSlot.layer.push(layer)
       skinSlot.ctx.push(layer.getContext('2d'))
       canvas.appendChild(layer)
+    }
+  
+    // add top layer for displaying messages
+    const infoLayer = GamepadRenderer.newCanvasLayer(...this.maxCanvasSize, 0, 0)
+    
+    skinSlot.layer.push(infoLayer)
+    skinSlot.ctx.push(infoLayer.getContext('2d'))
+    canvas.appendChild(infoLayer)
+    skinSlot.instruction.info = {
+      layer: skinSlot.layer.length - 1,
+      message: {
+        clear: [
+          {
+            instruction: "clearRect",
+            x: 0, y: 0,
+            width: this.maxCanvasSize[0], height: this.maxCanvasSize[1]
+          }
+        ],
+        show: [
+          {
+            instruction: "writeTextLines",
+            y: this.maxCanvasSize[1]
+          }
+        ]
+      }
     }
   }
   removeSkinFromSlot (slot) {
@@ -510,6 +561,7 @@ class GamepadRenderer {
       this.canvas[slot].removeChild(this.canvas[slot].lastChild)
     }
   }
+  
   
   /**
    *
@@ -537,20 +589,22 @@ class GamepadRenderer {
       gamepadIndex < 4;
       gamepadIndex++
     ) {
-      
       const skinSlot = this.skinSlot[gamepadIndex]
       /** @type {?ProcessedGamepadChange} */
       const gamepadChange = this._processedGamepadChange ?
         this._processedGamepadChange[gamepadIndex] : null
       
+      // render process for inputs
       if (gamepadChange) {
         // changes are received, work on rendering them
         if (skinSlot) {
+          skinSlot.assigning = gamepadChange.properties.indexOf('assigning') !== -1
           // skinSlot already exists
           if (
             skinSlot.dirname === this.skinMapping[gamepadChange.id.gamepadId]
           ) {
             // it's the same slot used before
+            if (skinSlot.assigning) { this.renderFrame(gamepadIndex) }
             this.render(gamepadIndex, gamepadChange)
           } else {
             // the gamepad for the slot is changed
@@ -593,6 +647,15 @@ class GamepadRenderer {
       }
     } // for loop of gamepadIndex
     
+    if (this.skinSlot[0] && this.skinSlot[0].activeState && this.skinSlot[0].lastActive) {
+      const eventLog = {
+        active: this.skinSlot[0].activeState,
+        last: this.skinSlot[0].lastActive
+      }
+      if (this._processedGamepadChange && this._processedGamepadChange[0]) { eventLog.gamepad = this._processedGamepadChange[0]}
+      window.dispatchEvent(new CustomEvent('skinStateChange', { detail: eventLog }))
+    }
+    
     this._processedGamepadChange = null
     this._timestamp = null
     
@@ -605,23 +668,25 @@ class GamepadRenderer {
    * calculate and render the fade-out effect.
    * @param {number} gamepadIndex
    * @param {ProcessedGamepadChange} gamepadChange
+   * @param {boolean} useFadeout
    * @returns {boolean}
    */
-  render (gamepadIndex, gamepadChange) {
-    const src = this.skinSlot[gamepadIndex].src
-    const ctx = this.skinSlot[gamepadIndex].ctx
-    const inst = this.skinSlot[gamepadIndex].instruction
+  render (gamepadIndex, gamepadChange, useFadeout = true) {
+    const skinSlot = this.skinSlot[gamepadIndex]
+    const src = skinSlot.src
+    const ctx = skinSlot.ctx
+    const inst = skinSlot.instruction
     if (!src || !ctx || !inst) {
       GamepadRenderer.announceMessage({
         message: 'Renderer is ready to draw but tools are somehow missing.',
-        skinSlot: this.skinSlot[gamepadIndex]
+        skinSlot: skinSlot
       }, 'error')
       return false
     }
   
-    const activeState = this.skinSlot[gamepadIndex].activeState
-    const lastActive = this.skinSlot[gamepadIndex].lastActive
-    const alpha = this.skinSlot[gamepadIndex].alpha
+    const activeState = skinSlot.activeState
+    const lastActive = skinSlot.lastActive
+    const alpha = skinSlot.alpha
     const timestampAtStart = this._timestamp || performance.now()
     
     /** @type {{left: ?stickChange, right: ?stickChange}} */
@@ -681,7 +746,7 @@ class GamepadRenderer {
             values.value, alpha.sticks[stickName], values.delta
           )
         }
-      } else {
+      } else if (useFadeout) {
         // if stick change isn't found, apply fade-out route
         // if it's actually active, update the lastActive time instead
         if (
@@ -758,7 +823,7 @@ class GamepadRenderer {
               lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
               alpha.buttons[buttonGroupName][buttonName] = 1
             }
-          } else {
+          } else if (useFadeout) {
             // for unchanged buttons in a changed group
             // if it's actually active, update the lastActive time instead
             if (activeState.buttons[buttonGroupName][buttonName]) {
@@ -786,7 +851,7 @@ class GamepadRenderer {
             }
           }
         }
-      } else {
+      } else if (useFadeout) {
         // for unchanged button groups in a changed gamepad
         for (let b = 0; b < this.order.button[bg].length; b++) {
           const buttonName = this.order.button[bg][b]
@@ -821,6 +886,29 @@ class GamepadRenderer {
         }
       }
     }
+  
+    const infoLayerIndex = inst.info.layer
+    const infoInst = inst.info.message
+    // message disappear timer
+    if (skinSlot.messageDisplayTimeLeft !== -1 && !skinSlot.assigning) {
+      if (skinSlot.messageDisplayTimeLeft === 0) {
+        this.followInstructions(
+          ctx[infoLayerIndex], null, infoInst.clear, null
+        )
+      }
+      skinSlot.messageDisplayTimeLeft--
+    }
+    if (gamepadChange.message) {
+      if (skinSlot.messageDisplayTimeLeft === -1) {
+        skinSlot.messageDisplayTimeLeft = this.messageDisplayTimeInSeconds * 60
+      }
+      this.followInstructions(
+        ctx[infoLayerIndex], null, infoInst.clear, null
+      )
+      this.followInstructions(
+        ctx[infoLayerIndex], null, infoInst.show, gamepadChange.message
+      )
+    }
     
     return true
   }
@@ -833,20 +921,21 @@ class GamepadRenderer {
    * @returns {boolean}
    */
   renderFadeout (gamepadIndex) {
-    const src = this.skinSlot[gamepadIndex].src
-    const ctx = this.skinSlot[gamepadIndex].ctx
-    const inst = this.skinSlot[gamepadIndex].instruction
+    const skinSlot = this.skinSlot[gamepadIndex]
+    const src = skinSlot.src
+    const ctx = skinSlot.ctx
+    const inst = skinSlot.instruction
     if (!src || !ctx || !inst) {
       GamepadRenderer.announceMessage({
         message: 'Renderer is ready to draw but tools are somehow missing.',
-        skinSlot: this.skinSlot[gamepadIndex]
+        skinSlot: skinSlot
       }, 'error')
       return false
     }
   
-    const activeState = this.skinSlot[gamepadIndex].activeState
-    const lastActive = this.skinSlot[gamepadIndex].lastActive
-    const alpha = this.skinSlot[gamepadIndex].alpha
+    const activeState = skinSlot.activeState
+    const lastActive = skinSlot.lastActive
+    const alpha = skinSlot.alpha
     const timestampAtStart = this._timestamp || performance.now()
     
     // sticks
@@ -927,6 +1016,18 @@ class GamepadRenderer {
           null, alpha.buttons[buttonGroupName][buttonName], null
         )
       }
+    }
+    
+    const infoLayerIndex = inst.info.layer
+    const infoInst = inst.info.message
+    // message disappear timer
+    if (skinSlot.messageDisplayTimeLeft !== -1 && !skinSlot.assigning) {
+      if (skinSlot.messageDisplayTimeLeft === 0) {
+        this.followInstructions(
+          ctx[infoLayerIndex], null, infoInst.clear, null
+        )
+      }
+      skinSlot.messageDisplayTimeLeft--
     }
   }
   
@@ -1041,9 +1142,11 @@ class GamepadRenderer {
             instArgs.push(typeof alpha === 'number' ? alpha : 1)
             break
           default:
-            if(inst[i].hasOwnProperty(parameterName)) {
-              instArgs.push(inst[i][parameterName])
-            }
+            instArgs.push(
+              inst[i].hasOwnProperty(parameterName) ?
+                inst[i][parameterName] : undefined
+            )
+            break
         }
       }
       this.instruction[instName](...instArgs, additionalValue)
@@ -1064,7 +1167,9 @@ class GamepadRenderer {
       drawImageInPolygon: ['ctx', 'src', 'path', 'coord', 'alpha'],
       drawImageInPolygonByValue: ['ctx', 'src', 'value', 'areaWidth', 'path', 'coord', 'alpha'],
       clearParallelogram: ['ctx', 'xMin', 'xMax', 'yMin', 'height', 'skewAway', 'vertical'],
-      clearParallelogramByValue: ['ctx', 'value', 'areaWidth', 'xMin', 'xMax', 'yMin', 'height', 'skewAway', 'vertical']
+      clearParallelogramByValue: ['ctx', 'value', 'areaWidth', 'xMin', 'xMax', 'yMin', 'height', 'skewAway', 'vertical'],
+      writeTextLine: ['ctx', 'y', 'value', 'color', 'fontSize', 'alpha'],
+      writeTextLines: ['ctx', 'y', 'value', 'newLineOnBelow', 'color', 'fontSize', 'alpha']
     }
     this.instruction = {
       clearRect: function (
@@ -1230,6 +1335,75 @@ class GamepadRenderer {
         this.clearParallelogram(
           ctx, xMin + width, xMax, yMin, height, skewAway, vertical
         )
+      },
+      /**
+       * write text on a semitransparent black line that fills up the full width
+       * @param {CanvasRenderingContext2D} ctx
+       * @param {number} y bottom point of the text
+       * @param {string} value
+       * @param {string} [color='white']
+       * @param {number} [fontSize=16]
+       * @param {number} [alpha=1]
+       */
+      writeTextLine: function (
+        ctx, y, value, color = 'white', fontSize = 16, alpha = 1
+      ) {
+        ctx.save()
+  
+        // fill background color
+        ctx.globalAlpha = 0.5 * alpha
+        ctx.fillStyle = 'black'
+        /*const letterHeight =
+          parseFloat(
+            window.getComputedStyle(ctx.canvas, null)
+              .getPropertyValue('font-size')
+          )*/
+        ctx.fillRect(0, y, ctx.canvas.clientWidth, -1 * letterHeight)
+        
+        // write text
+        ctx.globalAlpha = alpha
+        ctx.fillStyle = color
+        ctx.font = '1em monospace'
+        ctx.textBaseline = 'ideographic'
+        
+        ctx.fillText(value, 0, y)
+        
+        ctx.restore()
+      },
+      /**
+       * write multiple text lines on a semitransparent black line that fills up the full width
+       * @param {CanvasRenderingContext2D} ctx
+       * @param {number} y bottom point of the text
+       * @param {string[]} value
+       * @param {boolean} [newLineOnAbove=false] next line will appear above the last line
+       * @param {string} [color='white']
+       * @param {number} [fontSize=16]
+       * @param {number} [alpha=1]
+       */
+      writeTextLines: function (
+        ctx, y, value, newLineOnAbove = false, color = 'white', fontSize = 16, alpha = 1
+      ) {
+        ctx.save()
+        
+        // fill background color
+        ctx.globalAlpha = 0.25 * alpha
+        ctx.fillStyle = 'black'
+        const totalHeight = value.length * fontSize
+        ctx.fillRect(0, y, ctx.canvas.clientWidth, -1 * totalHeight)
+        
+        ctx.globalAlpha = alpha
+        ctx.fillStyle = color
+        ctx.font = '1em monospace'
+        ctx.textBaseline = 'ideographic'
+        
+        for (let l = 0; l < value.length; l++) {
+          ctx.fillText(
+            value[l], 0,
+            y - ( newLineOnAbove ? l : (value.length - 1 - l) ) * fontSize
+          )
+        }
+        
+        ctx.restore()
       }
     }
   }

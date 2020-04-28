@@ -967,7 +967,7 @@ class MappingManager {
    * Dpad (single axis) => Mapped Dpad (four buttons)
    * @param {Object.<string, number>} mappingDpad dpad mapping
    * @param {axisChange} changeAxis axis of the dpad
-   * @returns {Object.<string, buttonChange>}
+   * @returns {?Object.<string, ?buttonChange>}
    */
   static processAxisDpad (mappingDpad, changeAxis) {
     if (!changeAxis) { return null }
@@ -1007,20 +1007,25 @@ class MappingManager {
       neutralValues : MappingManager.convertAxisDpadValue(
         previousValue, false, directions, precision
       ) || neutralValues
+    
+    const deltaValues = Array(4).fill(0)
+    for(let d = 0; d < 4; d++) {
+      deltaValues[d] = dpadValues[d] - dpadPreviousValues[d]
+    }
   
     const processedChangeButtonsDpad =
       { up: {}, down: {}, left: {}, right: {} }
-    processedChangeButtonsDpad.up = {
-      value: dpadValues[0], delta: dpadValues[0] - dpadPreviousValues[0]
+    processedChangeButtonsDpad.up = deltaValues[0] === 0 ? null : {
+      value: dpadValues[0], delta: deltaValues[0]
     }
-    processedChangeButtonsDpad.down = {
-      value: dpadValues[1], delta: dpadValues[1] - dpadPreviousValues[1]
+    processedChangeButtonsDpad.down = deltaValues[1] === 0 ? null : {
+      value: dpadValues[1], delta: deltaValues[1]
     }
-    processedChangeButtonsDpad.left = {
-      value: dpadValues[2], delta: dpadValues[2] - dpadPreviousValues[2]
+    processedChangeButtonsDpad.left = deltaValues[2] === 0 ? null : {
+      value: dpadValues[2], delta: deltaValues[2]
     }
-    processedChangeButtonsDpad.right = {
-      value: dpadValues[3], delta: dpadValues[3] - dpadPreviousValues[3]
+    processedChangeButtonsDpad.right = deltaValues[3] === 0 ? null : {
+      value: dpadValues[3], delta: deltaValues[3]
     }
     
     return processedChangeButtonsDpad

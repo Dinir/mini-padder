@@ -21,7 +21,7 @@ body {
   font-size: $control-panel-font-size;
   position: fixed;
   top: 2 * $canvas-height + $canvas-gap;
-  left: 2 * $canvas-width + $canvas-gap;
+  left: $canvas-width;
   width: 2 * ( $canvas-width + $canvas-gap ) - $default-font-size;
   height: 2 * ( $canvas-height + $canvas-gap ) - $default-font-size;
   padding: 0.5 * $default-font-size;

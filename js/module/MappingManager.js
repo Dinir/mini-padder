@@ -417,6 +417,11 @@ class MappingManager {
   }
   
   startAssignment (gamepadIndex, name, gamepadId) {
+    if (this.assignmentState[gamepadIndex].ongoing) {
+      // called again while assignment is going, cancel the process
+      this.assignmentState[gamepadIndex].result = 'force-abort'
+      return
+    }
     this.assignmentState[gamepadIndex].ongoing = true
     this.assignmentState[gamepadIndex].index = -1
     this.assignmentState[gamepadIndex].result = null
@@ -460,6 +465,13 @@ class MappingManager {
       if (!assignmentState.result) {
         // aborted
         delete assignmentState.data
+        return
+      } else if (assignmentState.result === 'force-abort') {
+        assignmentState.result = false
+        processedGamepadChangeTemplate.properties.splice(
+          processedGamepadChangeTemplate.properties.indexOf('assigning'), 1
+        )
+        processedGamepadChangeTemplate.message = ['Assignment Aborted.']
         return
       }
       

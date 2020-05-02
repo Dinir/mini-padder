@@ -35,31 +35,31 @@
 <div id="control-panel" class="control-panel">
   <div class="option" data-name="assignment">
     <h1>Input Assignment</h1>
-    <button class="eachGamepad inactive">Gamepad Name</button>
-    <button class="eachGamepad inactive">Gamepad Name</button>
-    <button class="eachGamepad inactive">Gamepad Name</button>
-    <button class="eachGamepad inactive">Gamepad Name</button>
+    <button class="inactive">Gamepad Name</button>
+    <button class="inactive">Gamepad Name</button>
+    <button class="inactive">Gamepad Name</button>
+    <button class="inactive">Gamepad Name</button>
     <br>
     <span class="description">
       Make an input after pressing the button to start assigning.<br>
       Click the button again anytime to abort assigning.
     </span>
   </div>
-  <div class="option" data-name="layout" data-layout-0 data-layout-1 data-layout-2 data-layout-3>
+  <div class="option" data-name="layout">
     <h1>Gamepad Layout</h1>
-    <label class="eachGamepad full-width inactive">
+    <label class="full-width inactive">
       <span>Gamepad Name</span> is
       <select></select><br>
     </label>
-    <label class="eachGamepad full-width inactive">
+    <label class="full-width inactive">
       <span>Gamepad Name</span> is
       <select></select><br>
     </label>
-    <label class="eachGamepad full-width inactive">
+    <label class="full-width inactive">
       <span>Gamepad Name</span> is
       <select></select><br>
     </label>
-    <label class="eachGamepad full-width inactive">
+    <label class="full-width inactive">
       <span>Gamepad Name</span> is
       <select></select>
     </label>
@@ -133,9 +133,9 @@
         e.detail.message &&
         e.detail.message instanceof Error
       ) {
-        window.dispatchEvent(
-          new CustomEvent('customErrorMessage', {detail: e.detail.message})
-        )
+        window.dispatchEvent(new CustomEvent('customErrorMessage', {
+          detail: e.detail.message
+        }))
       }
     } else {
       console.log(e.detail.from + ':', e.detail.message)

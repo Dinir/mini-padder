@@ -730,15 +730,6 @@ class GamepadRenderer {
       }
     } // for loop of gamepadIndex
     
-    if (this.skinSlot[0] && this.skinSlot[0].activeState && this.skinSlot[0].lastActive) {
-      const eventLog = {
-        active: this.skinSlot[0].activeState,
-        last: this.skinSlot[0].lastActive
-      }
-      if (this._processedGamepadChange && this._processedGamepadChange[0]) { eventLog.gamepad = this._processedGamepadChange[0]}
-      window.dispatchEvent(new CustomEvent('skinStateChange', { detail: eventLog }))
-    }
-    
     this._processedGamepadChange = null
     this._timestamp = null
     

@@ -146,7 +146,8 @@ class GamepadRenderer {
     window.dispatchEvent(new CustomEvent('GPVMessage', {
       detail: {
         from: 'Gamepad Renderer',
-        type: messageType[type] || messageType.log,
+        type: message instanceof Error ?
+          messageType.error : ( messageType[type] || messageType.log ),
         message: message
       }
     }))

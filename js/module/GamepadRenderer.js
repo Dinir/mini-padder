@@ -111,20 +111,27 @@ class GamepadRenderer {
      */
     this.skins = {}
     /**
+     * Directory names of all skins currently loaded.
+     * @type {string[]}
+     */
+    this.skinList = []
+    /**
      * Store relations of gamepadId and a skin directory name, as key-value pair.
      * @type {Object.<string, string>}
      */
     this.skinMapping = {}
     this.loadSkinMapping()
     // after finishing loading all, `renderPending` will be `false`.
-    this.loadAllStoredSkins()
+    this.loadAllMappedSkins()
+    this.loadAllKnownSkins = this.loadAllKnownSkins.bind(this)
+    this.changeSkinOfSlot = this.changeSkinOfSlot.bind(this)
   
     /**
      * Save references of skins for each gamepad slot. Index is that of the gamepad.
      * @type {SkinSlot[]}
      */
     this.skinSlot = []
-    
+  
     this.requestRender = this.requestRender.bind(this)
     this.renderAll = this.renderAll.bind(this)
     this.requestRender()
@@ -153,7 +160,14 @@ class GamepadRenderer {
   }
   
   static isDirnameOkay (dirname) {
-    return !/[^0-9a-zA-Z_\-]/.test(dirname)
+    const isOkay = !/[^0-9a-zA-Z_\-]/.test(dirname)
+    if (!isOkay) {
+      GamepadRenderer.announceMessage(new Error(
+        'Directory name for the skin is invalid. ' +
+        'Allowed characters are alphanumericals, hyphen and underscore.'
+      ))
+    }
+    return isOkay
   }
   static findDefaultSkin (gamepadId, mappingProperties) {
     const defaultSkin = ['DInput', 'XInput', 'Joystick']
@@ -396,7 +410,7 @@ class GamepadRenderer {
     const rendererSkinMapping = JSON.parse(window.localStorage.getItem('rendererSkinMapping'))
     this.skinMapping = rendererSkinMapping || this.skinMapping || {}
   }
-  loadAllStoredSkins () {
+  loadAllMappedSkins () {
     const dirnameSeen = {}
     const allSkinDirnames = Object.values(this.skinMapping)
       .filter(dirname => {
@@ -407,6 +421,25 @@ class GamepadRenderer {
       this.loadSkin(allSkinDirnames[d])
     }
     this.renderPending = false
+  }
+  
+  /**
+   * Try to load all skins from an array of skin directory names.
+   * @param {string[]} newSkinList
+   */
+  loadAllKnownSkins (newSkinList) {
+    // delete every skin that exists on skinlist but not on the given list
+    const skinList = this.skinList
+    for (let i = 0; i < skinList.length; i++) {
+      if (newSkinList.indexOf(skinList[i]) === -1) {
+        this.unloadSkin(skinList[i])
+      }
+    }
+    // then load all skins on the given list
+    for (let i = 0; i < newSkinList.length; i++) {
+      this.loadSkin(newSkinList[i])
+    }
+    return true
   }
   /**
    * loads a skin and store the config under `this.skins[dirname]`.
@@ -421,6 +454,7 @@ class GamepadRenderer {
     this.skins[dirname] = {
       loaded: false
     }
+    this.skinList.push(dirname)
     const skin = this.skins[dirname]
     const path = `./skin/${dirname}`
     fetch(`${path}/config.json`)
@@ -439,9 +473,19 @@ class GamepadRenderer {
         )
       })
       .catch(error => {
-        delete this.skins[dirname]
+        this.unloadSkin(dirname)
         GamepadRenderer.announceMessage(error, 'error')
       })
+  }
+  unloadSkin (dirname) {
+    const skinName = this.skins[dirname] && this.skins[dirname].config ?
+      this.skins[dirname].config.name : dirname
+    delete this.skins[dirname]
+    const indexOnSkinList = this.skinList.indexOf(dirname)
+    if (indexOnSkinList !== -1) {
+      this.skinList.splice(this.skinList.indexOf(dirname), 1)
+    }
+    GamepadRenderer.announceMessage(`Unloaded skin ${skinName}.`)
   }
   /**
    * setup a loaded skin for one of four canvas
@@ -473,6 +517,11 @@ class GamepadRenderer {
       sticks: skin.config.sticks,
       buttons: skin.config.buttons
     }
+    /**
+     * It's false when `activeState` is an empty object.
+     * @type {boolean}
+     */
+    skinSlot.activeStateReady = false
     /**
      * Stores the last seen states of sticks and buttons.
      *
@@ -547,9 +596,12 @@ class GamepadRenderer {
         ]
       }
     }
+    
+    return true
   }
   removeSkinFromSlot (slot) {
     delete this.skinSlot[slot].gamepadId
+    delete this.skinSlot[slot].activeStateReady
     delete this.skinSlot[slot].activeState
     delete this.skinSlot[slot].lastActive
     delete this.skinSlot[slot].alpha
@@ -562,7 +614,23 @@ class GamepadRenderer {
       this.canvas[slot].removeChild(this.canvas[slot].lastChild)
     }
   }
-  
+  changeSkinOfSlot (slot, gamepadId, skinDirname = null) {
+    if (skinDirname) {
+      const skinMappingUpdated = this.setSkinMapping(gamepadId, skinDirname)
+      if (!skinMappingUpdated) {
+        GamepadRenderer.announceMessage(new Error(
+          `Skin for the slot ${slot} couldn't be changed.`
+        ))
+        return false
+      }
+    }
+    this.removeSkinFromSlot(slot)
+    return this.applySkinToSlot(
+      this.skinMapping[gamepadId],
+      slot,
+      gamepadId
+    )
+  }
   
   /**
    *
@@ -606,15 +674,14 @@ class GamepadRenderer {
           ) {
             // it's the same slot used before
             if (skinSlot.assigning) { this.renderFrame(gamepadIndex) }
-            this.render(gamepadIndex, gamepadChange)
+            if (!skinSlot.activeStateReady) {
+              this.renderFrame(gamepadIndex)
+            } else {
+              this.render(gamepadIndex, gamepadChange)
+            }
           } else {
             // the gamepad for the slot is changed
-            this.removeSkinFromSlot(gamepadIndex)
-            this.applySkinToSlot(
-              this.skinMapping[gamepadChange.id.gamepadId],
-              gamepadIndex,
-              gamepadChange.id.gamepadId
-            )
+            this.changeSkinOfSlot(gamepadIndex, gamepadChange.id.gamepadId)
             if (
               this.skins[this.skinMapping[gamepadChange.id.gamepadId]] &&
               this.skins[this.skinMapping[gamepadChange.id.gamepadId]].loaded
@@ -644,7 +711,11 @@ class GamepadRenderer {
         }
       } else if (skinSlot) {
         // no changes are received, but skin slot for the index exists
-        if (this.timingForFps(this.fadeoutFps)) {
+        if (!skinSlot.activeStateReady) {
+          // skinSlot might be recreated - active state should be made
+          this.renderFrame(gamepadIndex)
+        } else if (this.timingForFps(this.fadeoutFps)) {
+          // skin is loaded and active state also exist
           this.renderFadeout(gamepadIndex)
         }
       }
@@ -925,6 +996,14 @@ class GamepadRenderer {
    */
   renderFadeout (gamepadIndex) {
     const skinSlot = this.skinSlot[gamepadIndex]
+    if (!skinSlot.activeStateReady) {
+      GamepadRenderer.announceMessage(
+        `Active state of the skin for slot ${gamepadIndex} isn't populated.` +
+        'Rendering the frame first and populate the state.'
+      )
+      this.renderFrame(gamepadIndex)
+      return false
+    }
     const src = skinSlot.src
     const ctx = skinSlot.ctx
     const inst = skinSlot.instruction
@@ -1036,6 +1115,8 @@ class GamepadRenderer {
   
   /**
    * Render the frame of the skin, to show every part of skin.
+   * It walks over every part of gamepad part in the skin,
+   * and populate `activeState` and `lastActive` along the way.
    * @param {number} gamepadIndex
    * @see GamepadRenderer#render
    */
@@ -1121,6 +1202,10 @@ class GamepadRenderer {
         lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
         alpha.buttons[buttonGroupName][buttonName] = 1
       }
+    }
+    
+    if (!skinSlot.activeStateReady) {
+      skinSlot.activeStateReady = true
     }
   }
   

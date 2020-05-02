@@ -210,7 +210,122 @@ class ControlPanel {
   
   getControlForSelectFromList (name) {
     return {
-      name: name
+      name: name,
+      assign: function (
+        selectContainer, labelTextElements, listReference, customCallback,
+        defaultSelectedList
+      ) {
+        this.container = selectContainer
+        this.texts = labelTextElements
+        this.list = listReference
+        this.defaultSelectedList = defaultSelectedList
+        this.selects = ControlPanel.getIndexedElements(selectContainer, 'select')
+        this.addPlaceholder()
+        this.addItems(this.list)
+        this.callback = customCallback
+        this.container.addEventListener('mouseenter', e => {
+          this.updateItems(this.list)
+        })
+        this.container.addEventListener('change', e => {
+          if (e.target.tagName !== 'SELECT') return
+          const index = e.target.dataset.index
+          const text = this.texts[index]
+          this.callback(
+            index,
+            text.dataset.gamepadId,
+            e.target.selectedOptions[0].value
+          )
+        })
+      },
+      getExistingValues: function () {
+        return Array.from(this.selects[0].options).map(v => v.value)
+      },
+      addPlaceholder: function () {
+        const item = document.createElement('option')
+        item.value = '...'
+        item.innerHTML = '...'
+        item.setAttribute('disabled','')
+        item.setAttribute('selected','')
+        for(let s = 0; s < this.selects.length; s++) {
+          this.selects[s].options.add(item.cloneNode(true))
+        }
+      },
+      addItem: function (value) {
+        if (typeof value === 'undefined' || !value.length) { return false }
+        const item = document.createElement('option')
+        item.value = value
+        item.setAttribute('name', value)
+        item.innerHTML = value
+        for(let s = 0; s < this.selects.length; s++) {
+          this.selects[s].options.add(item.cloneNode(true))
+        }
+      },
+      addItems: function (valueArray) {
+        const existingValues = this.getExistingValues()
+        for (let i = 0; i < valueArray.length; i++) {
+          if (existingValues.indexOf(valueArray[i]) === -1) {
+            this.addItem(valueArray[i])
+          }
+        }
+      },
+      removeItem: function (value) {
+        if (typeof value === 'undefined' || !value.length) { return false }
+        for (let s = 0; s < this.selects.length; s++) {
+          this.selects[s].options.namedItem(value).remove()
+        }
+      },
+      removeAllItems: function () {
+        for (let s = 0; s < this.selects.length; s++) {
+          while (this.selects[s].options.length > 0) {
+            this.selects[s].options.remove(0)
+          }
+        }
+      },
+      updateItems: function (valueArray) {
+        const existingValues = this.getExistingValues()
+        // remove ones that doesn't exist in valueArray
+        // i === 0 is the placeholder
+        for(let i = 1; i < existingValues.length; i++) {
+          if (valueArray.indexOf(existingValues[i]) === -1) {
+            this.removeItem(existingValues[i])
+          }
+        }
+        // call addItems which will skip items already existing in valueArray
+        this.addItems(valueArray)
+      },
+      globalEventCallback: function (e) {
+        if (
+          e.type !== 'gamepadconnected' &&
+          e.type !== 'gamepaddisconnected'
+        ) {
+          return false
+        }
+        if (!this.selects) {
+          return false
+        }
+        switch (e.gamepad.connected) {
+          case true:
+            const id = ControlPanel.getGamepadId(e.gamepad.id)
+            const text = `${id.name} <sub>${id.gamepadId}</sub>`
+            this.changeLabel(e.gamepad.index, id, text)
+            const defaultValue = this.defaultSelectedList[id.gamepadId]
+            if (defaultValue) {
+              this.selects[e.gamepad.index].value = defaultValue
+            }
+            this.texts[e.gamepad.index].parentElement.classList.remove('inactive')
+            break
+          case false:
+            this.changeLabel(e.gamepad.index, null, '-')
+            this.texts[e.gamepad.index].parentElement.classList.add('inactive')
+            break
+        }
+      },
+      changeLabel: function (index, id, newText) {
+        if (typeof newText !== 'string' || !newText.length) { return }
+        this.texts[index].dataset.name = id ? id.name : ''
+        this.texts[index].dataset.gamepadId = id ? id.gamepadId : ''
+        this.texts[index].innerHTML = newText
+      }
     }
   }
   

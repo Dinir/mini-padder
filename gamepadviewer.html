@@ -48,10 +48,6 @@
   </div>
   <div class="option" data-name="layout" data-layout-0 data-layout-1 data-layout-2 data-layout-3>
     <h1>Gamepad Layout</h1>
-    <label class="allGamepad after-margin">
-      Every Gamepad is
-      <select ></select>
-    </label><br>
     <label class="eachGamepad full-width inactive">
       <span>Gamepad Name</span> is
       <select></select><br>
@@ -106,7 +102,7 @@
   <div class="option top-divider" data-name="management">
     <h1>Export & Import</h1>
     <button data-name="mappings">Gamepad Mappings</button>
-    <button data-name="skinMapping">Skin Mapping</button>
+    <button data-name="skinList">Skin List</button>
     <button data-name="controlPanel">Control Panel Settings</button>
     <button data-name="errorLog">Error Log</button>
     <br>
@@ -172,16 +168,20 @@
   cpPanel = Cp.panel
   
   cpPanel.assignment.assign(
-    cpDom.querySelector(
-      'div[data-name="assignment"]'
-    ),
+    cpDom.querySelector('div[data-name="assignment"]'),
     Mapper.startAssignment
+  )
+  
+  cpPanel.layout.assign(
+    cpDom.querySelector('div[data-name="layout"]'),
+    cpDom.querySelectorAll('div[data-name="layout"] label span'),
+    Renderer.skinList,
+    Renderer.changeSkinOfSlot,
+    Renderer.skinMapping
   )
 
   cpPanel.displayWidth.assign(
-    cpDom.querySelector(
-      'div[data-name="displayWidth"] input'
-    ), e => {
+    cpDom.querySelector('div[data-name="displayWidth"] input'), e => {
       canvasContainer.dataset.width = e.target.value
       cpDomSizeDescriptor.children[4].innerHTML =
         (canvasContainer.offsetWidth < 1000 ? '&nbsp;' : '') +
@@ -191,9 +191,7 @@
   )
   
   cpPanel.fadeout.assign(
-    cpDom.querySelector(
-      'div[data-name="fade"]'
-    ),
+    cpDom.querySelector('div[data-name="fade"]'),
     Renderer.setFadeoutOptionFromTextArray
   )
   if (!cpPanel.fadeout.panelValue) {
@@ -206,9 +204,7 @@
   }
 
   cpPanel.management.assign(
-    cpDom.querySelector(
-      'div[data-name="management"]'
-    ), e => {
+    cpDom.querySelector('div[data-name="management"]'), e => {
       switch (e.target.dataset.name) {
         case 'mappings':
           Obte.changeFocus(
@@ -217,11 +213,11 @@
             Mapper.import
           )
           break
-        case 'skinMapping':
+        case 'skinList':
           Obte.changeFocus(
-            'Skin Mapping',
-            Renderer.skinMapping,
-            Renderer.setSkinMappingInBulk
+            'Skin List',
+            Renderer.skinList,
+            Renderer.loadAllKnownSkins
           )
           break
         case 'controlPanel':

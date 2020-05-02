@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="./css/canvasContainer.css">
   <link rel="stylesheet" href="./css/controlPanel.css">
   <link rel="stylesheet" href="./css/OnBrowserTextEditor.css">
-  <link rel="stylesheet" href="./css/test.css">
 </head>
 
 <script src="./js/module/ErrorLogCollector.js"></script>
@@ -239,63 +238,5 @@
     }
   )
 </script>
-
-<!-- test codes -->
-<!--<script>
-  const changeViewDom = {
-    wrapper: document.createElement('div'),
-    axisView: document.createElement('pre'),
-    buttonView: document.createElement('pre'),
-    fullView: document.createElement('pre'),
-    changeIndicator: document.createElement('div')
-  }
-  changeViewDom.wrapper.id = 'change-viewer'
-  changeViewDom.wrapper.appendChild(changeViewDom.axisView)
-  changeViewDom.wrapper.appendChild(changeViewDom.buttonView)
-  changeViewDom.wrapper.appendChild(changeViewDom.fullView)
-  changeViewDom.wrapper.appendChild(changeViewDom.changeIndicator)
-  document.body.appendChild(changeViewDom.wrapper)
-
-  changeViewDom.changeIndicator.style.width = '1em'
-  changeViewDom.changeIndicator.style.height = '1em'
-  changeViewDom.changeIndicator.style.position = 'relative'
-  changeViewDom.changeIndicator.style.top = '-1em'
-  
-  /*/
-  // see gamepadChange
-  window.addEventListener('gamepadChange', e => {
-    // changeViewDom.changeIndicator.style.backgroundColor = 'green'
-    changeViewDom.axisView.innerHTML =
-      (e.detail[0] ?
-        JSON.stringify(e.detail[0].axes, null, 2) : '\n') +
-      (e.detail[1] ?
-        JSON.stringify(e.detail[1].axes, null, 2) : '')
-    changeViewDom.buttonView.innerHTML =
-      (e.detail[0] ?
-        JSON.stringify(e.detail[0].buttons, null, 2) : '\n') +
-      (e.detail[1] ?
-        JSON.stringify(e.detail[1].buttons, null, 2) : '')
-    changeViewDom.fullView.innerHTML = JSON.stringify(e.detail, null, 2)
-    // setTimeout(() => {changeViewDom.changeIndicator.style.backgroundColor = 'red'}, 50)
-  })
-  /*/
-  // see processedGamepadChange
-  window.addEventListener('processedGamepadChange', e => {
-    // changeViewDom.changeIndicator.style.backgroundColor = 'green'
-    changeViewDom.axisView.innerHTML =
-      (e.detail[0] ?
-        JSON.stringify(e.detail[0].sticks, null, 2) : '\n') +
-      (e.detail[1] ?
-        JSON.stringify(e.detail[1].sticks, null, 2) : '')
-    changeViewDom.buttonView.innerHTML =
-      (e.detail[0] ?
-        JSON.stringify(e.detail[0].buttons, null, 2) : '\n') +
-      (e.detail[1] ?
-        JSON.stringify(e.detail[1].buttons, null, 2) : '')
-    changeViewDom.fullView.innerHTML = JSON.stringify(e.detail, null, 2)
-    // setTimeout(() => {changeViewDom.changeIndicator.style.backgroundColor = 'red'}, 50)
-  })
-  //*/
-</script>-->
 
 </html>

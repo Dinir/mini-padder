@@ -115,12 +115,17 @@ class GamepadRenderer {
      * @type {string[]}
      */
     this.skinList = []
+    this.defaultSkins = ['XInput', 'DInput', 'Joystick']
     /**
      * Store relations of gamepadId and a skin directory name, as key-value pair.
      * @type {Object.<string, string>}
      */
     this.skinMapping = {}
     this.loadSkinMapping()
+    // load default skins
+    for (let i = 0; i < this.defaultSkins.length; i++) {
+      this.loadSkin(this.defaultSkins[i])
+    }
     // after finishing loading all, `renderPending` will be `false`.
     this.loadAllMappedSkins()
     this.loadAllKnownSkins = this.loadAllKnownSkins.bind(this)
@@ -431,6 +436,10 @@ class GamepadRenderer {
     // delete every skin that exists on skinlist but not on the given list
     const skinList = this.skinList
     for (let i = 0; i < skinList.length; i++) {
+      if (this.defaultSkins.indexOf(skinList[i]) !== -1) {
+        // don't unload default skins
+        continue
+      }
       if (newSkinList.indexOf(skinList[i]) === -1) {
         this.unloadSkin(skinList[i])
       }

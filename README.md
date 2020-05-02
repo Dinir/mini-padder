@@ -2,14 +2,6 @@
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)][JavaScript Standard Style]
 
----
-
-**This is a project being developed right now. Some of the introductions below won't apply to the actual project yet.**
-
-To use the old one that worked on only handful kind of gamepads, checkout the [1.2.1 release](https://github.com/Dinir/gamepad-viewer/releases/tag/1.2.1), or go to [this hosted page](https://dinir.github.io/gamepad-viewer/xboxpadviewer.html).
-
----
-
 | ![DInput Default and Joystick Default] | ![Input Assignment on 8Bitdo NES30 Pro] |
 | :---: | :---: |
 | multiple gamepads with different layouts | assigning inputs |
@@ -23,14 +15,11 @@ Simple gamepad input overlay for streaming, with default skins that keep a good 
 - Supports 4 gamepads simultaneously.
 - Default skins for XInput, DInput, 8-button arcade joysticks.
 - Fade-out effect for unused buttons.
-- Directly capture from OBS without running external programs.  
-Configurations are stored in the local storage, which will be loaded next time the page is loaded.
+- Directly capture from OBS without running external programs.
 
-It is intended to be running on a Chromium environment and depends on the use of localStorage to store and load configurations.
+This program is intended to be running on a Chromium environment, and it depends on the use of localStorage to store and load configurations.
 
 # How to Use
-
-## Using the hosted version
 
 - From OBS browser source, put the address of the [hosted webpage] as URL. Recommended Width and Height is 1048 × 600.
 - Right click the source, select *Transform -> Edit Transform...* to **crop off outside of the intended display area**.  
@@ -38,20 +27,15 @@ It is intended to be running on a Chromium environment and depends on the use of
 - To make a change using the control panel, right click the source and select *Interact*.
 - The page will start showing gamepads when any input is made on them.
 
-## Hosting it yourself
-
-By downloading the release and hosting it yourself, you can add or customize skins.
-
-- ~~If you know how to do it, you can download the codes alone. If you don't, you can downloaded the release with [http-server](https://www.npmjs.com/package/http-server) included in it and follow below.~~
-- ~~Run `runserver.bat` to host it on your localhost. The page can be found on `http://localhost:21600/gamepadviewer.html`. Close the opened command prompt window after use.  
-The batch file is just a single line file that starts http-server.~~
+To add or customize skins, you have to download the program and host it yourself.
 
 # Exporting & Importing Settings
 
 A local web page is not allowed to read files from the computer, so these progresses can't be made simple.
 
-- ~~If you made a custom skin, put the whole folder in `skin` folder, then register the folder name on the control panel.~~
-- If you want to keep settings for the viewer outside of it, you can copy them as a form of JSON text from the page. Paste such text to import settings.
+- If you made a custom skin, put the whole folder in `skin` folder, then include the folder name in the skin list. You can access the list via the control panel.  
+Folder name should be made of alphanumericals, hyphen and underscore. For now letter case matters.
+- If you want to keep settings for the program outside of it, you can copy them as a form of JSON text from the page. Paste such text to import settings.
 
 ---
 
@@ -66,6 +50,6 @@ Thank you for your visit and reading through this readme file. If you find this 
 [DInput ROCKETSROCKETSROCKETS]: ./images/DInput-R3.gif '(2.15MB) Mild Button Mash'
 [DInput Lightfield]: ./images/DInput-LF.gif '(1.55MB) Single Button Usage'
 
-[hosted webpage]: https://dinir.github.io/gamepad-viewer/gamepadviewer.html
+[hosted webpage]: https://dinir.github.io/gamepad-viewer/
 [latest release]: https://github.com/Dinir/gamepad-viewer/releases/latest
 [JavaScript Standard Style]: https://standardjs.com

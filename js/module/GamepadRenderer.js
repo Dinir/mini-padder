@@ -75,7 +75,6 @@ class GamepadRenderer {
     
     this.loadOrders()
     this.loadInstructions()
-    this.followInstructions.bind(this)
   
     this.canvas = canvasArray
     // I give it default values I used when it was 'XBoxPadViewer'.
@@ -365,6 +364,7 @@ class GamepadRenderer {
     if (!GamepadRenderer.isDirnameOkay(skinDirname)) { return false }
     this.skinMapping[gamepadId] = skinDirname
     this.saveSkinMapping()
+    return true
   }
   setSkinMappingInBulk (idDirnamePairs) {
     if (
@@ -625,11 +625,13 @@ class GamepadRenderer {
         } else {
           // skinSlot isn't made
           // find skin for the gamepad
-          const newSkinDirname = this.skinMapping[gamepadChange.id.gamepadId] ||
-            GamepadRenderer.findDefaultSkin(
+          let newSkinDirname = this.skinMapping[gamepadChange.id.gamepadId]
+          if (!newSkinDirname) {
+            newSkinDirname = GamepadRenderer.findDefaultSkin(
               gamepadChange.id.gamepadId, gamepadChange.properties
             )
-          this.setSkinMapping(gamepadChange.id.gamepadId, newSkinDirname)
+            this.setSkinMapping(gamepadChange.id.gamepadId, newSkinDirname)
+          }
           this.applySkinToSlot(
             newSkinDirname, gamepadIndex, gamepadChange.id.gamepadId
           )
@@ -1038,20 +1040,21 @@ class GamepadRenderer {
    * @see GamepadRenderer#render
    */
   renderFrame (gamepadIndex) {
-    const src = this.skinSlot[gamepadIndex].src
-    const ctx = this.skinSlot[gamepadIndex].ctx
-    const inst = this.skinSlot[gamepadIndex].instruction
+    const skinSlot = this.skinSlot[gamepadIndex]
+    const src = skinSlot.src
+    const ctx = skinSlot.ctx
+    const inst = skinSlot.instruction
     if (!src || !ctx || !inst) {
       GamepadRenderer.announceMessage({
         message: 'Renderer is ready to draw but tools are somehow missing.',
-        skinSlot: this.skinSlot[gamepadIndex]
+        skinSlot: skinSlot
       }, 'error')
       return false
     }
   
-    const activeState = this.skinSlot[gamepadIndex].activeState
-    const lastActive = this.skinSlot[gamepadIndex].lastActive
-    const alpha = this.skinSlot[gamepadIndex].alpha
+    const activeState = skinSlot.activeState
+    const lastActive = skinSlot.lastActive
+    const alpha = skinSlot.alpha
     const timestampAtStart = this._timestamp || performance.now()
     
     activeState.sticks = activeState.sticks || {}
@@ -1359,7 +1362,7 @@ class GamepadRenderer {
             window.getComputedStyle(ctx.canvas, null)
               .getPropertyValue('font-size')
           )*/
-        ctx.fillRect(0, y, ctx.canvas.clientWidth, -1 * letterHeight)
+        ctx.fillRect(0, y, ctx.canvas.clientWidth, -1 * fontSize)
         
         // write text
         ctx.globalAlpha = alpha

@@ -64,6 +64,14 @@ class ControlPanel {
     }
   }
   
+  static getIndexedElements (elementContainer, elementType) {
+    const elements = Array.from(elementContainer.querySelectorAll(elementType))
+    for (let i = 0; i < elements.length; i++) {
+      elements[i].dataset.index = i
+    }
+    return elements
+  }
+  
   setPanelValue (key, value) {
     this.panelValues[key] = value
     this.savePanelValues()
@@ -156,13 +164,8 @@ class ControlPanel {
       name: name,
       assign: function (buttonContainer, customCallback) {
         this.container = buttonContainer
-        this.buttons = Array.from(
-          buttonContainer.querySelectorAll('button')
-        )
+        this.buttons = ControlPanel.getIndexedElements(buttonContainer, 'button')
         this.callback = customCallback
-        for (let i = 0; i < this.buttons.length; i++) {
-          this.buttons[i].dataset.index = i
-        }
         this.container.addEventListener('click', e => {
           if (e.target.tagName !== 'BUTTON') return
           this.callback(
@@ -188,11 +191,11 @@ class ControlPanel {
             const label = `${id.name}<br><span>${id.gamepadId}</span>`
             this.changeLabel(e.gamepad.index, id, label)
             this.buttons[e.gamepad.index].classList.remove('inactive')
-            break;
+            break
           case false:
             this.changeLabel(e.gamepad.index, null, '-')
             this.buttons[e.gamepad.index].classList.add('inactive')
-            break;
+            break
         }
         
       },

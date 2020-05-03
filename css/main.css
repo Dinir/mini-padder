@@ -9,6 +9,8 @@ body {
 #canvas-container {
   letter-spacing: -2px;
   line-height: 26px; }
+  #canvas-container canvas {
+    color: grey; }
 
 .control-panel {
   font-size: 14px;

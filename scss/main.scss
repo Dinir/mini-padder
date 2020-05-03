@@ -14,6 +14,10 @@ body {
   // these makes gaps between canvases to be always 8px
   letter-spacing: $canvas-gap - 10px;
   line-height: 2 * $canvas-gap + 10px;
+  // ensure contrast of fallback text on default black background
+  canvas {
+    color: grey;
+  }
 }
 
 .control-panel {

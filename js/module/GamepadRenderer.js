@@ -567,7 +567,8 @@ class GamepadRenderer {
      * @type {number}
      */
     skinSlot.messageDisplayTimeLeft = -1
-    
+  
+    const altMessage = `a layer of canvas to display inputs of gamepad ${slot}`
     for (let l = 0; l < config.layer.length; l++) {
       const layer = GamepadRenderer.newCanvasLayer(
         config.layer[l].width,
@@ -575,6 +576,7 @@ class GamepadRenderer {
         config.layer[l].x,
         config.layer[l].y
       )
+      layer.innerHTML = altMessage
       
       skinSlot.layer.push(layer)
       skinSlot.ctx.push(layer.getContext('2d'))
@@ -583,6 +585,7 @@ class GamepadRenderer {
   
     // add top layer for displaying messages
     const infoLayer = GamepadRenderer.newCanvasLayer(...this.maxCanvasSize, 0, 0)
+    infoLayer.innerHTML = `a layer of canvas to display messages in regards to gamepad ${slot}`
     
     skinSlot.layer.push(infoLayer)
     skinSlot.ctx.push(infoLayer.getContext('2d'))

@@ -1,4 +1,4 @@
-# Gamepad Viewer
+# Mini Padder
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)][JavaScript Standard Style]
 
@@ -47,6 +47,6 @@ Thank you for reading all the way to the end! 😁
 [DInput ROCKETSROCKETSROCKETS]: ./images/DInput-R3.gif '(2.15MB) Mild Button Mash'
 [DInput Lightfield]: ./images/DInput-LF.gif '(1.55MB) Single Button Usage'
 
-[hosted webpage]: https://dinir.github.io/gamepad-viewer/
-[latest release]: https://github.com/Dinir/gamepad-viewer/releases/latest
+[hosted webpage]: https://dinir.github.io/mini-padder/
+[latest release]: https://github.com/Dinir/mini-padder/releases/latest
 [JavaScript Standard Style]: https://standardjs.com

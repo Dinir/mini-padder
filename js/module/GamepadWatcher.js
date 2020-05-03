@@ -107,6 +107,8 @@ class GamepadWatcher {
     this.onLoop = false
     this.pollID = 0
     
+    this.browser = GamepadWatcher.detectBrowser()
+    
     if (GamepadWatcher.hasEvents) {
       window.addEventListener('gamepadconnected', e => {
         this.updateConnection(e, true)
@@ -140,15 +142,29 @@ class GamepadWatcher {
   }
   
   /**
+   * detects if it's Firefox or Chrome.
+   * @return {string}
+   */
+  static detectBrowser () {
+    if (!!window.chrome && !!window.chrome.runtime) { return 'Chrome' }
+    if (typeof InstallTrigger !== 'undefined') { return 'Firefox' }
+  }
+  
+  /**
    * Extract human readable description and gamepadId from `Gamepad.id`.
    * @param {string} idString
    * @returns {{name: string, gamepadId: gamepadId}}
    */
-  static getGamepadId (idString) {
-    const matchResult = idString.match(/ \(.*Vendor: ([0-9a-f]{4}) Product: ([0-9a-f]{4})\)/)
+  getGamepadId (idString) {
+    // only parse for either Chrome or Firefox environment at the moment
+    const matchResult = this.browser === 'Chrome' ?
+      idString.match(/ \(.*Vendor: ([0-9a-f]{4}) Product: ([0-9a-f]{4})\)/) :
+      idString.match(/([0-9a-f]{1,4})-([0-9a-f]{1,4})/)
     if (matchResult) {
       return {
-        name: idString.substring(0, matchResult.index),
+        name:
+          idString.substring(0, matchResult.index) ||
+          idString.substring(10),
         gamepadId: matchResult[1] + matchResult[2]
       }
       // vender and product aren't found. assume it's a standard gamepad.
@@ -182,7 +198,7 @@ class GamepadWatcher {
     if (connection) {
       this.gamepads[gamepad.index] = gamepad
       this.gamepadId[gamepad.index] =
-        GamepadWatcher.getGamepadId(gamepad.id)
+        this.getGamepadId(gamepad.id)
     } else {
       delete this.gamepads[gamepad.index]
       delete this.gamepadId[gamepad.index]
@@ -212,7 +228,7 @@ class GamepadWatcher {
       if (gamepads[i]) {
         this.gamepads[gamepads[i].index] = gamepads[i]
         this.gamepadId[gamepads[i].index] =
-          GamepadWatcher.getGamepadId(gamepads[i].id)
+          this.getGamepadId(gamepads[i].id)
       }
       else {
         delete this.gamepads[gamepads[i].index]
@@ -271,15 +287,18 @@ class GamepadWatcher {
       const index = newState.index
       const oldState = this.gamepads[index]
       
+      /*
+       * the `oldState` is a reference to a LIVE STATE of a gamepad in firefox...
+       */
       // check if the state is changed
-      if (newState.timestamp === oldState.timestamp) {
-        lastChanges[newState.index] = null
-        continue
-      } else {
+      if (newState.timestamp !== oldState.timestamp || this.browser === 'Firefox') {
         // add gamepadId into the change object
         lastChanges[newState.index] = {
           id: this.gamepadId[newState.index]
         }
+      } else {
+        lastChanges[newState.index] = null
+        continue
       }
       const lastChange = lastChanges[newState.index]
       
@@ -296,7 +315,10 @@ class GamepadWatcher {
       // check buttons
       const buttonChanges = Array(newState.buttons.length).fill(null)
       for (let bi = 0; bi < newState.buttons.length; bi++) {
-        if (newState.buttons[bi].value !== oldState.buttons[bi].value) {
+        /*
+         * the `oldState` is a reference to a LIVE STATE of a gamepad in firefox...
+         */
+        if (newState.buttons[bi].value !== oldState.buttons[bi].value || this.browser === 'Firefox') {
           buttonChanges[bi] = {
             pressed: newState.buttons[bi].pressed,
             value: newState.buttons[bi].value,

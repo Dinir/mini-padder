@@ -14,6 +14,8 @@ class ControlPanel {
     this.panelValues = {}
     this.loadPanelValues()
     
+    this.browser = ControlPanel.detectBrowser()
+    
     for (const item in typeListingObject) {
       if (!typeListingObject.hasOwnProperty(item)) continue
       this.panel[item] = this.getControlForType(
@@ -38,15 +40,29 @@ class ControlPanel {
   }
   
   /**
+   * detects if it's Firefox or Chrome.
+   * @return {string}
+   */
+  static detectBrowser () {
+    if (!!window.chrome && !!window.chrome.runtime) { return 'Chrome' }
+    if (typeof InstallTrigger !== 'undefined') { return 'Firefox' }
+  }
+  
+  /**
    * Extract human readable description and gamepadId from `Gamepad.id`.
    * @param {string} idString
    * @returns {{name: string, gamepadId: gamepadId}}
    */
   static getGamepadId (idString) {
-    const matchResult = idString.match(/ \(.*Vendor: ([0-9a-f]{4}) Product: ([0-9a-f]{4})\)/)
+    // only parse for either Chrome or Firefox environment at the moment
+    const matchResult = ControlPanel.detectBrowser() === 'Chrome' ?
+      idString.match(/ \(.*Vendor: ([0-9a-f]{4}) Product: ([0-9a-f]{4})\)/) :
+      idString.match(/([0-9a-f]{1,4})-([0-9a-f]{1,4})/)
     if (matchResult) {
       return {
-        name: idString.substring(0, matchResult.index),
+        name:
+          idString.substring(0, matchResult.index) ||
+          idString.substring(10),
         gamepadId: matchResult[1] + matchResult[2]
       }
       // vender and product aren't found. assume it's a standard gamepad.

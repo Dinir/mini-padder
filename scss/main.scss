@@ -42,8 +42,13 @@ body {
       margin-bottom: 0;
       border-bottom: 0;
     }
+    &.vertical-space-but-no-divider {
+      padding: 0.5em 0;
+      border-bottom: 0;
+    }
     &.after-margin {
       margin-bottom: 0.5em;
+      padding-bottom: 0.5em;
     }
     &.top-divider {
       padding-top: 0.5em;
@@ -70,6 +75,13 @@ body {
   }
   .description {
     font-size: 0.8em;
+  }
+  .caution {
+    background-color: #c1c08b;
+    border-radius: 8px;
+    &:before {
+      content: '⚠️ ';
+    }
   }
   
   h1 {

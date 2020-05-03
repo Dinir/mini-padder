@@ -31,8 +31,12 @@ body {
       padding-bottom: 0;
       margin-bottom: 0;
       border-bottom: 0; }
+    .control-panel > div.vertical-space-but-no-divider {
+      padding: 0.5em 0;
+      border-bottom: 0; }
     .control-panel > div.after-margin {
-      margin-bottom: 0.5em; }
+      margin-bottom: 0.5em;
+      padding-bottom: 0.5em; }
     .control-panel > div.top-divider {
       padding-top: 0.5em;
       margin-top: 0.5em;
@@ -50,6 +54,11 @@ body {
     display: none; }
   .control-panel .description {
     font-size: 0.8em; }
+  .control-panel .caution {
+    background-color: #c1c08b;
+    border-radius: 8px; }
+    .control-panel .caution:before {
+      content: '⚠️ '; }
   .control-panel h1 {
     font-size: 1em;
     margin-block-start: 0;

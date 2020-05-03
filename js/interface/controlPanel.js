@@ -74,7 +74,7 @@ class ControlPanel {
       }
     } else {
       return {
-        name: 'DInput Standard Controller?',
+        name: 'DInput Controller?',
         gamepadId: 'DInput'
       }
     }

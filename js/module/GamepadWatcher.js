@@ -146,7 +146,8 @@ class GamepadWatcher {
    * @return {string}
    */
   static detectBrowser () {
-    if (!!window.chrome && !!window.chrome.runtime) { return 'Chrome' }
+    // can't believe `!!window.chrome` doesn't work on OBS browser
+    if (/Chrome\/\d+/.test(navigator.userAgent)) { return 'Chrome' }
     if (typeof InstallTrigger !== 'undefined') { return 'Firefox' }
   }
   
@@ -155,10 +156,10 @@ class GamepadWatcher {
    * @param {string} idString
    * @returns {{name: string, gamepadId: gamepadId}}
    */
-  getGamepadId (idString) {
+  static getGamepadId (idString) {
     // only parse for either Chrome or Firefox environment at the moment
-    const matchResult = this.browser === 'Chrome' ?
-      idString.match(/ \(.*Vendor: ([0-9a-f]{4}) Product: ([0-9a-f]{4})\)/) :
+    const matchResult =
+      idString.match(/ \(.*Vendor: ([0-9a-f]{4}) Product: ([0-9a-f]{4})\)/) ||
       idString.match(/([0-9a-f]{1,4})-([0-9a-f]{1,4})/)
     if (matchResult) {
       return {
@@ -198,7 +199,7 @@ class GamepadWatcher {
     if (connection) {
       this.gamepads[gamepad.index] = gamepad
       this.gamepadId[gamepad.index] =
-        this.getGamepadId(gamepad.id)
+        GamepadWatcher.getGamepadId(gamepad.id)
     } else {
       delete this.gamepads[gamepad.index]
       delete this.gamepadId[gamepad.index]
@@ -228,7 +229,7 @@ class GamepadWatcher {
       if (gamepads[i]) {
         this.gamepads[gamepads[i].index] = gamepads[i]
         this.gamepadId[gamepads[i].index] =
-          this.getGamepadId(gamepads[i].id)
+          GamepadWatcher.getGamepadId(gamepads[i].id)
       }
       else {
         delete this.gamepads[gamepads[i].index]

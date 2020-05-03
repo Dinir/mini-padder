@@ -44,7 +44,8 @@ class ControlPanel {
    * @return {string}
    */
   static detectBrowser () {
-    if (!!window.chrome && !!window.chrome.runtime) { return 'Chrome' }
+    // can't believe `!!window.chrome` doesn't work on OBS browser
+    if (/Chrome\/\d+/.test(navigator.userAgent)) { return 'Chrome' }
     if (typeof InstallTrigger !== 'undefined') { return 'Firefox' }
   }
   
@@ -55,8 +56,8 @@ class ControlPanel {
    */
   static getGamepadId (idString) {
     // only parse for either Chrome or Firefox environment at the moment
-    const matchResult = ControlPanel.detectBrowser() === 'Chrome' ?
-      idString.match(/ \(.*Vendor: ([0-9a-f]{4}) Product: ([0-9a-f]{4})\)/) :
+    const matchResult =
+      idString.match(/ \(.*Vendor: ([0-9a-f]{4}) Product: ([0-9a-f]{4})\)/) ||
       idString.match(/([0-9a-f]{1,4})-([0-9a-f]{1,4})/)
     if (matchResult) {
       return {

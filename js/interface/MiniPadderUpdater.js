@@ -29,6 +29,7 @@ class MiniPadderUpdater extends Updater {
   }
   
   loadUpdateTasks () {
+    // only add applications of changes that couldn't be done by updating files
     return {
       '2': {
         '1': {

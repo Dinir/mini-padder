@@ -855,16 +855,16 @@ class MappingManager {
           mapping.sticks, change.axes, change.buttons
         )
       }
-      
+  
+      processedChange.buttons.dpad = {}
       // buttons.dpad
       if (processedChange.properties.indexOf('joystick') !== -1) {
-        // 'joystick': this is a joystick - only one of the three is active: LS, RS, or Dpad.
+        // 'joystick': this is a joystick - only one of the three is active as LS: LS, RS, or Dpad.
         /*
          This property is intended to be a simpler one for 'axisdpad' + 'nodpad'.
          Since only the changes on a gamepad are received,
          signal of non-axis dpad can't be converted into a stick signal.
          */
-        processedChange.buttons.dpad = null
         // check if there's already an active signal received as any of the sticks on the mapping
         if (
           (!processedChange.sticks.left || !processedChange.sticks.left.active) &&
@@ -877,7 +877,7 @@ class MappingManager {
            */
           if (mapping.buttons.dpad.axis) {
             processedChange.sticks.left = MappingManager.processAxisDpadAsLeftStick(
-              mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis]
+              mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis], this.dpadState[i]
             )
           } else {
             // we're trying to simulate a gamepad as a joystick here
@@ -888,13 +888,13 @@ class MappingManager {
           }
         } else {
           // stick is active, reset the dpad state
-          this.dpadState[i] = [0, 0]
+          MappingManager.updateDpadStateDirectly(this.dpadState[i], [0, 0])
         }
       } else if (processedChange.properties.indexOf('axisdpad') !== -1) {
         // 'axisdpad': axis is dpad - certain axes represent dpad
         // this is a weird gamepad
         processedChange.buttons.dpad = MappingManager.processAxisDpad(
-          mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis]
+          mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis], this.dpadState[i]
         )
       } else {
         // dpad is reasonably found as simple and clean four buttons
@@ -902,6 +902,8 @@ class MappingManager {
           mapping.buttons.dpad, change.buttons, this.dpadState[i]
         )
       }
+      // include stick style dpad state
+      processedChange.buttons.dpad.value = this.dpadState[i]
       
       // buttons.face and buttons.shoulder
       Object.assign(
@@ -985,38 +987,39 @@ class MappingManager {
    * Convert axis dpad value as stick value for stickChange or
    * an array of four direction values.
    * @param {number} value
-   * @param {boolean} asStick
    * @param {number[]} directionValues
    * @param {number} precision
-   * @returns {number[]}
-   * If `asStick` is true, values of x-axis, y-axis,
-   * and null as the stick button state.
-   * If not `asStick`, then value of up, down, left, and right.
+   * @returns {{stick: number[], dpad: number[]}}
+   * stick: x-axis, y-axis, null
+   * dpad: up, down, left, right
    */
   static convertAxisDpadValue (
-    value, asStick = true,
+    value,
     directionValues = [-1, -0.8, -0.5, -0.2, 0.1, 0.4, 0.7, 1],
     precision = 0.1
   ) {
-    const conversionTable = asStick ? [
-      [ 0, -1, null],
-      [ 1, -1, null],
-      [ 1,  0, null],
-      [ 1,  1, null],
-      [ 0,  1, null],
-      [-1,  1, null],
-      [-1,  0, null],
-      [-1, -1, null]
-    ] : [
-      [1, 0, 0, 0],
-      [1, 0, 0, 1],
-      [0, 0, 0, 1],
-      [0, 1, 0, 1],
-      [0, 1, 0, 0],
-      [0, 1, 1, 0],
-      [0, 0, 1, 0],
-      [1, 0, 1, 0]
-    ]
+    const conversionTable = {
+      stick: [
+        [ 0, -1, null],
+        [ 1, -1, null],
+        [ 1,  0, null],
+        [ 1,  1, null],
+        [ 0,  1, null],
+        [-1,  1, null],
+        [-1,  0, null],
+        [-1, -1, null]
+      ],
+      dpad: [
+        [1, 0, 0, 0],
+        [1, 0, 0, 1],
+        [0, 0, 0, 1],
+        [0, 1, 0, 1],
+        [0, 1, 0, 0],
+        [0, 1, 1, 0],
+        [0, 0, 1, 0],
+        [1, 0, 1, 0]
+      ]
+    }
     
     const directionIndex = directionValues.findIndex( d =>
       Math.abs(value - d) < precision
@@ -1024,11 +1027,14 @@ class MappingManager {
     
     if (directionIndex === -1) { return null }
     
-    return conversionTable[directionIndex]
+    return {
+      stick: conversionTable.stick[directionIndex],
+      dpad: conversionTable.dpad[directionIndex]
+    }
   }
   /**
    * update last seen dpad state using new button change data
-   * @param {number[][]} dpadState reference to last seen dpad state
+   * @param {number[]} dpadState reference to last seen dpad state
    * @param {Object.<string, number>} mappingDpad dpad mapping
    * @param {?buttonChange[]} changeButtons
    * @returns {?buttonChange[]} changes of up, down, left, and right dpad button
@@ -1057,16 +1063,26 @@ class MappingManager {
   }
   
   /**
+   * update last seen dpad state with an already made dpad state data
+   * @param {number[]} dpadState reference to last seen dpad state
+   * @param {number[]} newStateData array of dpad x-axis and y-axis value
+   */
+  static updateDpadStateDirectly (dpadState, newStateData) {
+    dpadState[0] = newStateData[0]
+    dpadState[1] = newStateData[1]
+  }
+  
+  /**
    * Dpad (single axis) => Mapped Dpad (four buttons)
    * @param {Object.<string, number>} mappingDpad dpad mapping
    * @param {axisChange} changeAxis axis of the dpad
+   * @param {number[]} dpadState reference to last seen dpad state
    * @returns {?Object.<string, ?buttonChange>}
    */
-  static processAxisDpad (mappingDpad, changeAxis) {
-    if (!changeAxis) { return null }
-    
-    const value = changeAxis.value
-    const previousValue = value - changeAxis.delta
+  static processAxisDpad (mappingDpad, changeAxis, dpadState) {
+    const neutralValue = 23/7
+    const value = changeAxis ? changeAxis.value : neutralValue
+    const previousValue = changeAxis ? value - changeAxis.delta : neutralValue
   
     /*
     converting up ~ upleft to 0 ~ 7,
@@ -1086,40 +1102,42 @@ class MappingManager {
       mappingDpad.upleft,
     ] : undefined
     const precision = mappingDpad.precision || undefined
-    const neutralValues = [0, 0, 0, 0]
+    const neutralValues = { dpad: [0, 0, 0, 0] }
   
     // the value is 0 when connected and recognized,
     // and it's 23/7 when returned to its neutral position.
     // active value can be negative or 1, and not 0.
     const dpadValues = (value > 1 || value === 0) ?
       neutralValues : MappingManager.convertAxisDpadValue(
-        value, false, directions, precision
+        value, directions, precision
       ) || neutralValues
     
     const dpadPreviousValues = (previousValue > 1 || previousValue === 0) ?
       neutralValues : MappingManager.convertAxisDpadValue(
-        previousValue, false, directions, precision
+        previousValue, directions, precision
       ) || neutralValues
     
     const deltaValues = Array(4).fill(0)
     for(let d = 0; d < 4; d++) {
-      deltaValues[d] = dpadValues[d] - dpadPreviousValues[d]
+      deltaValues[d] = dpadValues.dpad[d] - dpadPreviousValues.dpad[d]
     }
   
     const processedChangeButtonsDpad =
       { up: {}, down: {}, left: {}, right: {} }
     processedChangeButtonsDpad.up = deltaValues[0] === 0 ? null : {
-      value: dpadValues[0], delta: deltaValues[0]
+      value: dpadValues.dpad[0], delta: deltaValues[0]
     }
     processedChangeButtonsDpad.down = deltaValues[1] === 0 ? null : {
-      value: dpadValues[1], delta: deltaValues[1]
+      value: dpadValues.dpad[1], delta: deltaValues[1]
     }
     processedChangeButtonsDpad.left = deltaValues[2] === 0 ? null : {
-      value: dpadValues[2], delta: deltaValues[2]
+      value: dpadValues.dpad[2], delta: deltaValues[2]
     }
     processedChangeButtonsDpad.right = deltaValues[3] === 0 ? null : {
-      value: dpadValues[3], delta: deltaValues[3]
+      value: dpadValues.dpad[3], delta: deltaValues[3]
     }
+    
+    MappingManager.updateDpadStateDirectly(dpadState, dpadValues.dpad)
     
     return processedChangeButtonsDpad
   }
@@ -1127,27 +1145,25 @@ class MappingManager {
    * Dpad (single axis) => Mapped Stick (two axis)
    * @param {Object.<string, number>} mappingDpad dpad mapping
    * @param {axisChange} changeAxis axis of the dpad
+   * @param dpadState
    * @returns {?stickChange}
    */
-  static processAxisDpadAsLeftStick (mappingDpad, changeAxis) {
-    if (!changeAxis) { return null }
-    
-    const value = changeAxis.value
-    const delta = changeAxis.delta
+  static processAxisDpadAsLeftStick (mappingDpad, changeAxis, dpadState) {
+    const value = changeAxis ? changeAxis.value : 0
+    const delta = changeAxis ? changeAxis.delta : 0
     const previousValue = value - delta
     // the value is 0 when connected and recognized,
     // and it's 23/7 when returned to its neutral position.
     // active value can be negative or 1, and not 0.
     const active = value !== 0 && value <= 1
   
-    const neutralValues = [0, 0, null]
+    const neutralValues = { stick: [0, 0, null] }
   
     const conversionArgs = [[value], [delta]]
     // the mapping declared its own dpad values and comparison precision
     if (mappingDpad.hasOwnProperty('upright')) {
       for (let i = 0; i < 2; i++) {
         conversionArgs[i].push(
-          true,
           [
             mappingDpad.up,
             mappingDpad.upright,
@@ -1172,13 +1188,15 @@ class MappingManager {
       neutralValues
     
     const deltaValues = [
-      stickValues[0] - stickPreviousValues[0],
-      stickValues[1] - stickPreviousValues[1],
+      stickValues.stick[0] - stickPreviousValues.stick[0],
+      stickValues.stick[1] - stickPreviousValues.stick[1],
       null
     ]
+  
+    MappingManager.updateDpadStateDirectly(dpadState, stickValues.stick)
     
     return {
-      value: stickValues,
+      value: stickValues.stick,
       delta: deltaValues,
       active: active
     }
@@ -1188,13 +1206,13 @@ class MappingManager {
    * Dpad (four buttons) => Mapped Dpad (four buttons)
    * @param {Object.<string, number>} mappingDpad dpad mapping
    * @param  {?buttonChange[]} changeButtons
-   * @param {number[][]} dpadState reference to last seen dpad state
+   * @param {number[]} dpadState reference to last seen dpad state
    * @returns {?Object.<string, ?buttonChange>}
    */
   static processDpadSimple (mappingDpad, changeButtons, dpadState) {
     const values = MappingManager.updateDpadState(dpadState, mappingDpad, changeButtons)
     
-    if (values.every(v => v === null)) { return null }
+    // if (values.every(v => v === null)) { return null }
     
     return {
       up:    values[0],
@@ -1207,7 +1225,7 @@ class MappingManager {
    * Dpad (four buttons) => Mapped Stick (two axis)
    * @param {Object.<string, number>} mappingDpad dpad mapping
    * @param  {?buttonChange[]} changeButtons
-   * @param {number[][]} dpadState reference to last seen dpad state
+   * @param {number[]} dpadState reference to last seen dpad state
    * @returns {stickChange}
    */
   static processDpadAsLeftStick (mappingDpad, changeButtons, dpadState) {

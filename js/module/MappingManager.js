@@ -615,8 +615,10 @@ class MappingManager {
           }
           
           // copy l3 and r3 from sticks mapping to buttons one
-          mapping.buttons.face.l3 = mapping.sticks.left.button || null
-          mapping.buttons.face.r3 = mapping.sticks.right.button || null
+          assignmentState.data.mapping.buttons.face.l3 =
+            assignmentState.data.mapping.sticks.left.button || null
+          assignmentState.data.mapping.buttons.face.r3 =
+            assignmentState.data.mapping.sticks.right.button || null
           
           if (inputToBeSkipped || aborting) {
             // required input is found so increase the index and finish assignment

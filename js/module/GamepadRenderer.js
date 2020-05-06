@@ -190,6 +190,11 @@ class GamepadRenderer {
     
     return layer
   }
+  static updateLeftStickActiveStatesOnDpadInput (skinSlot, timestamp) {
+    skinSlot.activeState.sticks.left[0] = true
+    skinSlot.lastActive.sticks.left = timestamp
+    skinSlot.alpha.sticks.left = 1
+  }
   
   tickFpsCounter () {
     this.counterFor30fps = !this.counterFor30fps
@@ -526,6 +531,7 @@ class GamepadRenderer {
       sticks: skin.config.sticks,
       buttons: skin.config.buttons
     }
+    skinSlot.properties = config.properties
     /**
      * It's false when `activeState` is an empty object.
      * @type {boolean}
@@ -753,6 +759,7 @@ class GamepadRenderer {
     const src = skinSlot.src
     const ctx = skinSlot.ctx
     const inst = skinSlot.instruction
+    const properties = skinSlot.properties
     if (!src || !ctx || !inst) {
       GamepadRenderer.announceMessage({
         message: 'Renderer is ready to draw but tools are somehow missing.',
@@ -765,6 +772,8 @@ class GamepadRenderer {
     const lastActive = skinSlot.lastActive
     const alpha = skinSlot.alpha
     const timestampAtStart = this._timestamp || performance.now()
+    
+    const forJoystick = properties.indexOf('joystick') !== -1
     
     /** @type {{left: ?stickChange, right: ?stickChange}} */
     const sticks = gamepadChange.sticks
@@ -871,6 +880,9 @@ class GamepadRenderer {
       if (buttons[buttonGroupName]) {
         // changes for a button group is confirmed
         for (let b = 0; b < this.order.button[bg].length; b++) {
+          // skip other dpad instructions on joystick
+          if (forJoystick && bg === 0 && b !== 0) { break }
+          
           const buttonName = this.order.button[bg][b]
           const buttonInst = inst.buttons[buttonGroupName][buttonName]
           // skip if the referred instruction is not made
@@ -884,18 +896,29 @@ class GamepadRenderer {
               ctx[buttonLayerIndex], src, buttonInst.clear,
               null, null, null
             )
-      
-            if (value === 0) {
+  
+            // joystick skin uses dpad.value which is [x-axis, y-axis]
+            const valueIsOff = forJoystick && bg === 0 && b === 0 ?
+              value[0] === 0 && value[1] === 0 : value === 0
+            if (valueIsOff) {
               this.followInstructions(
                 ctx[buttonLayerIndex], src, buttonInst.off,
                 null, null, null
               )
+              if (forJoystick && bg === 0 && b === 0) {
+                activeState.sticks.left[0] = false
+              }
               activeState.buttons[buttonGroupName][buttonName] = false
             } else {
               this.followInstructions(
                 ctx[buttonLayerIndex], src, buttonInst.on,
                 value, null, null
               )
+              if (forJoystick && bg === 0 && b === 0) {
+                GamepadRenderer.updateLeftStickActiveStatesOnDpadInput(
+                  skinSlot, timestampAtStart
+                )
+              }
               activeState.buttons[buttonGroupName][buttonName] = true
               lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
               alpha.buttons[buttonGroupName][buttonName] = 1
@@ -904,8 +927,16 @@ class GamepadRenderer {
             // for unchanged buttons in a changed group
             // if it's actually active, update the lastActive time instead
             if (activeState.buttons[buttonGroupName][buttonName]) {
+              if (forJoystick && bg === 0 && b === 0) {
+                GamepadRenderer.updateLeftStickActiveStatesOnDpadInput(
+                  skinSlot, timestampAtStart
+                )
+              }
               lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
             } else if (this.timingForFps(this.fadeoutFps)) {
+              // dpad for joystick render fade-out using left stick part
+              if (forJoystick && bg === 0 && b === 0) { continue }
+              
               const timeInactive =
                 timestampAtStart - lastActive.buttons[buttonGroupName][buttonName]
               let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
@@ -931,6 +962,9 @@ class GamepadRenderer {
       } else if (useFadeout) {
         // for unchanged button groups in a changed gamepad
         for (let b = 0; b < this.order.button[bg].length; b++) {
+          // skip other dpad instructions on joystick
+          if (forJoystick && bg === 0 && b !== 0) { break }
+          
           const buttonName = this.order.button[bg][b]
           const buttonInst = inst.buttons[buttonGroupName][buttonName]
           // skip if the referred instruction is not made
@@ -940,6 +974,8 @@ class GamepadRenderer {
           if (activeState.buttons[buttonGroupName][buttonName]) {
             lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
           } else if (this.timingForFps(this.fadeoutFps)) {
+            // dpad for joystick render fade-out using left stick part
+            if (forJoystick && bg === 0 && b === 0) { continue }
             const timeInactive =
               timestampAtStart - lastActive.buttons[buttonGroupName][buttonName]
             let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
@@ -1010,6 +1046,7 @@ class GamepadRenderer {
     const src = skinSlot.src
     const ctx = skinSlot.ctx
     const inst = skinSlot.instruction
+    const properties = skinSlot.properties
     if (!src || !ctx || !inst) {
       GamepadRenderer.announceMessage({
         message: 'Renderer is ready to draw but tools are somehow missing.',
@@ -1022,6 +1059,8 @@ class GamepadRenderer {
     const lastActive = skinSlot.lastActive
     const alpha = skinSlot.alpha
     const timestampAtStart = this._timestamp || performance.now()
+  
+    const forJoystick = properties.indexOf('joystick') !== -1
     
     // sticks
     const stickLayerIndex = inst.sticks.layer
@@ -1071,15 +1110,26 @@ class GamepadRenderer {
       if (!inst.buttons[buttonGroupName]) { continue }
       
       for (let b = 0; b < this.order.button[bg].length; b++) {
+        // skip other dpad instructions on joystick
+        if (forJoystick && bg === 0 && b !== 0) { break }
+        
         const buttonName = this.order.button[bg][b]
         const buttonInst = inst.buttons[buttonGroupName][buttonName]
         if (!buttonInst || buttonInst.constructor !== Object) { continue }
   
         // if it's actually active, update the lastActive time instead
         if (activeState.buttons[buttonGroupName][buttonName]) {
+          if (forJoystick && bg === 0 && b === 0) {
+            GamepadRenderer.updateLeftStickActiveStatesOnDpadInput(
+              skinSlot, timestampAtStart
+            )
+          }
           lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
           continue
         }
+        
+        // dpad for joystick render fade-out using left stick part
+        if (forJoystick && bg === 0 && b === 0) { continue }
   
         const timeInactive =
           timestampAtStart - lastActive.buttons[buttonGroupName][buttonName]
@@ -1128,6 +1178,7 @@ class GamepadRenderer {
     const src = skinSlot.src
     const ctx = skinSlot.ctx
     const inst = skinSlot.instruction
+    const properties = skinSlot.properties
     if (!src || !ctx || !inst) {
       GamepadRenderer.announceMessage({
         message: 'Renderer is ready to draw but tools are somehow missing.',
@@ -1302,6 +1353,8 @@ class GamepadRenderer {
         pos, areaSize, coord,
         alpha = 1
       ) {
+        if (pos === null) { pos = [0, 0] }
+        
         const fixedPos = []
         for (let a = 0; a < 2; a++) {
           fixedPos.push(pos[a] * areaSize[a])
@@ -1328,6 +1381,8 @@ class GamepadRenderer {
         pos, length, lengthDiagonal, coord,
         alpha = 1
       ) {
+        if (pos === null) { pos = [0, 0] }
+        
         const fixedLength = Math.abs(pos[0]) !== 1 || Math.abs(pos[1]) !== 1 ?
           length : lengthDiagonal || ( length * Math.sin(Math.PI*0.75) )
         const fixedCoord = []
@@ -1509,7 +1564,9 @@ class GamepadRenderer {
       stick: ['left','right'],
       buttonGroup: ['dpad', 'face', 'shoulder'],
       button: [
-        ['up','down','left','right'],
+        // joystick rendering will skip after first property of this array
+        // so first property should be the joystick related dpad value
+        ['value','up','down','left','right'],
         ['down','right','left','up','select','start','l3','r3','home','touchpad'],
         ['l1','r1','l2','r2']
       ]

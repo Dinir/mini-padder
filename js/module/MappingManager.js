@@ -278,26 +278,26 @@ class MappingManager {
       {
         label: 'dpad-down',
         group: 'buttons',
-        virtualInput: { "dpad": { "down": { "value": 1 }, "value": [0,1] } },
+        virtualInput: { "dpad": { "down": { "value": 1 }, "value": { "value": [0,1] } } },
         mapInput: (m, i) => {m.buttons.dpad.down = i},
         mapInputAxis: (m, i) => {m.buttons.dpad.axis = i}
       }, 
       {
         label: 'dpad-left',
         group: 'buttons',
-        virtualInput: { "dpad": { "left": { "value": 1 }, "value": [-1,0] } },
+        virtualInput: { "dpad": { "left": { "value": 1 }, "value": { "value": [-1,0] } } },
         mapInput: (m, i) => {m.buttons.dpad.left = i}
       }, 
       {
         label: 'dpad-up',
         group: 'buttons',
-        virtualInput: { "dpad": { "up": { "value": 1 }, "value": [0,-1] } },
+        virtualInput: { "dpad": { "up": { "value": 1 }, "value": { "value": [0,-1] } } },
         mapInput: (m, i) => {m.buttons.dpad.up = i}
       }, 
       {
         label: 'dpad-right',
         group: 'buttons',
-        virtualInput: { "dpad": { "right": { "value": 1 }, "value": [1,0] } },
+        virtualInput: { "dpad": { "right": { "value": 1 }, "value": { "value": [1,0] } } },
         mapInput: (m, i) => {m.buttons.dpad.right = i}
       },
       {
@@ -612,10 +612,11 @@ class MappingManager {
             } else if (mapping.properties.indexOf('joystick') === -1) {
               mapping.properties.push('joystick')
             }
-            // move l3 and r3 to buttons mapping
-            mapping.buttons.face.l3 = mapping.sticks.left.button || null
-            mapping.buttons.face.r3 = mapping.sticks.right.button || null
           }
+          
+          // copy l3 and r3 from sticks mapping to buttons one
+          mapping.buttons.face.l3 = mapping.sticks.left.button || null
+          mapping.buttons.face.r3 = mapping.sticks.right.button || null
           
           if (inputToBeSkipped || aborting) {
             // required input is found so increase the index and finish assignment
@@ -856,7 +857,6 @@ class MappingManager {
         )
       }
   
-      processedChange.buttons.dpad = {}
       // buttons.dpad
       if (processedChange.properties.indexOf('joystick') !== -1) {
         // 'joystick': this is a joystick - only one of the three is active as LS: LS, RS, or Dpad.
@@ -903,7 +903,17 @@ class MappingManager {
         )
       }
       // include stick style dpad state
-      processedChange.buttons.dpad.value = this.dpadState[i]
+      if (
+        processedChange.buttons.dpad &&
+        (
+          processedChange.buttons.dpad.up ||
+          processedChange.buttons.dpad.down ||
+          processedChange.buttons.dpad.left ||
+          processedChange.buttons.dpad.right
+        )
+      ) {
+        processedChange.buttons.dpad.value = { value: this.dpadState[i] }
+      }
       
       // buttons.face and buttons.shoulder
       Object.assign(
@@ -1102,7 +1112,7 @@ class MappingManager {
       mappingDpad.upleft,
     ] : undefined
     const precision = mappingDpad.precision || undefined
-    const neutralValues = { dpad: [0, 0, 0, 0] }
+    const neutralValues = { stick: [0, 0, null], dpad: [0, 0, 0, 0] }
   
     // the value is 0 when connected and recognized,
     // and it's 23/7 when returned to its neutral position.
@@ -1137,7 +1147,7 @@ class MappingManager {
       value: dpadValues.dpad[3], delta: deltaValues[3]
     }
     
-    MappingManager.updateDpadStateDirectly(dpadState, dpadValues.dpad)
+    MappingManager.updateDpadStateDirectly(dpadState, dpadValues.stick)
     
     return processedChangeButtonsDpad
   }

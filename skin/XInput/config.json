@@ -1,5 +1,6 @@
 {
 	"name": "XInput Default",
+	"properties": [],
 	"src": [
 		"frame.png", "active.png"
 	],

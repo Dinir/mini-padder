@@ -29,15 +29,18 @@
   <link rel="stylesheet" href="./css/canvasContainer.css">
   <link rel="stylesheet" href="./css/controlPanel.css">
   <link rel="stylesheet" href="./css/OnBrowserTextEditor.css">
+  
+  <script src="./js/module/ErrorLogCollector.js"></script>
+  <script src="./js/module/GamepadWatcher.js"></script>
+  <script src="./js/module/MappingManager.js"></script>
+  <script src="./js/module/GamepadRenderer.js"></script>
+  <script src="./js/module/OnBrowserTextEditor.js"></script>
+  <script src="./js/module/Updater.js"></script>
+  <script src="./js/interface/Mapper.js"></script>
+  <script src="./js/interface/controlPanel.js"></script>
+  <script src="./js/interface/MiniPadderUpdater.js"></script>
 </head>
 
-<script src="./js/module/ErrorLogCollector.js"></script>
-<script src="./js/module/GamepadWatcher.js"></script>
-<script src="./js/module/MappingManager.js"></script>
-<script src="./js/module/GamepadRenderer.js"></script>
-<script src="./js/module/OnBrowserTextEditor.js"></script>
-<script src="./js/interface/Mapper.js"></script>
-<script src="./js/interface/controlPanel.js"></script>
 
 <body>
 <div id="canvas-container">
@@ -130,7 +133,7 @@
   </div>
   <div>
     <div>
-      <b>Mini Padder</b> &copy; 2020, Dinir Nertan
+      <b>Mini Padder</b><sub> <span class="version"></span></sub> &copy; 2020, Dinir Nertan
     </div>
     <div>
       <a href="https://github.com/Dinir/mini-padder"
@@ -276,6 +279,14 @@
       }
     }
   )
+</script>
+
+<!-- updater -->
+<script>
+  const version = '2.1.0'
+  const MPUpdater = new MiniPadderUpdater(version)
+  const versionDoms = document.getElementsByClassName('version')
+  Array.from(versionDoms).forEach(v => v.innerHTML = version)
 </script>
 
 </html>

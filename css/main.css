@@ -7,6 +7,13 @@ body {
   font-family: "Fira Code", monospace;
   background-color: black; }
 
+sub {
+  vertical-align: baseline;
+  font-size: x-small; }
+
+.version {
+  font-family: sans-serif; }
+
 #canvas-container {
   letter-spacing: -2px;
   line-height: 26px; }

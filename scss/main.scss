@@ -10,6 +10,15 @@ body {
   background-color: black;
 }
 
+sub {
+  vertical-align: baseline;
+  font-size: x-small;
+}
+
+.version {
+  font-family: sans-serif;
+}
+
 #canvas-container {
   // these makes gaps between canvases to be always 8px
   letter-spacing: $canvas-gap - 10px;

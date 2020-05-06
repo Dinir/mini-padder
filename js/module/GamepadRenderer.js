@@ -756,6 +756,14 @@ class GamepadRenderer {
    */
   render (gamepadIndex, gamepadChange, useFadeout = true) {
     const skinSlot = this.skinSlot[gamepadIndex]
+    if (!skinSlot.activeStateReady) {
+      GamepadRenderer.announceMessage(
+        `Active state of the skin for slot ${gamepadIndex} isn't populated.` +
+        'Rendering the frame first and populating the state.'
+      )
+      this.renderFrame(gamepadIndex)
+      return false
+    }
     const src = skinSlot.src
     const ctx = skinSlot.ctx
     const inst = skinSlot.instruction
@@ -774,6 +782,7 @@ class GamepadRenderer {
     const timestampAtStart = this._timestamp || performance.now()
     
     const forJoystick = properties.indexOf('joystick') !== -1
+    const dpadInUse = activeState.buttons.dpad && activeState.buttons.dpad.value
     
     /** @type {{left: ?stickChange, right: ?stickChange}} */
     const sticks = gamepadChange.sticks
@@ -786,7 +795,9 @@ class GamepadRenderer {
       // skip if the referred instruction is not made
       if (!stickInst || stickInst.constructor !== Object) { continue }
       
-      if (sticks[stickName]) {
+      if (forJoystick && dpadInUse) {
+        // skip rendering sticks because dpad is active
+      } else if (sticks[stickName]) {
         // change for the stick is confirmed
         const values = sticks[stickName]
         let fadingOut = false
@@ -1038,7 +1049,7 @@ class GamepadRenderer {
     if (!skinSlot.activeStateReady) {
       GamepadRenderer.announceMessage(
         `Active state of the skin for slot ${gamepadIndex} isn't populated.` +
-        'Rendering the frame first and populate the state.'
+        'Rendering the frame first and populating the state.'
       )
       this.renderFrame(gamepadIndex)
       return false

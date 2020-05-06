@@ -889,8 +889,7 @@ class MappingManager {
               )
           }
         } else {
-          // stick is active, reset the dpad state
-          MappingManager.updateDpadStateDirectly(this.dpadState[i], [0, 0])
+          // stick is active, don't process dpad input as a stick
         }
       } else if (processedChange.properties.indexOf('axisdpad') !== -1) {
         // 'axisdpad': axis is dpad - certain axes represent dpad

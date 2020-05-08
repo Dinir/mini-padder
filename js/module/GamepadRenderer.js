@@ -1393,9 +1393,20 @@ class GamepadRenderer {
         alpha = 1
       ) {
         if (pos === null) { pos = [0, 0] }
+        if (typeof lengthDiagonal === 'undefined') {
+          lengthDiagonal = length * Math.sin(Math.PI*0.75)
+        }
         
-        const fixedLength = Math.abs(pos[0]) !== 1 || Math.abs(pos[1]) !== 1 ?
-          length : lengthDiagonal || ( length * Math.sin(Math.PI*0.75) )
+        const inputPositiveThreshold = 0.5
+        const posMagnitude = [ Math.abs(pos[0]), Math.abs(pos[1]) ]
+        const posDiagonalPositive =
+          posMagnitude[0] >= inputPositiveThreshold &&
+          posMagnitude[1] >= inputPositiveThreshold
+        if (posDiagonalPositive) {
+          pos[0] /= posMagnitude[0]
+          pos[1] /= posMagnitude[1]
+        }
+        const fixedLength = posDiagonalPositive ? lengthDiagonal : length
         const fixedCoord = []
         
         for (let p = 0; p < coord.length; p++) {

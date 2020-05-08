@@ -351,13 +351,8 @@ class ControlPanel {
       name: name,
       assign: function (buttonContainer, custonCallback) {
         this.container = buttonContainer
-        this.buttons = Array.from(
-          buttonContainer.querySelectorAll('button')
-        )
+        this.buttons = ControlPanel.getIndexedElements(buttonContainer, 'button')
         this.callback = custonCallback
-        for (let i = 0; i < this.buttons.length; i++) {
-          this.buttons[i].dataset.index = i
-        }
         this.container.addEventListener('click', e => {
           if (e.target.tagName !== 'BUTTON') return
           this.callback(e)
@@ -410,13 +405,9 @@ class ControlPanel {
       },
       assign: function (textArrayContainer, customCallback) {
         this.container = textArrayContainer
-        this.textArray = Array.from(
-          textArrayContainer.querySelectorAll('input')
-        )
+        this.textArray =
+          ControlPanel.getIndexedElements(textArrayContainer, 'input')
         this.callback = customCallback
-        for (let i = 0; i < this.textArray.length; i++) {
-          this.textArray[i].dataset.index = i
-        }
         if (this.panelValue) {
           this.applyPanelValue()
         }

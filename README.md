@@ -42,10 +42,10 @@ Thank you for reading all the way to the end! 😁
 
 
 
-[DInput Default and Joystick Default]: image/DS4-and-Joystick.gif '(539.9kB) Dinput Default Skin and Joystick Default Skin'
-[Input Assignment on 8Bitdo NES30 Pro]: image/Assignment.gif '(564.7kB) Assigning buttons for 8Bitdo NES30 Pro'
-[DInput ROCKETSROCKETSROCKETS]: image/DInput-R3.gif '(2.15MB) Mild Button Mash'
-[DInput Lightfield]: image/DInput-LF.gif '(1.55MB) Single Button Usage'
+[DInput Default and Joystick Default]: ./image/DS4-and-Joystick.gif '(539.9kB) Dinput Default Skin and Joystick Default Skin'
+[Input Assignment on 8Bitdo NES30 Pro]: ./image/Assignment.gif '(564.7kB) Assigning buttons for 8Bitdo NES30 Pro'
+[DInput ROCKETSROCKETSROCKETS]: ./image/DInput-R3.gif '(2.15MB) Mild Button Mash'
+[DInput Lightfield]: ./image/DInput-LF.gif '(1.55MB) Single Button Usage'
 
 [hosted webpage]: https://dinir.github.io/mini-padder/
 [latest release]: https://github.com/Dinir/mini-padder/releases/latest

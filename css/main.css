@@ -11,6 +11,12 @@ sub {
   vertical-align: baseline;
   font-size: x-small; }
 
+.inline {
+  display: inline; }
+
+.normal-font-size {
+  font-size: 1em; }
+
 .version {
   font-family: sans-serif; }
 
@@ -62,15 +68,15 @@ sub {
     display: none; }
   .control-panel .description {
     font-size: 0.8em; }
+    .control-panel .description b {
+      display: inline; }
   .control-panel .caution {
     background-color: #c1c08b;
     border-radius: 8px; }
     .control-panel .caution:before {
       content: '⚠️ '; }
-  .control-panel h1 {
-    font-size: 1em;
-    margin-block-start: 0;
-    margin-block-end: 0;
+  .control-panel b {
+    display: block;
     margin-bottom: 0.5em; }
   .control-panel label {
     display: inline-block; }

@@ -15,6 +15,12 @@ sub {
   font-size: x-small;
 }
 
+.inline {
+  display: inline;
+}
+.normal-font-size {
+  font-size: 1em;
+}
 .version {
   font-family: sans-serif;
 }
@@ -84,6 +90,10 @@ sub {
   }
   .description {
     font-size: 0.8em;
+    b {
+      // title of a description
+      display: inline;
+    }
   }
   .caution {
     background-color: #c1c08b;
@@ -93,10 +103,9 @@ sub {
     }
   }
   
-  h1 {
-    font-size: 1em;
-    margin-block-start: 0;
-    margin-block-end: 0;
+  b {
+    // control panel section name
+    display: block;
     margin-bottom: 0.5em;
   }
   label {

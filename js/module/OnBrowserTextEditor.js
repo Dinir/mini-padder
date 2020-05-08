@@ -36,7 +36,7 @@ class OnBrowserTextEditor {
   }
   
   makeDomStructure () {
-    const title = document.createElement('h1')
+    const title = document.createElement('b')
     title.setAttribute('class', 'title')
     const closeButton = document.createElement('button')
     closeButton.classList.add('close')

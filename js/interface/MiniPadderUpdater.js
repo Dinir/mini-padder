@@ -56,6 +56,23 @@ class MiniPadderUpdater extends Updater {
             
             return true
           }
+        },
+        '2': {
+          '0': function () {
+            if (
+              typeof Renderer === 'undefined'
+            ) {
+              return false
+            }
+            const version = '2.2.0'
+            MiniPadderUpdater.announceMessage(
+              version + ': Adding a new skin for 6-button gamepads.'
+            )
+            
+            Renderer.addSkinToSkinList('MegaPad')
+            
+            return true
+          }
         }
       }
     }

@@ -1340,7 +1340,45 @@ class GamepadRenderer {
       writeTextLine: ['ctx', 'y', 'value', 'color', 'fontSize', 'alpha'],
       writeTextLines: ['ctx', 'y', 'value', 'newLineOnBelow', 'color', 'fontSize', 'alpha']
     }
+    // everything here has `this.instruction` as `this`
     this.instruction = {
+      _posOrder: [
+        'upleft','up','upright',
+        'left','neutral','right',
+        'downleft','down','downright'
+      ],
+      /**
+       * Take the position data and convert their number to either -1, 0, or 1.
+       *
+       * It turns out there's a joystick that can't push the input all the way to 1,
+       * so this method is to ensure stick/dpad position is always one of 9 possible cases.
+       *
+       * @param {number[]} pos
+       * array of x-axis and y-axis value, each in a range of 0 ~ 1 (inclusive)
+       * @param {number} [threshold=0.5] axis value below this is considered inactive
+       * @returns {number[]} returns new pos data with values always being either -1, 0, or 1.
+       * @private
+       */
+      _getDigitalPos: function (pos, threshold = 0.5) {
+        if (!pos) { pos = [0, 0] }
+        const posMagnitude = [ Math.abs(pos[0]), Math.abs(pos[1]) ]
+        const digitalPos = [
+          posMagnitude[0] >= threshold ?
+            pos[0] / posMagnitude[0] : 0,
+          posMagnitude[1] >= threshold ?
+            pos[1] / posMagnitude[1] : 0
+        ]
+        if (digitalPos[0] % 1 !== 0 || digitalPos[1] % 1 !== 0) {
+          GamepadRenderer.announceMessage(
+            new Error('Value divided by its magnitude didn\'t return 1. ' +
+                      'Code will keep running but it should be always rounded.')
+          )
+          digitalPos[0] = Math.round(digitalPos[0])
+          digitalPos[1] = Math.round(digitalPos[1])
+        }
+        
+        return digitalPos
+      },
       clearRect: function (
         ctx, x, y, width, height
       ) {
@@ -1416,23 +1454,17 @@ class GamepadRenderer {
           lengthDiagonal = length * Math.sin(Math.PI*0.75)
         }
         
-        const inputPositiveThreshold = 0.5
-        const posMagnitude = [ Math.abs(pos[0]), Math.abs(pos[1]) ]
-        const posDiagonalPositive =
-          posMagnitude[0] >= inputPositiveThreshold &&
-          posMagnitude[1] >= inputPositiveThreshold
-        if (posDiagonalPositive) {
-          pos[0] /= posMagnitude[0]
-          pos[1] /= posMagnitude[1]
-        }
-        const fixedLength = posDiagonalPositive ? lengthDiagonal : length
+        const digitalPos = this._getDigitalPos(pos)
+        
+        // if both axis is not zero then dP[0]*dP[1] will be true
+        const fixedLength = digitalPos[0] * digitalPos[1] ? lengthDiagonal : length
         const fixedCoord = []
         
         for (let p = 0; p < coord.length; p++) {
           if (coord[p].constructor === Array) {
             for (let a = 0; a < 2; a++) {
               fixedCoord.push(
-                fixedLength * pos[a] + coord[p][a]
+                fixedLength * digitalPos[a] + coord[p][a]
               )
             }
           } else {

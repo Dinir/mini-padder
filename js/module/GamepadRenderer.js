@@ -110,25 +110,29 @@ class GamepadRenderer {
      * data from `config.json` in the skin directory
      */
     this.skins = {}
+  
     /**
-     * Directory names of all skins currently loaded.
+     * Directory names of all skins currently known.
      * @type {string[]}
      */
     this.skinList = []
     this.defaultSkins = ['XInput', 'DInput', 'Joystick']
+    // push name of default skins
+    for (let i = 0; i < this.defaultSkins.length; i++) {
+      this.skinList.push(this.defaultSkins[i])
+    }
+    // then load and add any existing additional skins to the list
+    this.loadSkinList()
     /**
      * Store relations of gamepadId and a skin directory name, as key-value pair.
      * @type {Object.<string, string>}
      */
     this.skinMapping = {}
     this.loadSkinMapping()
-    // load default skins
-    for (let i = 0; i < this.defaultSkins.length; i++) {
-      this.loadSkin(this.defaultSkins[i])
-    }
-    // after finishing loading all, `renderPending` will be `false`.
+    // after finishing loading all mapped ones, `renderPending` will be `false`.
     this.loadAllMappedSkins()
-    this.loadAllKnownSkins = this.loadAllKnownSkins.bind(this)
+    this.loadAllListedSkins()
+    this.reloadSkins = this.reloadSkins.bind(this)
     this.changeSkinOfSlot = this.changeSkinOfSlot.bind(this)
   
     /**
@@ -402,6 +406,46 @@ class GamepadRenderer {
     ) / 10 ** this.fadeoutOpacityPrecision
   }
   
+  addSkinToSkinList (skinDirname) {
+    if (this.skinList.indexOf(skinDirname) !== -1) {
+      return false
+    }
+    this.skinList.push(skinDirname)
+    this.saveSkinList()
+  }
+  addSkinsToSkinList (skinDirnameArray) {
+    if (typeof skinDirnameArray === 'string') {
+      this.addSkinToSkinList(skinDirnameArray)
+    }
+    skinDirnameArray.forEach(skinDirName => {
+      if (this.skinList.indexOf(skinDirName) !== -1) {
+        return false
+      }
+      this.skinList.push(skinDirName)
+    })
+    this.saveSkinList()
+  }
+  removeSkinFromSkinList (skinDirname) {
+    const indexOnSkinList = this.skinList.indexOf(skinDirname)
+    if (indexOnSkinList !== -1) {
+      this.skinList.splice(indexOnSkinList, 1)
+    }
+  }
+  saveSkinList () {
+    const listJSON = JSON.stringify(this.skinList)
+    window.localStorage.setItem('skinList', listJSON)
+  }
+  resetSkinList () {
+    this.skinList.splice(0, this.skinList.length)
+  }
+  loadSkinList (reloadFromScratch = false) {
+    const skinList = JSON.parse(window.localStorage.getItem('skinList')) || []
+    if (skinList.length) {
+      if (reloadFromScratch) { this.resetSkinList() }
+      this.addSkinsToSkinList(skinList)
+    }
+  }
+  
   setSkinMapping (gamepadId, skinDirname) {
     if (!GamepadRenderer.isDirnameOkay(skinDirname)) { return false }
     this.skinMapping[gamepadId] = skinDirname
@@ -439,19 +483,27 @@ class GamepadRenderer {
     this.skinMapping = rendererSkinMapping || this.skinMapping || {}
   }
   loadAllMappedSkins () {
-    const dirnameSeen = {}
     const allSkinDirnames = GamepadRenderer.getUniqueValues(this.skinMapping)
     for (let d = 0; d < allSkinDirnames.length; d++) {
       this.loadSkin(allSkinDirnames[d])
     }
     this.renderPending = false
   }
+  loadAllListedSkins () {
+    for (let d = 0; d < this.skinList.length; d++) {
+      this.loadSkin(this.skinList[d])
+    }
+  }
   
   /**
    * Try to load all skins from an array of skin directory names.
    * @param {string[]} newSkinList
    */
-  loadAllKnownSkins (newSkinList) {
+  reloadSkins (newSkinList) {
+    if (typeof newSkinList === 'undefined') {
+      this.loadAllListedSkins()
+      return true
+    }
     // delete every skin that exists on skinlist but not on the given list
     const skinList = this.skinList
     for (let i = 0; i < skinList.length; i++) {
@@ -467,6 +519,9 @@ class GamepadRenderer {
     for (let i = 0; i < newSkinList.length; i++) {
       this.loadSkin(newSkinList[i])
     }
+    // save the changes
+    this.saveSkinList()
+    
     return true
   }
   /**
@@ -482,7 +537,7 @@ class GamepadRenderer {
     this.skins[dirname] = {
       loaded: false
     }
-    this.skinList.push(dirname)
+    this.addSkinToSkinList(dirname)
     const skin = this.skins[dirname]
     const path = `./skin/${dirname}`
     fetch(`${path}/config.json`)
@@ -509,10 +564,7 @@ class GamepadRenderer {
     const skinName = this.skins[dirname] && this.skins[dirname].config ?
       this.skins[dirname].config.name : dirname
     delete this.skins[dirname]
-    const indexOnSkinList = this.skinList.indexOf(dirname)
-    if (indexOnSkinList !== -1) {
-      this.skinList.splice(this.skinList.indexOf(dirname), 1)
-    }
+    this.removeSkinFromSkinList(dirname)
     GamepadRenderer.announceMessage(`Unloaded skin ${skinName}.`)
   }
   /**

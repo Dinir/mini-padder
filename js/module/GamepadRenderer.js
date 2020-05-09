@@ -1365,7 +1365,10 @@ class GamepadRenderer {
       drawImage: function (
         ctx, src, coord, alpha = 1
       ) {
-        if (alpha === 0) { return }
+        if (
+          alpha === 0 ||
+          !coord
+        ) { return }
         if (alpha !== 1) {
           ctx.save()
           ctx.globalAlpha = alpha
@@ -1380,6 +1383,7 @@ class GamepadRenderer {
         pos, areaSize, coord,
         alpha = 1
       ) {
+        if (!coord) { return }
         if (pos === null) { pos = [0, 0] }
         
         const fixedPos = []

@@ -1476,6 +1476,26 @@ class GamepadRenderer {
           ctx, src, fixedCoord, alpha
         )
       },
+      drawDifferentImageInNinePos: function (
+        ctx, src, pos, allCoords, alpha = 1
+      ) {
+        if (pos === null) { pos = [0, 0] }
+    
+        const digitalPos = this._getDigitalPos(pos)
+    
+        /*
+         * this.posOrder = [
+         *   'upleft','up','upright',
+         *   'left','neutral','right',
+         *   'downleft','down','downright'
+         * ]
+         */
+        const positionIndex = 4 + digitalPos[0] + 3 * digitalPos[1]
+    
+        this.drawImage(
+          ctx, src, allCoords[this._posOrder[positionIndex]], alpha
+        )
+      },
       drawImageInPolygon: function (
         ctx, src, path, coord, alpha = 1
       ) {

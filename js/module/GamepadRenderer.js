@@ -1333,7 +1333,8 @@ class GamepadRenderer {
       clearPolygon: ['ctx', 'path'],
       drawImage: ['ctx', 'src', 'coord', 'alpha'],
       drawImageByPos: ['ctx', 'src', 'pos', 'areaSize', 'coord', 'alpha'],
-      drawImageInEightPos: ['ctx', 'src', 'pos', 'length', 'lengthDiagonal', 'coord', 'alpha'],
+      drawImageInNinePos: ['ctx', 'src', 'pos', 'length', 'lengthDiagonal', 'coord', 'alpha'],
+      drawDifferentImageInNinePos: ['ctx', 'src', 'pos', 'allCoords', 'alpha'],
       drawImageInPolygon: ['ctx', 'src', 'path', 'coord', 'alpha'],
       drawImageInPolygonByValue: ['ctx', 'src', 'value', 'areaWidth', 'path', 'coord', 'alpha'],
       writeTextLine: ['ctx', 'y', 'value', 'color', 'fontSize', 'alpha'],
@@ -1405,7 +1406,7 @@ class GamepadRenderer {
           ctx, src, fixedCoord, alpha
         )
       },
-      drawImageInEightPos: function (
+      drawImageInNinePos: function (
         ctx, src,
         pos, length, lengthDiagonal, coord,
         alpha = 1

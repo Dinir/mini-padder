@@ -27,13 +27,13 @@
 			],
 			"off": [
 				{
-					"instruction": "drawImageInEightPos",
+					"instruction": "drawImageInNinePos",
 					"length": 28, "lengthDiagonal": 20, "src": 1, "coord": [0, 36, 32, 32, [28, 52], 32, 32]
 				}
 			],
 			"on": [
 				{
-					"instruction": "drawImageInEightPos",
+					"instruction": "drawImageInNinePos",
 					"length": 28, "lengthDiagonal": 20, "src": 1, "coord": [0, 36, 32, 32, [28, 52], 32, 32]
 				}
 			]
@@ -55,13 +55,13 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImageInEightPos",
+						"instruction": "drawImageInNinePos",
 						"length": 28, "lengthDiagonal": 20, "src": 1, "coord": [0, 36, 32, 32, [28, 52], 32, 32]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImageInEightPos",
+						"instruction": "drawImageInNinePos",
 						"length": 28, "lengthDiagonal": 20, "src": 1, "coord": [0, 36, 32, 32, [28, 52], 32, 32]
 					}
 				]

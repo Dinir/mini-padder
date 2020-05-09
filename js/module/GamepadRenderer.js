@@ -1336,8 +1336,6 @@ class GamepadRenderer {
       drawImageInEightPos: ['ctx', 'src', 'pos', 'length', 'lengthDiagonal', 'coord', 'alpha'],
       drawImageInPolygon: ['ctx', 'src', 'path', 'coord', 'alpha'],
       drawImageInPolygonByValue: ['ctx', 'src', 'value', 'areaWidth', 'path', 'coord', 'alpha'],
-      clearParallelogram: ['ctx', 'xMin', 'xMax', 'yMin', 'height', 'skewAway', 'vertical'],
-      clearParallelogramByValue: ['ctx', 'value', 'areaWidth', 'xMin', 'xMax', 'yMin', 'height', 'skewAway', 'vertical'],
       writeTextLine: ['ctx', 'y', 'value', 'color', 'fontSize', 'alpha'],
       writeTextLines: ['ctx', 'y', 'value', 'newLineOnBelow', 'color', 'fontSize', 'alpha']
     }
@@ -1479,50 +1477,6 @@ class GamepadRenderer {
         }
         this.drawImageInPolygon(
           ctx, src, fixedPath, coord, alpha
-        )
-      },
-      clearParallelogram: function (
-        ctx, xMin, xMax, yMin, height, skewAway = false, vertical = false
-      ) {
-        ctx.save()
-        ctx.globalCompositeOperation = 'destination-out'
-        ctx.fillStyle = 'black'
-        
-        ctx.beginPath()
-        if (!vertical) {
-          ctx.moveTo(xMax, yMin)
-          ctx.lineTo(xMin, yMin)
-          if (!skewAway) {
-            ctx.lineTo(xMin - height, yMin + height)
-            ctx.lineTo(xMax - height, yMin + height)
-          } else {
-            ctx.lineTo(xMin + height, yMin + height)
-            ctx.lineTo(xMax + height, yMin + height)
-          }
-        } else {
-          ctx.moveTo(yMin, xMax)
-          ctx.lineTo(yMin, xMin)
-          if (!skewAway) {
-            ctx.lineTo(yMin + height, xMin - height)
-            ctx.lineTo(yMin + height, xMax - height)
-          } else {
-            ctx.lineTo(yMin + height, xMin + height)
-            ctx.lineTo(yMin + height, xMax + height)
-          }
-        }
-        ctx.closePath()
-        ctx.fill()
-        
-        ctx.restore()
-      },
-      clearParallelogramByValue: function (
-        ctx,
-        value, areaWidth, xMin,
-        xMax, yMin, height, skewAway = false, vertical = false
-      ) {
-        const width = value * areaWidth
-        this.clearParallelogram(
-          ctx, xMin + width, xMax, yMin, height, skewAway, vertical
         )
       },
       /**

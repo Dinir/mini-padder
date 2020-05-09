@@ -40,10 +40,10 @@ class MiniPadderUpdater extends Updater {
               return false
             }
             const version = '2.1.0'
-            
             MiniPadderUpdater.announceMessage(
               version + ': Copying stick button mappings to button mappings.'
             )
+            
             if (Mapper.mappings.hasOwnProperty('XInput')) {
               Mapper.mappings.XInput.buttons.face.l3 = Mapper.mappings.XInput.sticks.left.button
               Mapper.mappings.XInput.buttons.face.r3 = Mapper.mappings.XInput.sticks.right.button

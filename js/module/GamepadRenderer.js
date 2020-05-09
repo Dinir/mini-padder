@@ -1290,6 +1290,8 @@ class GamepadRenderer {
   
   followInstructions (ctx, src, inst, value, alpha, additionalValue) {
     // `this` is bound as `GamepadRenderer` in the constructor
+    if (!inst) { return false }
+    
     for (let i = 0; i < inst.length; i++) {
       const instName = inst[i].instruction
       const instArgs = []

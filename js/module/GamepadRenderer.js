@@ -164,6 +164,24 @@ class GamepadRenderer {
     }))
   }
   
+  /**
+   * Return an array of unique values with no duplicates.
+   * If an object is given, values of the objects will be used.
+   * Can't be used for arrays of non primitive values.
+   *
+   * @param {array|Object} list
+   * @returns {array}
+   */
+  static getUniqueValues (list) {
+    const type = list.constructor
+    const array = type === Object ?
+      Object.values(list) : list
+    const itemSeen = {}
+    return array.filter(item => {
+      return itemSeen.hasOwnProperty(item) ?
+        false : (itemSeen[item] = true)
+    })
+  }
   static isDirnameOkay (dirname) {
     const isOkay = !/[^0-9a-zA-Z_\-]/.test(dirname)
     if (!isOkay) {
@@ -422,11 +440,7 @@ class GamepadRenderer {
   }
   loadAllMappedSkins () {
     const dirnameSeen = {}
-    const allSkinDirnames = Object.values(this.skinMapping)
-      .filter(dirname => {
-        return dirnameSeen.hasOwnProperty(dirname) ?
-          false : (dirnameSeen[dirname] = true)
-      })
+    const allSkinDirnames = GamepadRenderer.getUniqueValues(this.skinMapping)
     for (let d = 0; d < allSkinDirnames.length; d++) {
       this.loadSkin(allSkinDirnames[d])
     }

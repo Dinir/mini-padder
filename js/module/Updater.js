@@ -71,6 +71,11 @@ class Updater {
     return Updater.getVersionString(this.currentVersion)
   }
   
+  setLastUpdatedVersionToCurrentVersion () {
+    this.lastFoundVersion.major = this.currentVersion.major
+    this.lastFoundVersion.minor = this.currentVersion.minor
+    this.lastFoundVersion.patch = this.currentVersion.patch
+  }
   saveLastUpdatedVersion () {
     const versionString = Updater.getVersionString(this.lastFoundVersion)
     window.localStorage.setItem('version', versionString)
@@ -150,6 +155,8 @@ class Updater {
         }
       }
     }
+    // minor update is successfully done, update the last version string
+    this.setLastUpdatedVersionToCurrentVersion()
     this.saveLastUpdatedVersion()
     return true
   }

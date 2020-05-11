@@ -7,6 +7,9 @@ body {
   font-family: "Fira Code", monospace;
   background-color: black; }
 
+address {
+  font-style: inherit; }
+
 sub {
   vertical-align: baseline;
   font-size: x-small; }
@@ -78,6 +81,8 @@ sub {
   .control-panel b {
     display: block;
     margin-bottom: 0.5em; }
+    .control-panel b.inline {
+      display: inline; }
   .control-panel label {
     display: inline-block; }
 

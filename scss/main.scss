@@ -10,6 +10,11 @@ body {
   background-color: black;
 }
 
+// symantic markups
+address {
+  font-style: inherit;
+}
+
 sub {
   vertical-align: baseline;
   font-size: x-small;
@@ -107,6 +112,9 @@ sub {
     // control panel section name
     display: block;
     margin-bottom: 0.5em;
+    &.inline {
+      display: inline;
+    }
   }
   label {
     display: inline-block;

@@ -119,4 +119,11 @@ sub {
   label {
     display: inline-block;
   }
+  
+  @media (max-height: 599px) and (orientation: landscape) {
+    & {
+      height: auto;
+      bottom: 0;
+    }
+  }
 }

@@ -85,5 +85,9 @@ sub {
       display: inline; }
   .control-panel label {
     display: inline-block; }
+  @media (max-height: 599px) and (orientation: landscape) {
+    .control-panel {
+      height: auto;
+      bottom: 0; } }
 
 /*# sourceMappingURL=main.css.map */

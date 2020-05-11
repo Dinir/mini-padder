@@ -28,5 +28,9 @@
     #text-editor-wrapper div#notify-area.visible {
       opacity: 1;
       bottom: 12%; }
+  @media (max-height: 599px) and (orientation: landscape) {
+    #text-editor-wrapper > div:last-of-type {
+      position: absolute;
+      bottom: 8px; } }
 
 /*# sourceMappingURL=OnBrowserTextEditor.css.map */

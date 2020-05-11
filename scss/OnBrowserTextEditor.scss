@@ -40,4 +40,11 @@
       bottom: 12%;
     }
   }
+  
+  @media (max-height: 599px) and (orientation: landscape) {
+    & > div:last-of-type {
+      position: absolute;
+      bottom: 8px;
+    }
+  }
 }

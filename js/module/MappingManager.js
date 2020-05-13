@@ -689,13 +689,34 @@ class MappingManager {
           }
         }
         
-      } else if (assignmentState.index > 20) {
-        // input is not found, let's define the deadzone value for sticks
-        const stickMappings = assignmentState.data.mapping.sticks
-        if (stickMappings.left.x !== false && stickMappings.left.y !== false) {
+      } else {
+        // input is not found
+        if (assignmentState.index > 21) {
+          // let's define the deadzone value for sticks
+          const stickMappings = assignmentState.data.mapping.sticks
+          let maximumLSValueOnIdle = 0
+          let maximumRSValueOnIdle = 0
+          if (
+            stickMappings.left &&
+            stickMappings.left.x !== null && stickMappings.left.y !== null
+          ) {
+            maximumLSValueOnIdle = Math.max(
+              Math.abs(gamepadChange.axes[stickMappings.left.x].value),
+              Math.abs(gamepadChange.axes[stickMappings.left.y].value)
+            )
+          }
+          if (
+            stickMappings.right &&
+            stickMappings.right.x !== null && stickMappings.right.y !== null
+          ) {
+            maximumRSValueOnIdle = Math.max(
+              Math.abs(gamepadChange.axes[stickMappings.right.x].value),
+              Math.abs(gamepadChange.axes[stickMappings.right.y].value)
+            )
+          }
+          
           const maximumValueOnIdle = Math.max(
-            Math.abs(gamepadChange.axes[stickMappings.left.x].value),
-            Math.abs(gamepadChange.axes[stickMappings.left.y].value)
+            maximumLSValueOnIdle, maximumRSValueOnIdle
           )
           stickMappings.deadzone =
             10 ** (Math.floor(Math.log10(maximumValueOnIdle)) + 1)

@@ -282,7 +282,8 @@ class MappingManager {
         group: 'buttons',
         virtualInput: { "dpad": { "down": { "value": 1 }, "value": { "value": [0,1] } } },
         mapInput: (m, i) => {m.buttons.dpad.down = i},
-        mapInputAxis: (m, i) => {m.buttons.dpad.axis = i}
+        mapInputAxis: (m, i) => {m.buttons.dpad.axis = i},
+        nullInput: m => {m.buttons.dpad = null}
       }, 
       {
         label: 'dpad-left',
@@ -330,7 +331,8 @@ class MappingManager {
         label: 'lb/l1',
         group: 'buttons',
         virtualInput: { "shoulder": { "l1": { "value": 1 } } },
-        mapInput: (m, i) => {m.buttons.shoulder.l1 = i}
+        mapInput: (m, i) => {m.buttons.shoulder.l1 = i},
+        nullInput: m => {m.buttons.shoulder = null}
       }, 
       {
         label: 'rb/r1',
@@ -359,7 +361,11 @@ class MappingManager {
             "pressed": null,
             "active": true
         } },
-        mapInput: (m, i) => {m.sticks.left.x = i}
+        mapInput: (m, i) => {m.sticks.left.x = i},
+        nullInput: m => {
+          m.sticks.left.x = null
+          m.sticks.left.y = null
+        }
       }, 
       {
         label: 'left stick to down',
@@ -381,7 +387,14 @@ class MappingManager {
             "pressed": true,
             "active": true
         } },
-        mapInput: (m, i) => {m.sticks.left.button = i}
+        mapInput: (m, i) => {m.sticks.left.button = i},
+        nullInput: m => {
+          if (m.sticks.left.x === null && m.sticks.left.y === null) {
+            m.sticks.left = null
+          } else {
+            m.sticks.left.button = null
+          }
+        }
       },
       {
         label: 'right stick to right',
@@ -392,7 +405,11 @@ class MappingManager {
             "pressed": null,
             "active": true
         } },
-        mapInput: (m, i) => {m.sticks.right.x = i}
+        mapInput: (m, i) => {m.sticks.right.x = i},
+        nullInput: m => {
+          m.sticks.right.x = null
+          m.sticks.right.y = null
+        }
       }, 
       {
         label: 'right stick to down',
@@ -414,7 +431,20 @@ class MappingManager {
             "pressed": true,
             "active": true
         } },
-        mapInput: (m, i) => {m.sticks.right.button = i}
+        mapInput: (m, i) => {m.sticks.right.button = i},
+        nullInput: m => {
+          if (m.sticks.right.x === null && m.sticks.right.y === null) {
+            m.sticks.right = null
+            // put 'nosticks' property if no sticks were assigned
+            if (m.sticks.left === null) {
+              if (m.properties.indexOf('nosticks') === -1) {
+                m.properties.push('nosticks')
+              }
+            }
+          } else {
+            m.sticks.right.button = null
+          }
+        }
       }
     ]
   }
@@ -539,22 +569,35 @@ class MappingManager {
           // update index
           switch (assignmentState.index) {
             case 4: // dpad-down
+              buttonInfo.nullInput(assignmentState.data.mapping)
             case 5: // dpad-left
             case 6: // dpad-up
             case 7: // dpad-right
               assignmentState.index = 8
               break
             case 12: // lb/l1
+              buttonInfo.nullInput(assignmentState.data.mapping)
             case 14: // lt/l2
               assignmentState.index = 16
               break
             case 16: // stick-left-x
+              buttonInfo.nullInput(assignmentState.data.mapping)
               assignmentState.index = 18
               break
+            case 18: // stick-left-button
+              buttonInfo.nullInput(assignmentState.data.mapping)
+              assignmentState.index++
+              break
             case 19: // stick-right-x
+              buttonInfo.nullInput(assignmentState.data.mapping)
               assignmentState.index = 21
               break
+            case 21: // stick-right-button
+              buttonInfo.nullInput(assignmentState.data.mapping)
+              assignmentState.index++
+              break
             default:
+              buttonInfo.mapInput(assignmentState.data.mapping, null)
               assignmentState.index++
               break
           }
@@ -617,10 +660,12 @@ class MappingManager {
           }
           
           // copy l3 and r3 from sticks mapping to buttons one
-          assignmentState.data.mapping.buttons.face.l3 =
-            assignmentState.data.mapping.sticks.left.button || null
-          assignmentState.data.mapping.buttons.face.r3 =
-            assignmentState.data.mapping.sticks.right.button || null
+            assignmentState.data.mapping.buttons.face.l3 =
+              assignmentState.data.mapping.sticks.left ?
+              assignmentState.data.mapping.sticks.left.button || null : null
+            assignmentState.data.mapping.buttons.face.r3 =
+              assignmentState.data.mapping.sticks.right ?
+              assignmentState.data.mapping.sticks.right.button || null : null
           
           if (inputToBeSkipped || aborting) {
             // required input is found so increase the index and finish assignment

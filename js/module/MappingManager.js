@@ -948,48 +948,52 @@ class MappingManager {
       }
   
       // buttons.dpad
-      if (processedChange.properties.indexOf('joystick') !== -1) {
-        // 'joystick': this is a joystick - only one of the three is active as LS: LS, RS, or Dpad.
-        /*
-         This property is intended to be a simpler one for 'axisdpad' + 'nodpad'.
-         Since only the changes on a gamepad are received,
-         signal of non-axis dpad can't be converted into a stick signal.
-         */
-        // check if there's already an active signal received as any of the sticks on the mapping
-        if (
-          (!processedChange.sticks.left || !processedChange.sticks.left.active) &&
-          (!processedChange.sticks.right || !processedChange.sticks.right.active)
-        ) {
-          /*
-           No way to know if the stick signal is being sent as that of left/right stick,
-           but both sticks are seen as inactive at the moment
-           so maybe I can try reading a dpad axis signal as that of left stick.
-           */
-          if (mapping.buttons.dpad.axis) {
-            processedChange.sticks.left = MappingManager.processAxisDpadAsLeftStick(
-              mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis], this.dpadState[i]
-            )
-          } else {
-            // we're trying to simulate a gamepad as a joystick here
-            processedChange.sticks.left =
-              MappingManager.processDpadAsLeftStick(
-                mapping.buttons.dpad, change.buttons, this.dpadState[i]
-              )
-          }
-        } else {
-          // stick is active, don't process dpad input as a stick
-        }
-      } else if (processedChange.properties.indexOf('axisdpad') !== -1) {
-        // 'axisdpad': axis is dpad - certain axes represent dpad
-        // this is a weird gamepad
-        processedChange.buttons.dpad = MappingManager.processAxisDpad(
-          mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis], this.dpadState[i]
-        )
+      if (mapping.buttons.dpad === null) {
+        processedChange.buttons.dpad = null
       } else {
-        // dpad is reasonably found as simple and clean four buttons
-        processedChange.buttons.dpad = MappingManager.processDpadSimple(
-          mapping.buttons.dpad, change.buttons, this.dpadState[i]
-        )
+        if (processedChange.properties.indexOf('joystick') !== -1) {
+          // 'joystick': this is a joystick - only one of the three is active as LS: LS, RS, or Dpad.
+          /*
+           This property is intended to be a simpler one for 'axisdpad' + 'nodpad'.
+           Since only the changes on a gamepad are received,
+           signal of non-axis dpad can't be converted into a stick signal.
+           */
+          // check if there's already an active signal received as any of the sticks on the mapping
+          if (
+            (!processedChange.sticks.left || !processedChange.sticks.left.active) &&
+            (!processedChange.sticks.right || !processedChange.sticks.right.active)
+          ) {
+            /*
+             No way to know if the stick signal is being sent as that of left/right stick,
+             but both sticks are seen as inactive at the moment
+             so maybe I can try reading a dpad axis signal as that of left stick.
+             */
+            if (mapping.buttons.dpad.axis) {
+              processedChange.sticks.left = MappingManager.processAxisDpadAsLeftStick(
+                mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis], this.dpadState[i]
+              )
+            } else {
+              // we're trying to simulate a gamepad as a joystick here
+              processedChange.sticks.left =
+                MappingManager.processDpadAsLeftStick(
+                  mapping.buttons.dpad, change.buttons, this.dpadState[i]
+                )
+            }
+          } else {
+            // stick is active, don't process dpad input as a stick
+          }
+        } else if (processedChange.properties.indexOf('axisdpad') !== -1) {
+          // 'axisdpad': axis is dpad - certain axes represent dpad
+          // this is a weird gamepad
+          processedChange.buttons.dpad = MappingManager.processAxisDpad(
+            mapping.buttons.dpad, change.axes[mapping.buttons.dpad.axis], this.dpadState[i]
+          )
+        } else {
+          // dpad is reasonably found as simple and clean four buttons
+          processedChange.buttons.dpad = MappingManager.processDpadSimple(
+            mapping.buttons.dpad, change.buttons, this.dpadState[i]
+          )
+        }
       }
       // include stick style dpad state
       if (

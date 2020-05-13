@@ -349,7 +349,7 @@ class MappingManager {
         mapInput: (m, i) => {m.buttons.shoulder.r2 = i}
       },
       {
-        label: 'stick-left to right',
+        label: 'left stick to right',
         group: 'axes',
         mappedGroup: 'sticks',
         virtualInput: { "left": {
@@ -360,7 +360,7 @@ class MappingManager {
         mapInput: (m, i) => {m.sticks.left.x = i}
       }, 
       {
-        label: 'stick-left to down',
+        label: 'left stick to down',
         group: 'axes',
         mappedGroup: 'sticks',
         virtualInput: { "left": {
@@ -371,7 +371,7 @@ class MappingManager {
         mapInput: (m, i) => {m.sticks.left.y = i}
       }, 
       {
-        label: 'stick-left-button',
+        label: 'left stick button',
         group: 'buttons',
         mappedGroup: 'sticks',
         virtualInput: { "left": {
@@ -382,7 +382,7 @@ class MappingManager {
         mapInput: (m, i) => {m.sticks.left.button = i}
       },
       {
-        label: 'stick-right to right',
+        label: 'right stick to right',
         group: 'axes',
         mappedGroup: 'sticks',
         virtualInput: { "right": {
@@ -393,7 +393,7 @@ class MappingManager {
         mapInput: (m, i) => {m.sticks.right.x = i}
       }, 
       {
-        label: 'stick-right to down',
+        label: 'right stick to down',
         group: 'axes',
         mappedGroup: 'sticks',
         virtualInput: { "right": {
@@ -404,7 +404,7 @@ class MappingManager {
         mapInput: (m, i) => {m.sticks.right.y = i}
       }, 
       {
-        label: 'stick-right-button',
+        label: 'right stick button',
         group: 'buttons',
         mappedGroup: 'sticks',
         virtualInput: { "right": {

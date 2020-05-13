@@ -57,6 +57,8 @@
  * @property {string} id.name
  * @property {gamepadId} id.gamepadId
  *
+ * @property {gamepadId} mappingId gamepadId of a mapping used for producing this ProcessedGamepadChange.
+ *
  * @property {Object.<string, ?stickChange>} sticks
  *
  * @property {?stickChange} sticks.left
@@ -804,6 +806,31 @@ class MappingManager {
   }
   
   /**
+   * Look for gamepadId that has a corresponding mapping and return the Id.
+   * If the mapping for the exact gamepadId doesn't exist,
+   * look if a mapping for the same vendor ID exists,
+   * and give either the vendor ID or 'DInput'.
+   * @param {gamepadId} gamepadId
+   * @returns {string}
+   */
+  getMappedGamepadId (gamepadId) {
+    // if it's not one of two standards,
+    // check vendor id, if still not known then assign DInput
+    /* I assume gamepads have xinput mode beside
+     their own mode that could be fit as dinput */
+    if (this.mappings[gamepadId]) {
+      return gamepadId
+    } else {
+      const vendorId = gamepadId.slice(0,4)
+      if (this.mappings[vendorId]) {
+        return vendorId
+      } else {
+        return 'DInput'
+      }
+    }
+  }
+  
+  /**
    * @param {GamepadWatcher#event:gamepadChange} e
    * @listens GamepadWatcher#event:gamepadChange
    */
@@ -841,14 +868,9 @@ class MappingManager {
         continue
       }
   
-      // if it's not one of two standards,
-      // check vendor id, if still not known then assign DInput
-      /* I assume gamepads have xinput mode beside
-       their own mode that could be fit as dinput */
-      const mapping =
-        this.mappings[processedChange.id.gamepadId] ||
-        this.mappings[processedChange.id.gamepadId.slice(0,4)] ||
-        this.mappings['DInput']
+      const mappingId = this.getMappedGamepadId(processedChange.id.gamepadId)
+      const mapping = this.mappings[mappingId]
+      processedChange.mappingId = mappingId
       processedChange.properties = mapping.properties
       
       // sticks.left and sticks.right

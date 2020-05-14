@@ -268,7 +268,7 @@ class ControlPanel {
         }
       },
       addItem: function (value) {
-        if (typeof value === 'undefined' || !value.length) { return false }
+        if (typeof value === 'undefined' || value === null || !value.length) { return false }
         const item = document.createElement('option')
         item.value = value
         item.setAttribute('name', value)

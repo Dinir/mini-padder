@@ -187,6 +187,12 @@ class GamepadRenderer {
     })
   }
   static isDirnameOkay (dirname) {
+    if (!dirname) {
+      GamepadRenderer.announceMessage(new Error(
+        `Directory name for the skin is faulty: ${dirname}`
+      ))
+      return false
+    }
     const isOkay = !/[^0-9a-zA-Z_\-]/.test(dirname)
     if (!isOkay) {
       GamepadRenderer.announceMessage(new Error(
@@ -198,7 +204,9 @@ class GamepadRenderer {
   }
   static findDefaultSkin (gamepadId, mappingProperties) {
     const defaultSkin = ['DInput', 'XInput', 'Joystick']
-    if (mappingProperties.indexOf('joystick') !== -1) { return defaultSkin[2] }
+    if (mappingProperties) {
+      if (mappingProperties.indexOf('joystick') !== -1) { return defaultSkin[2] }
+    }
     // when it's a standard XInput gamepad, the gamepadId is just 'xinput'.
     if (/XInput/i.test(gamepadId)) { return defaultSkin[1] }
     return defaultSkin[0]
@@ -407,9 +415,8 @@ class GamepadRenderer {
   }
   
   addSkinToSkinList (skinDirname) {
-    if (this.skinList.indexOf(skinDirname) !== -1) {
-      return false
-    }
+    if (this.skinList.indexOf(skinDirname) !== -1) { return false }
+    if (!GamepadRenderer.isDirnameOkay(skinDirname)) { return false }
     this.skinList.push(skinDirname)
     this.saveSkinList()
   }
@@ -574,6 +581,7 @@ class GamepadRenderer {
    * @param {gamepadId} gamepadId gamepad the skin is set to be used for
    */
   applySkinToSlot (dirname, slot, gamepadId) {
+    if (!GamepadRenderer.isDirnameOkay(dirname)) { return false }
     if (!this.skins[dirname] || typeof slot === 'undefined') {
       this.loadSkin(dirname)
       return false
@@ -709,8 +717,11 @@ class GamepadRenderer {
       }
     }
     this.removeSkinFromSlot(slot)
+  
+    const ExistingSkinDir =
+      skinDirname || GamepadRenderer.findDefaultSkin(gamepadId)
     return this.applySkinToSlot(
-      this.skinMapping[gamepadId],
+      ExistingSkinDir,
       slot,
       gamepadId
     )

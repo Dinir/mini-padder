@@ -183,6 +183,32 @@ class MappingManager {
     )
   }
   
+  static announceMessage (message, type) {
+    const messageType = {
+      log: 'log',
+      error: 'error'
+    }
+    window.dispatchEvent(new CustomEvent('GPVMessage', {
+      detail: {
+        from: 'Mapping Manager',
+        type: message instanceof Error ?
+          messageType.error : ( messageType[type] || messageType.log ),
+        message: message
+      }
+    }))
+  }
+  /**
+   * Dispatch an event of 'processedGamepadChange' type
+   * with data of mapped changes included in it.
+   * @param {Object.<ProcessedGamepadChange, number>} processedGamepadChange
+   * @fires MappingManager#processedGamepadChange
+   */
+  static announceGamepadChange(processedGamepadChange) {
+    window.dispatchEvent(new CustomEvent('processedGamepadChange', {
+      detail: processedGamepadChange
+    }))
+  }
+  
   static validateMappings (mappings) {
     if (
       !mappings ||
@@ -224,33 +250,49 @@ class MappingManager {
       return issue
     }
   }
-  
-  static announceMessage (message, type) {
-    const messageType = {
-      log: 'log',
-      error: 'error'
+  static setDeadzone (stickMappings, changeAxes) {
+    let maximumLSValueOnIdle = 0
+    let maximumRSValueOnIdle = 0
+    if (
+      stickMappings.left &&
+      stickMappings.left.x !== null && stickMappings.left.y !== null
+    ) {
+      maximumLSValueOnIdle = Math.max(
+        Math.abs(changeAxes[stickMappings.left.x].value),
+        Math.abs(changeAxes[stickMappings.left.y].value)
+      )
     }
-    window.dispatchEvent(new CustomEvent('GPVMessage', {
-      detail: {
-        from: 'Mapping Manager',
-        type: message instanceof Error ?
-          messageType.error : ( messageType[type] || messageType.log ),
-        message: message
-      }
-    }))
+    if (
+      stickMappings.right &&
+      stickMappings.right.x !== null && stickMappings.right.y !== null
+    ) {
+      maximumRSValueOnIdle = Math.max(
+        Math.abs(changeAxes[stickMappings.right.x].value),
+        Math.abs(changeAxes[stickMappings.right.y].value)
+      )
+    }
+    
+    const maximumValueOnIdle = Math.max(
+      maximumLSValueOnIdle, maximumRSValueOnIdle
+    )
+    
+    // by dividing at 0.04 most idle values will be multiplied into range of 0.07 ~ 0.1
+    // I think this is enough but who knows what wild gamepads exist in this world
+    const multiplier = maximumValueOnIdle > 0.04 ? 1.5 : 2
+    
+    const multipliedMaximumValue =
+      multiplier * Math.min(0.125, maximumValueOnIdle)
+    const firstDigitPosition = multipliedMaximumValue === 0 ?
+      0 : Math.floor(Math.log10(multipliedMaximumValue))
+    // round up from the second valid digit
+    const deadzone =
+      Math.round( multipliedMaximumValue * 10 ** ( -1 * firstDigitPosition) ) *
+      10 ** firstDigitPosition
+    
+    stickMappings.deadzone = deadzone
+    
+    return deadzone
   }
-  /**
-   * Dispatch an event of 'processedGamepadChange' type
-   * with data of mapped changes included in it.
-   * @param {Object.<ProcessedGamepadChange, number>} processedGamepadChange
-   * @fires MappingManager#processedGamepadChange
-   */
-  static announceGamepadChange(processedGamepadChange) {
-    window.dispatchEvent(new CustomEvent('processedGamepadChange', {
-      detail: processedGamepadChange
-    }))
-  }
-  
   static get everyButtonInfo () {
     return [
       {
@@ -697,33 +739,7 @@ class MappingManager {
         // input is not found
         if (assignmentState.index > 21) {
           // let's define the deadzone value for sticks
-          const stickMappings = assignmentState.data.mapping.sticks
-          let maximumLSValueOnIdle = 0
-          let maximumRSValueOnIdle = 0
-          if (
-            stickMappings.left &&
-            stickMappings.left.x !== null && stickMappings.left.y !== null
-          ) {
-            maximumLSValueOnIdle = Math.max(
-              Math.abs(gamepadChange.axes[stickMappings.left.x].value),
-              Math.abs(gamepadChange.axes[stickMappings.left.y].value)
-            )
-          }
-          if (
-            stickMappings.right &&
-            stickMappings.right.x !== null && stickMappings.right.y !== null
-          ) {
-            maximumRSValueOnIdle = Math.max(
-              Math.abs(gamepadChange.axes[stickMappings.right.x].value),
-              Math.abs(gamepadChange.axes[stickMappings.right.y].value)
-            )
-          }
-          
-          const maximumValueOnIdle = Math.max(
-            maximumLSValueOnIdle, maximumRSValueOnIdle
-          )
-          stickMappings.deadzone =
-            10 ** (Math.floor(Math.log10(maximumValueOnIdle)) + 1)
+          MappingManager.setDeadzone(assignmentState.data.mapping.sticks, gamepadChange.axes)
         }
       }
     }

@@ -560,12 +560,14 @@ class MappingManager {
         }
         
         if (aborting && !allButtonMapped) {
+          // 'abort' input received
           assignmentState.result = false
           processedGamepadChangeTemplate.properties.splice(
             processedGamepadChangeTemplate.properties.indexOf('assigning'), 1
           )
           processedGamepadChangeTemplate.message = ['Assignment Aborted.']
         } else if (inputToBeSkipped && !allButtonMapped) {
+          // 'skip' input received
           // update index
           switch (assignmentState.index) {
             case 4: // dpad-down
@@ -604,91 +606,93 @@ class MappingManager {
           // update buttonInfo with new index
           buttonInfo =
             MappingManager.everyButtonInfo[assignmentState.index]
-        } else if (assignmentState.index === 4) {
-          // own routine for dpad - the index is for dpad-down
-          if (
-            foundIndexes[0] !== -1 &&
-            axisNotAssigned
-          ) {
-            // it's axisdpad!
-            buttonInfo.mapInputAxis(
-              assignmentState.data.mapping, foundIndexes[0]
-            )
-            assignmentState.data.mapping.properties.push('axisdpad')
-            if (Math.abs(gamepadChange.axes[foundIndexes[0]].value - 0.1) < 0.1) {
-              // it's standard axisdpad!
-              assignmentState.data.occupied.axes.push(foundIndexes[0])
-              assignmentState.index += 4
-            } else {
-              // it's a weird axisdpad...
-              // work on this when such case is actually found. Below is a placeholder.
-              MappingManager.announceMessage(
-                new Error('I finally found a user of a rare dpad kind! Please contact me.'),
-                'error'
-              )
-              assignmentState.data.occupied.axes.push(foundIndexes[0])
-              assignmentState.index += 4
-              /*
-              function getFirstDigit (x) {
-                const position = Math.floor(Math.log10(x))
-                return Math.floor(x/10**position)*10**position
-              }
-               */
-            }
-          } else if (buttonNotAssigned) {
-            // it's four button dpad
-            buttonInfo.mapInput(
-              assignmentState.data.mapping, foundIndexes[1]
-            )
-            assignmentState.index++
-          }
-        } else if (allButtonMapped) {
-          // get the input for the last question - is it joystick?
-          // inputToBeSkipped === A/× pressed === Answer is Gamepad
-          // aborting === B/○ pressed === Answer is Joystick
-          if (aborting) {
-            const mapping = assignmentState.data.mapping
-            // it is joystick, put 'joystick' to the properties array
-            const wasItAxisdpad = mapping.properties.indexOf('axisdpad')
-            if (wasItAxisdpad !== -1) {
-              mapping.properties.splice(
-                mapping.properties.indexOf('axisdpad'), 1, 'joystick'
-              )
-            } else if (mapping.properties.indexOf('joystick') === -1) {
-              mapping.properties.push('joystick')
-            }
-          }
-          
-          // copy l3 and r3 from sticks mapping to buttons one
-            assignmentState.data.mapping.buttons.face.l3 =
-              assignmentState.data.mapping.sticks.left ?
-              assignmentState.data.mapping.sticks.left.button || null : null
-            assignmentState.data.mapping.buttons.face.r3 =
-              assignmentState.data.mapping.sticks.right ?
-              assignmentState.data.mapping.sticks.right.button || null : null
-          
-          if (inputToBeSkipped || aborting) {
-            // required input is found so increase the index and finish assignment
-            assignmentState.index++
-          }
         } else {
-          // anything else than dpad-down (or whole dpad if it was axis)
-          const inputGroupIndex = buttonInfo.group === 'buttons' ? 1 : 0
-          const foundIndex = foundIndexes[inputGroupIndex]
-          if (
-            foundIndex !== -1 && (
-              (inputGroupIndex === 1 && buttonNotAssigned) ||
-              (inputGroupIndex === 0 && axisNotAssigned)
-            )
-          ) {
-            buttonInfo.mapInput(
-              assignmentState.data.mapping, foundIndex
-            )
-            assignmentState.data.occupied[buttonInfo.group].push(foundIndex)
-            assignmentState.index++
+          // no 'abort' or 'skip' interruption received
+          if (assignmentState.index === 4) {
+            // own routine for dpad - the index is for dpad-down
+            if (
+              foundIndexes[0] !== -1 &&
+              axisNotAssigned
+            ) {
+              // it's axisdpad!
+              buttonInfo.mapInputAxis(
+                assignmentState.data.mapping, foundIndexes[0]
+              )
+              assignmentState.data.mapping.properties.push('axisdpad')
+              if (Math.abs(gamepadChange.axes[foundIndexes[0]].value - 0.1) < 0.1) {
+                // it's standard axisdpad!
+                assignmentState.data.occupied.axes.push(foundIndexes[0])
+                assignmentState.index += 4
+              } else {
+                // it's a weird axisdpad...
+                // work on this when such case is actually found. Below is a placeholder.
+                MappingManager.announceMessage(
+                  new Error('I finally found a user of a rare dpad kind! Please contact me.'),
+                  'error'
+                )
+                assignmentState.data.occupied.axes.push(foundIndexes[0])
+                assignmentState.index += 4
+                /*
+                function getFirstDigit (x) {
+                  const position = Math.floor(Math.log10(x))
+                  return Math.floor(x/10**position)*10**position
+                }
+                 */
+              }
+            } else if (buttonNotAssigned) {
+              // it's four button dpad
+              buttonInfo.mapInput(
+                assignmentState.data.mapping, foundIndexes[1]
+              )
+              assignmentState.index++
+            }
+          } else if (allButtonMapped) {
+            // get the input for the last question - is it joystick?
+            // inputToBeSkipped === A/× pressed === Answer is Gamepad
+            // aborting === B/○ pressed === Answer is Joystick
+            if (aborting) {
+              const mapping = assignmentState.data.mapping
+              // it is joystick, put 'joystick' to the properties array
+              const wasItAxisdpad = mapping.properties.indexOf('axisdpad')
+              if (wasItAxisdpad !== -1) {
+                mapping.properties.splice(
+                  mapping.properties.indexOf('axisdpad'), 1, 'joystick'
+                )
+              } else if (mapping.properties.indexOf('joystick') === -1) {
+                mapping.properties.push('joystick')
+              }
+            }
+            
+            // copy l3 and r3 from sticks mapping to buttons one
+              assignmentState.data.mapping.buttons.face.l3 =
+                assignmentState.data.mapping.sticks.left ?
+                assignmentState.data.mapping.sticks.left.button || null : null
+              assignmentState.data.mapping.buttons.face.r3 =
+                assignmentState.data.mapping.sticks.right ?
+                assignmentState.data.mapping.sticks.right.button || null : null
+            
+            if (inputToBeSkipped || aborting) {
+              // required input is found so increase the index and finish assignment
+              assignmentState.index++
+            }
+          } else {
+            // anything else than dpad-down (or whole dpad if it was axis)
+            const inputGroupIndex = buttonInfo.group === 'buttons' ? 1 : 0
+            const foundIndex = foundIndexes[inputGroupIndex]
+            if (
+              foundIndex !== -1 && (
+                (inputGroupIndex === 1 && buttonNotAssigned) ||
+                (inputGroupIndex === 0 && axisNotAssigned)
+              )
+            ) {
+              buttonInfo.mapInput(
+                assignmentState.data.mapping, foundIndex
+              )
+              assignmentState.data.occupied[buttonInfo.group].push(foundIndex)
+              assignmentState.index++
+            }
           }
         }
-        
       } else {
         // input is not found
         if (assignmentState.index > 21) {

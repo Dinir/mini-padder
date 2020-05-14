@@ -27,7 +27,8 @@ class MappingInterface extends MappingManager {
           },
           "face": {
             "down": 0, "right": 1, "left": 2, "up": 3,
-            "select": 8, "start": 9
+            "select": 8, "start": 9, "l3": 10, "r3": 11,
+            "home": 16
           },
           "shoulder": {
             "l1": 4, "r1": 5, "l2": 6, "r2": 7
@@ -52,7 +53,7 @@ class MappingInterface extends MappingManager {
           },
           "face": {
             "down": 0, "right": 1, "left": 2, "up": 3,
-            "select": 8, "start": 9,
+            "select": 8, "start": 9, "l3": 10, "r3": 11,
             "home": 16, "touchpad": 17
           },
           "shoulder": {
@@ -151,7 +152,7 @@ class MappingInterface extends MappingManager {
           },
           "face": {
             "right": 0, "down": 1, "up": 3, "left": 4,
-            "select": 10, "start": 11,
+            "select": 10, "start": 11, "l3": 13, "r3": 14,
             "home": 2
           },
           "shoulder": {

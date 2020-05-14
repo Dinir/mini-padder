@@ -40,7 +40,8 @@
 			},
 			"face": {
 				"right": 0, "down": 1, "up": 3, "left": 4,
-				"select": 10, "start": 11, "home": 2
+				"select": 10, "start": 11, "l3": 13, "r3": 14,
+				"home": 2
 			},
 			"shoulder": {
 				"l1": 6, "r1": 7, "l2": 8, "r2": 9

@@ -13,13 +13,16 @@
   }
   
   & > div {
+    // each canvas slot
     display: inline-block;
     position: relative;
     width: $canvas-width;
     height: $canvas-height;
+    // layers in the slot
     div, canvas {
       position: absolute;
     }
+    // needed for static background layer
     div {
       top: 0;
       left: 0;

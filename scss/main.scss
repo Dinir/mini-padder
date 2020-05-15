@@ -31,7 +31,7 @@ sub {
 }
 
 #canvas-container {
-  // these makes gaps between canvases to be always 8px
+  // these makes gaps between canvas to be always 8px
   letter-spacing: $canvas-gap - 10px;
   line-height: 2 * $canvas-gap + 10px;
   // ensure contrast of fallback text on default black background

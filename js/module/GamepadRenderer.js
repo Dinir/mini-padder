@@ -1394,18 +1394,50 @@ class GamepadRenderer {
     this.instructionParameters = {
       clearRect: ['ctx', 'x', 'y', 'width', 'height'],
       clearPolygon: ['ctx', 'path'],
-      drawImageWithCoord: ['ctx', 'src', 'coord', 'alpha'],
-      drawImage: ['ctx', 'src', 'srcPos', 'size', 'canvasPos', 'resize', 'alpha'],
-      drawImageByPos: ['ctx', 'src', 'pos', 'areaSize', 'coord', 'alpha'],
-      drawImageInNinePos: ['ctx', 'src', 'pos', 'length', 'lengthDiagonal', 'coord', 'alpha'],
+      drawImage: [
+        'ctx', 'src',
+        'srcPos', 'size', 'canvasPos', 'resize',
+        'alpha'
+      ],
+      drawImageByPos: [
+        'ctx', 'src',
+        'pos', 'areaSize',
+        'srcPos', 'size', 'canvasPos', 'resize',
+        'alpha'
+      ],
+      drawImageInNinePos: [
+        'ctx', 'src',
+        'pos', 'length', 'lengthDiagonal',
+        'srcPos', 'size', 'canvasPos', 'resize',
+        'alpha'
+      ],
       drawDifferentImageInNinePos: ['ctx', 'src', 'pos', 'allCoords', 'alpha'],
-      drawImageInPolygon: ['ctx', 'src', 'path', 'coord', 'alpha'],
-      drawImageInPolygonByValue: ['ctx', 'src', 'value', 'areaWidth', 'path', 'coord', 'alpha'],
-      writeTextLine: ['ctx', 'y', 'value', 'color', 'fontSize', 'alpha'],
-      writeTextLines: ['ctx', 'y', 'value', 'newLineOnBelow', 'color', 'fontSize', 'alpha']
+      drawImageInPolygon: [
+        'ctx', 'src',
+        'path',
+        'srcPos', 'size', 'canvasPos', 'resize',
+        'alpha'
+      ],
+      drawImageInPolygonByValue: [
+        'ctx', 'src',
+        'value', 'areaWidth', 'path',
+        'srcPos', 'size', 'canvasPos', 'resize',
+        'alpha'
+      ],
+      writeTextLine: [
+        'ctx', 
+        'y', 'value',
+        'color', 'fontSize', 'alpha'
+      ],
+      writeTextLines: [
+        'ctx',
+        'y', 'value', 'newLineOnBelow',
+        'color', 'fontSize', 'alpha'
+      ]
     }
     // everything here has `this.instruction` as `this`
     this.instruction = {
+      _sin45: Math.sin(Math.PI * 0.75),
       _posOrder: [
         'upleft','up','upright',
         'left','neutral','right',
@@ -1443,9 +1475,6 @@ class GamepadRenderer {
         
         return digitalPos
       },
-      _getCoord: function (srcPos, size, canvasPos, resize) {
-        return [...srcPos, ...size, ...canvasPos, ...resize||size]
-      },
       clearRect: function (
         ctx, x, y, width, height
       ) {
@@ -1466,38 +1495,21 @@ class GamepadRenderer {
     
         ctx.restore()
       },
-      drawImageWithCoord: function (
-        ctx, src, coord, alpha = 1
-      ) {
-        if (
-          alpha === 0 ||
-          !coord
-        ) { return }
-        if (alpha !== 1) {
-          ctx.save()
-          ctx.globalAlpha = alpha
-        }
-        
-        ctx.drawImage(src, ...coord)
-        
-        if (alpha !== 1) {
-          ctx.restore()
-        }
-      },
       drawImage: function (
-        ctx, src, srcPos, size, canvasPos, resize, alpha = 1
+        ctx, src,
+        srcPos, size, canvasPos, resize,
+        alpha = 1
       ) {
         if (
           alpha === 0 ||
-          !canvasPos
+          !srcPos || !size || !canvasPos
         ) { return }
         if (alpha !== 1) {
           ctx.save()
           ctx.globalAlpha = alpha
         }
         
-        const coord = this._getCoord(srcPos, size, canvasPos, resize)
-        ctx.drawImage(src, ...coord)
+        ctx.drawImage(src, ...srcPos, ...size, ...canvasPos, ...resize||size)
         
         if (alpha !== 1) {
           ctx.restore()
@@ -1505,63 +1517,44 @@ class GamepadRenderer {
       },
       drawImageByPos: function (
         ctx, src,
-        pos, areaSize, coord,
+        pos, areaSize,
+        srcPos, size, canvasPos, resize,
         alpha = 1
       ) {
-        if (!coord) { return }
+        if (!srcPos || !size || !canvasPos) { return }
         if (pos === null) { pos = [0, 0] }
-        
+    
         const fixedPos = []
         for (let a = 0; a < 2; a++) {
-          fixedPos.push(pos[a] * areaSize[a])
+          fixedPos.push(pos[a] * areaSize[a] + canvasPos[a])
         }
-        const fixedCoord = []
-        
-        for (let p = 0; p < coord.length; p++) {
-          if (coord[p].constructor === Array) {
-            for (let a = 0; a < 2; a++) {
-              fixedCoord.push(
-                fixedPos[a] + (coord[p][a+2] ? 1 : -1) * coord[p][a]
-              )
-            }
-          } else {
-            fixedCoord.push(coord[p])
-          }
-        }
-        this.drawImageWithCoord(
-          ctx, src, fixedCoord, alpha
+    
+        this.drawImage(
+          ctx, src, srcPos, size, fixedPos, resize, alpha
         )
       },
       drawImageInNinePos: function (
         ctx, src,
-        pos, length, lengthDiagonal, coord,
+        pos, length, lengthDiagonal,
+        srcPos, size, canvasPos, resize,
         alpha = 1
       ) {
         if (pos === null) { pos = [0, 0] }
         if (typeof lengthDiagonal === 'undefined') {
-          lengthDiagonal = length * Math.sin(Math.PI*0.75)
+          lengthDiagonal = length * this._sin45
         }
-        
+    
         const digitalPos = this._getDigitalPos(pos)
-        
+    
         // if both axis is not zero then dP[0]*dP[1] will be true
         const fixedLength = digitalPos[0] * digitalPos[1] ? lengthDiagonal : length
-        const fixedCoord = []
-        
-        for (let p = 0; p < coord.length; p++) {
-          if (coord[p].constructor === Array) {
-            for (let a = 0; a < 2; a++) {
-              fixedCoord.push(
-                fixedLength * digitalPos[a] + coord[p][a]
-              )
-            }
-          } else {
-            fixedCoord.push(coord[p])
-          }
+        const fixedPos = []
+        for (let a = 0; a < 2; a++) {
+          fixedPos.push(digitalPos[a] * fixedLength + canvasPos[a])
         }
-        
-        this.drawImageWithCoord(
-          ctx, src, fixedCoord, alpha
+    
+        this.drawImage(
+          ctx, src, srcPos, size, fixedPos, resize, alpha
         )
       },
       drawDifferentImageInNinePos: function (
@@ -1579,13 +1572,19 @@ class GamepadRenderer {
          * ]
          */
         const positionIndex = 4 + digitalPos[0] + 3 * digitalPos[1]
+        const coord = allCoords[this._posOrder[positionIndex]]
     
-        this.drawImageWithCoord(
-          ctx, src, allCoords[this._posOrder[positionIndex]], alpha
+        if (!coord) { return }
+        
+        this.drawImage(
+          ctx, src, coord[0], coord[1], coord[2], coord[3], alpha
         )
       },
       drawImageInPolygon: function (
-        ctx, src, path, coord, alpha = 1
+        ctx, src,
+        path,
+        srcPos, size, canvasPos, resize,
+        alpha = 1
       ) {
         ctx.save()
         if (alpha === 0) { return }
@@ -1597,13 +1596,14 @@ class GamepadRenderer {
         }
         ctx.closePath()
         ctx.clip()
-        ctx.drawImage(src, ...coord)
+        ctx.drawImage(src, ...srcPos, ...size, ...canvasPos, ...resize||size)
         ctx.restore()
       },
       drawImageInPolygonByValue: function (
         ctx, src,
         value, areaWidth, path,
-        coord, alpha = 1
+        srcPos, size, canvasPos, resize,
+        alpha = 1
       ) {
         const fixedPath = []
         const width = value * areaWidth
@@ -1617,7 +1617,7 @@ class GamepadRenderer {
           }
         }
         this.drawImageInPolygon(
-          ctx, src, fixedPath, coord, alpha
+          ctx, src, fixedPath, srcPos, size, canvasPos, resize, alpha
         )
       },
       /**
@@ -1630,7 +1630,9 @@ class GamepadRenderer {
        * @param {number} [alpha=1]
        */
       writeTextLine: function (
-        ctx, y, value, color = 'white', fontSize = 16, alpha = 1
+        ctx,
+        y, value,
+        color = 'white', fontSize = 16, alpha = 1
       ) {
         ctx.save()
   
@@ -1665,7 +1667,9 @@ class GamepadRenderer {
        * @param {number} [alpha=1]
        */
       writeTextLines: function (
-        ctx, y, value, newLineOnAbove = false, color = 'white', fontSize = 16, alpha = 1
+        ctx,
+        y, value, newLineOnAbove = false,
+        color = 'white', fontSize = 16, alpha = 1
       ) {
         ctx.save()
         

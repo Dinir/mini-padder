@@ -23,7 +23,7 @@
 					"x": 0, "y": 0, "width": 96, "height": 96
 				},
 				{
-					"instruction": "drawImage",
+					"instruction": "drawImageWithCoord",
 					"src": 0, "coord": [0, 36, 96, 96, 0, 0, 96, 96]
 				}
 			],
@@ -47,7 +47,7 @@
 					"x": 160, "y": 0, "width": 96, "height": 96
 				},
 				{
-					"instruction": "drawImage",
+					"instruction": "drawImageWithCoord",
 					"src": 0, "coord": [96, 36, 96, 96, 160, 0, 96, 96]
 				}
 			],
@@ -77,13 +77,13 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [338, 0, 24, 26, 36, 43, 24, 26]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 1, "coord": [437, 0, 24, 26, 36, 43, 24, 26]
 					}
 				]
@@ -97,13 +97,13 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [362, 0, 24, 26, 36, 91, 24, 26]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 1, "coord": [461, 0, 24, 26, 36, 91, 24, 26]
 					}
 				]
@@ -117,13 +117,13 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [386, 0, 26, 24, 11, 68, 26, 24]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 1, "coord": [485, 0, 26, 24, 11, 68, 26, 24]
 					}
 				]
@@ -137,13 +137,13 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [412, 0, 26, 24, 59, 68, 26, 24]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 1, "coord": [511, 0, 26, 24, 59, 68, 26, 24]
 					}
 				]
@@ -159,13 +159,13 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [0, 0, 28, 28, 194, 92, 28, 28]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 1, "coord": [0, 0, 28, 28, 194, 92, 28, 28]
 					}
 				]
@@ -179,13 +179,13 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [28, 0, 28, 28, 220, 66, 28, 28]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 1, "coord": [28, 0, 28, 28, 220, 66, 28, 28]
 					}
 				]
@@ -199,13 +199,13 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [56, 0, 28, 28, 168, 66, 28, 28]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 1, "coord": [56, 0, 28, 28, 168, 66, 28, 28]
 					}
 				]
@@ -219,13 +219,13 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [84, 0, 28, 28, 194, 40, 28, 28]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 1, "coord": [84, 0, 28, 28, 194, 40, 28, 28]
 					}
 				]
@@ -239,17 +239,17 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [300, 0, 19, 19, 103, 70, 19, 19]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [300, 0, 19, 19, 103, 70, 19, 19]
 					},
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 1, "coord": [300, 0, 19, 19, 103, 70, 19, 19]
 					}
 				]
@@ -263,17 +263,17 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [319, 0, 19, 19, 134, 70, 19, 19]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [319, 0, 19, 19, 134, 70, 19, 19]
 					},
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 1, "coord": [319, 0, 19, 19, 134, 70, 19, 19]
 					}
 				]
@@ -287,13 +287,13 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [438, 0, 30, 30, 113, 32, 30, 30]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 1, "coord": [537, 0, 30, 30, 113, 32, 30, 30]
 					}
 				]
@@ -309,13 +309,13 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [112, 0, 47, 24, 45, 0, 47, 24]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 1, "coord": [112, 0, 47, 24, 45, 0, 47, 24]
 					}
 				]
@@ -329,13 +329,13 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [159, 0, 47, 24, 164, 0, 47, 24]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 1, "coord": [159, 0, 47, 24, 164, 0, 47, 24]
 					}
 				]
@@ -349,13 +349,13 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [206, 0, 47, 24, 4, 0, 47, 24]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [206, 0, 47, 24, 4, 0, 47, 24]
 					},
 					{
@@ -376,13 +376,13 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [253, 0, 47, 24, 205, 0, 47, 24]
 					}
 				],
 				"on": [
 					{
-						"instruction": "drawImage",
+						"instruction": "drawImageWithCoord",
 						"src": 0, "coord": [253, 0, 47, 24, 205, 0, 47, 24]
 					},
 					{

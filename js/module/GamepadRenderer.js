@@ -1394,7 +1394,8 @@ class GamepadRenderer {
     this.instructionParameters = {
       clearRect: ['ctx', 'x', 'y', 'width', 'height'],
       clearPolygon: ['ctx', 'path'],
-      drawImage: ['ctx', 'src', 'coord', 'alpha'],
+      drawImageWithCoord: ['ctx', 'src', 'coord', 'alpha'],
+      drawImage: ['ctx', 'src', 'srcPos', 'size', 'canvasPos', 'resize', 'alpha'],
       drawImageByPos: ['ctx', 'src', 'pos', 'areaSize', 'coord', 'alpha'],
       drawImageInNinePos: ['ctx', 'src', 'pos', 'length', 'lengthDiagonal', 'coord', 'alpha'],
       drawDifferentImageInNinePos: ['ctx', 'src', 'pos', 'allCoords', 'alpha'],
@@ -1442,6 +1443,9 @@ class GamepadRenderer {
         
         return digitalPos
       },
+      _getCoord: function (srcPos, size, canvasPos, resize) {
+        return [...srcPos, ...size, ...canvasPos, ...resize||size]
+      },
       clearRect: function (
         ctx, x, y, width, height
       ) {
@@ -1462,7 +1466,7 @@ class GamepadRenderer {
     
         ctx.restore()
       },
-      drawImage: function (
+      drawImageWithCoord: function (
         ctx, src, coord, alpha = 1
       ) {
         if (
@@ -1473,7 +1477,28 @@ class GamepadRenderer {
           ctx.save()
           ctx.globalAlpha = alpha
         }
+        
         ctx.drawImage(src, ...coord)
+        
+        if (alpha !== 1) {
+          ctx.restore()
+        }
+      },
+      drawImage: function (
+        ctx, src, srcPos, size, canvasPos, resize, alpha = 1
+      ) {
+        if (
+          alpha === 0 ||
+          !canvasPos
+        ) { return }
+        if (alpha !== 1) {
+          ctx.save()
+          ctx.globalAlpha = alpha
+        }
+        
+        const coord = this._getCoord(srcPos, size, canvasPos, resize)
+        ctx.drawImage(src, ...coord)
+        
         if (alpha !== 1) {
           ctx.restore()
         }
@@ -1503,7 +1528,7 @@ class GamepadRenderer {
             fixedCoord.push(coord[p])
           }
         }
-        this.drawImage(
+        this.drawImageWithCoord(
           ctx, src, fixedCoord, alpha
         )
       },
@@ -1535,7 +1560,7 @@ class GamepadRenderer {
           }
         }
         
-        this.drawImage(
+        this.drawImageWithCoord(
           ctx, src, fixedCoord, alpha
         )
       },
@@ -1555,7 +1580,7 @@ class GamepadRenderer {
          */
         const positionIndex = 4 + digitalPos[0] + 3 * digitalPos[1]
     
-        this.drawImage(
+        this.drawImageWithCoord(
           ctx, src, allCoords[this._posOrder[positionIndex]], alpha
         )
       },

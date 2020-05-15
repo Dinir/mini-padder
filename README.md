@@ -44,7 +44,7 @@ Thank you for reading all the way to the end! 😁
 
 
 
-[Default Skins]: ./image/open-graph-image.png 'All default skins'
+[Default Skins]: ./image/open-graph-image-0_5x.png 'All default skins'
 [Input Assignment on 8Bitdo NES30 Pro]: ./image/Assignment.gif '(564.7kB) Assigning buttons for 8Bitdo NES30 Pro'
 
 [hosted webpage]: https://dinir.github.io/mini-padder/

@@ -2,17 +2,19 @@
 
 [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)][JavaScript Standard Style]
 
-| ![DInput Default and Joystick Default] | ![DInput ROCKETSROCKETSROCKETS] ![DInput Lightfield] <br>![Input Assignment on 8Bitdo NES30 Pro] |
-| :---: | :---: |
+![Default Skins]
 
 Simple gamepad input overlay for streaming, with default skins that keep a good readability even in tough encoding situations.
 
 - Supports 4 gamepads simultaneously.
-- Default skins for XInput, DInput, 8-button arcade joysticks.
-- Fade-out effect for unused buttons.
+- Default skins for XInput, DInput, 8-button arcade joysticks and 6-button gamepads.
+- Fade-out effect for unused buttons, of which the duration and opacity can be adjusted.
 - Directly capture from OBS without running external programs.
 
-This application is intended to be running on a Chromium environment, and it depends on the use of localStorage to store and load configurations.
+# Requirements
+
+- A **Chromium** browser environment and access to local storage. Because that's the environment of OBS browser source Mini Padder is originally made for.
+- Features confirmed to be working on **OBS 24.0.3** and onward. On OBS 21.1.0 and below, gamepad inputs might not be received.
 
 # How to Use
 
@@ -42,10 +44,8 @@ Thank you for reading all the way to the end! 😁
 
 
 
-[DInput Default and Joystick Default]: ./image/DS4-and-Joystick.gif '(539.9kB) Dinput Default Skin and Joystick Default Skin'
+[Default Skins]: ./image/open-graph-image.png 'All default skins'
 [Input Assignment on 8Bitdo NES30 Pro]: ./image/Assignment.gif '(564.7kB) Assigning buttons for 8Bitdo NES30 Pro'
-[DInput ROCKETSROCKETSROCKETS]: ./image/DInput-R3.gif '(2.15MB) Mild Button Mash'
-[DInput Lightfield]: ./image/DInput-LF.gif '(1.55MB) Single Button Usage'
 
 [hosted webpage]: https://dinir.github.io/mini-padder/
 [latest release]: https://github.com/Dinir/mini-padder/releases/latest

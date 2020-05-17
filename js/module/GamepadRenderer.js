@@ -1708,7 +1708,11 @@ class GamepadRenderer {
         // joystick rendering will skip after first property of this array
         // so first property should be the joystick related dpad value
         ['value','up','down','left','right'],
-        ['down','right','left','up','select','start','l3','r3','home','touchpad'],
+        [
+          'down','right','left','up',
+          'select','start','l3','r3',
+          'home','touchpad'
+        ],
         ['l1','r1','l2','r2']
       ]
     }

@@ -76,6 +76,22 @@ class Updater {
     this.lastFoundVersion.minor = this.currentVersion.minor
     this.lastFoundVersion.patch = this.currentVersion.patch
   }
+  announceUpdateCompletionAndSetLastUpdatedVersion (
+    newMajorNumber, newMinorNumber, newPatchNumber
+  ) {
+    let message = 'Updated: ' + Updater.getVersionString(this.lastFoundVersion)
+    if (!isNaN(parseInt(newMajorNumber))) {
+      this.lastFoundVersion.major = String(newMajorNumber)
+    }
+    if (!isNaN(parseInt(newMinorNumber))) {
+      this.lastFoundVersion.minor = String(newMinorNumber)
+    }
+    if (!isNaN(parseInt(newPatchNumber))) {
+      this.lastFoundVersion.patch = String(newPatchNumber)
+    }
+    message += ' -> ' + Updater.getVersionString(this.lastFoundVersion)
+    Updater.announceMessage(message)
+  }
   saveLastUpdatedVersion () {
     const versionString = Updater.getVersionString(this.lastFoundVersion)
     window.localStorage.setItem('version', versionString)
@@ -92,20 +108,22 @@ class Updater {
     
     for (let i = 0; i < updateIndex.length; i++) {
       if (patchNumber >= updateIndex[i]) { continue }
+      
       try {
-        const updateResult = allPatchUpdates[updateIndex[i]]()
+        const updateResult = allPatchUpdates[updateIndex[i]] ?
+          allPatchUpdates[updateIndex[i]]() : true
         if (updateResult) {
-          let message = 'Updated: ' + Updater.getVersionString(this.lastFoundVersion)
-          this.lastFoundVersion.patch = updateIndex[i]
+          this.announceUpdateCompletionAndSetLastUpdatedVersion(
+            null, null, updateIndex[i]
+          )
           patchNumber = updateIndex[i]
-          message += ' -> ' + Updater.getVersionString(this.lastFoundVersion)
-          Updater.announceMessage(message)
         }
       } catch (e) {
         Updater.announceMessage(e)
         return false
       }
     }
+    
     this.saveLastUpdatedVersion()
     return true
   }
@@ -126,37 +144,91 @@ class Updater {
       if (minorNumber < updateIndex[i]) {
         // minor version up
         try {
-          const updateResult = allMinorUpdates[updateIndex[i]][0]()
+          const updateResult = allMinorUpdates[updateIndex[i]][0] ?
+            allMinorUpdates[updateIndex[i]][0]() : true
           if (updateResult) {
-            let message = 'Updated: ' + Updater.getVersionString(this.lastFoundVersion)
-            this.lastFoundVersion.minor = updateIndex[i]
+            this.announceUpdateCompletionAndSetLastUpdatedVersion(
+              null, updateIndex[i], 0
+            )
             minorNumber = updateIndex[i]
-            this.lastFoundVersion.patch = 0
             patchNumber = 0
-            message += ' -> ' + Updater.getVersionString(this.lastFoundVersion)
-            Updater.announceMessage(message)
           }
         } catch (e) {
-          Update.announceMessage(e)
+          Updater.announceMessage(e)
           return false
         }
       }
-      
+  
+      // put same version case after 'current is older' case
+      // so after increasing the version it can still work on lower version changes in the same loop
       if (minorNumber === updateIndex[i]) {
         // patches under the minor version
         try {
           const updateResult = this.patchUpdate()
           if (updateResult) {
             Updater.announceMessage(`Updated all patches under ${majorNumber}.${minorNumber}.`)
+        
+          }
+        } catch (e) {
+          Updater.announceMessage(e)
+          return false
+        }
+      }
+    }
+    
+    // minor update is successfully done
+    this.saveLastUpdatedVersion()
+    return true
+  }
+  
+  majorUpdate () {
+    let majorNumber = this.lastFoundVersion.major
+    let minorNumber = this.lastFoundVersion.minor
+    let patchNumber = this.lastFoundVersion.patch
+    
+    const allUpdates = this.updateTasks
+    
+    const updateIndex = Object.keys(allUpdates)
+    
+    for (let i = 0; i < updateIndex.length; i++) {
+      if (majorNumber > updateIndex[i]) { continue }
+      
+      if (majorNumber < updateIndex[i]) {
+        // major version up
+        try {
+          const updateResult = allUpdates[updateIndex[i]][0][0]?
+            allUpdates[updateIndex[i]][0][0]() : true
+          if (updateResult) {
+            this.announceUpdateCompletionAndSetLastUpdatedVersion(
+              updateIndex[i], 0, 0
+            )
+            majorNumber = updateIndex[i]
+            minorNumber = 0
+            patchNumber = 0
           }
         } catch (e) {
           Update.announceMessage(e)
           return false
         }
       }
+  
+      // put same version case after 'current is older' case
+      // so after increasing the version it can still work on lower version changes in the same loop
+      if (majorNumber === updateIndex[i]) {
+        // patches under the major version
+        try {
+          const updateResult = this.minorUpdate()
+          if (updateResult) {
+            Updater.announceMessage(`Updated all minors under ${majorNumber}.`)
+          }
+        } catch (e) {
+          Updater.announceMessage(e)
+          return false
+        }
+      }
     }
-    // minor update is successfully done, update the last version string
-    this.setLastUpdatedVersionToCurrentVersion()
+    
+    // major update is successfully done
     this.saveLastUpdatedVersion()
     return true
   }

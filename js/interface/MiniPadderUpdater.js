@@ -7,7 +7,7 @@ class MiniPadderUpdater extends Updater {
     if (currentVersionString === Updater.getVersionString(this.lastFoundVersion)) {
       MiniPadderUpdater.announceMessage('This is the latest version.')
     } else {
-      const updateResult = this.minorUpdate()
+      const updateResult = this.majorUpdate()
       if (updateResult) {
         MiniPadderUpdater.announceMessage('Finished updating.')
       } else {

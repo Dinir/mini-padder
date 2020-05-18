@@ -31,13 +31,6 @@
 					"src": 1, "length": 28, "lengthDiagonal": 20,
 					"srcPos": [0, 36], "size": [32, 32], "canvasPos": [28, 52]
 				}
-			],
-			"on": [
-				{
-					"instruction": "drawImageInNinePos",
-					"src": 1, "length": 28, "lengthDiagonal": 20,
-					"srcPos": [0, 36], "size": [32, 32], "canvasPos": [28, 52]
-				}
 			]
 		}
 	},
@@ -57,9 +50,8 @@
 				],
 				"off": [
 					{
-						"instruction": "drawImageInNinePos",
-						"src": 1, "length": 28, "lengthDiagonal": 20,
-						"srcPos": [0, 36], "size": [32, 32], "canvasPos": [28, 52]
+						"instruction": "drawImage",
+						"src": 1, "srcPos": [0, 36], "size": [32, 32], "canvasPos": [28, 52]
 					}
 				],
 				"on": [

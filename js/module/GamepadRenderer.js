@@ -911,7 +911,7 @@ class GamepadRenderer {
         )
         if (activeState.sticks[stickName][1]) {
           this.followInstructions(
-            ctx[stickLayerIndex], src, stickInst.on,
+            ctx[stickLayerIndex], src, stickInst.on || stickInst.off,
             values.value, alpha.sticks[stickName], values.delta
           )
         } else {

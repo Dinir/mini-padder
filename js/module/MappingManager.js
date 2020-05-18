@@ -1184,7 +1184,6 @@ class MappingManager {
     
     return values
   }
-  
   /**
    * update last seen dpad state with an already made dpad state data
    * @param {number[]} dpadState reference to last seen dpad state

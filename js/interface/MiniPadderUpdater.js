@@ -74,6 +74,13 @@ class MiniPadderUpdater extends Updater {
             return true
           }
         }
+      },
+      '3': {
+        '0': {
+          '0': function () {
+            return true
+          }
+        }
       }
     }
   }

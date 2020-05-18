@@ -956,13 +956,16 @@ class GamepadRenderer {
      *  @property {?Object.<string, ?buttonChange>} shoulder
      */
     const buttons = gamepadChange.buttons
-    const buttonLayerIndex = inst.buttons.layer
+    const buttonLayerIndexDefault = inst.buttons.layer
     
     // give instructions for buttons
     for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
       const buttonGroupName = this.order.buttonGroup[bg]
       // skip the button group if the skin doesn't include it
       if (!inst.buttons[buttonGroupName]) { continue }
+      
+      const buttonLayerIndex = typeof inst.buttons[buttonGroupName].layer === 'number' ?
+        inst.buttons[buttonGroupName].layer : buttonLayerIndexDefault
       
       // check for changes for a button group
       if (buttons[buttonGroupName]) {
@@ -1190,12 +1193,15 @@ class GamepadRenderer {
     }
   
     // buttons
-    const buttonLayerIndex = inst.buttons.layer
+    const buttonLayerIndexDefault = inst.buttons.layer
     
     for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
       const buttonGroupName = this.order.buttonGroup[bg]
       // skip the button group if the skin doesn't include it
       if (!inst.buttons[buttonGroupName]) { continue }
+  
+      const buttonLayerIndex = typeof inst.buttons[buttonGroupName].layer === 'number' ?
+        inst.buttons[buttonGroupName].layer : buttonLayerIndexDefault
       
       for (let b = 0; b < this.order.button[bg].length; b++) {
         // skip other dpad instructions on joystick
@@ -1310,12 +1316,15 @@ class GamepadRenderer {
     lastActive.buttons = lastActive.buttons || {}
     alpha.buttons = alpha.buttons || {}
   
-    const buttonLayerIndex = inst.buttons.layer
+    const buttonLayerIndexDefault = inst.buttons.layer
     
     for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
       const buttonGroupName = this.order.buttonGroup[bg]
       // skip the button group if the skin doesn't include it
       if (!inst.buttons[buttonGroupName]) { continue }
+      
+      const buttonLayerIndex = typeof inst.buttons[buttonGroupName].layer === 'number' ?
+        inst.buttons[buttonGroupName].layer : buttonLayerIndexDefault
       
       activeState.buttons[buttonGroupName] =
         activeState.buttons[buttonGroupName] || {}

@@ -1352,7 +1352,7 @@ class GamepadRenderer {
   }
   
   followInstructions (ctx, src, inst, value, alpha, additionalValue) {
-    // `this` is bound as `GamepadRenderer` in the constructor
+    // `this` is bound as `GamepadRenderer` instance in the constructor
     if (!inst) { return false }
     
     for (let i = 0; i < inst.length; i++) {

@@ -429,13 +429,13 @@ class MappingManager {
             "pressed": true,
             "active": true
         } },
-        mapInput: (m, i) => {m.sticks.left.button = i},
-        nullInput: m => {
-          if (m.sticks.left.x === null && m.sticks.left.y === null) {
-            m.sticks.left = null
+        mapInput: (m, i) => {
+          if (m.sticks.left.x !== null || m.sticks.left.y !== null) {
+            m.sticks.left.button = i
           } else {
-            m.sticks.left.button = null
+            m.sticks.left = null
           }
+          m.buttons.face.l3 = i
         }
       },
       {
@@ -473,19 +473,19 @@ class MappingManager {
             "pressed": true,
             "active": true
         } },
-        mapInput: (m, i) => {m.sticks.right.button = i},
-        nullInput: m => {
-          if (m.sticks.right.x === null && m.sticks.right.y === null) {
+        mapInput: (m, i) => {
+          if (m.sticks.right.x !== null || m.sticks.right.y !== null) {
+            m.sticks.right.button = i
+          } else {
             m.sticks.right = null
-            // put 'nosticks' property if no sticks were assigned
+            // put 'nosticks' property if no stick axes were assigned
             if (m.sticks.left === null) {
               if (m.properties.indexOf('nosticks') === -1) {
                 m.properties.push('nosticks')
               }
             }
-          } else {
-            m.sticks.right.button = null
           }
+          m.buttons.face.r3 = i
         }
       }
     ]
@@ -628,17 +628,9 @@ class MappingManager {
               buttonInfo.nullInput(assignmentState.data.mapping)
               assignmentState.index = 18
               break
-            case 18: // stick-left-button
-              buttonInfo.nullInput(assignmentState.data.mapping)
-              assignmentState.index++
-              break
             case 19: // stick-right-x
               buttonInfo.nullInput(assignmentState.data.mapping)
               assignmentState.index = 21
-              break
-            case 21: // stick-right-button
-              buttonInfo.nullInput(assignmentState.data.mapping)
-              assignmentState.index++
               break
             default:
               buttonInfo.mapInput(assignmentState.data.mapping, null)
@@ -697,21 +689,12 @@ class MappingManager {
               // it is joystick, put 'joystick' to the properties array
               const wasItAxisdpad = mapping.properties.indexOf('axisdpad')
               if (wasItAxisdpad !== -1) {
-                mapping.properties.splice(
-                  mapping.properties.indexOf('axisdpad'), 1, 'joystick'
-                )
-              } else if (mapping.properties.indexOf('joystick') === -1) {
+                mapping.properties.splice(wasItAxisdpad, 1)
+              }
+              if (mapping.properties.indexOf('joystick') === -1) {
                 mapping.properties.push('joystick')
               }
             }
-            
-            // copy l3 and r3 from sticks mapping to buttons one
-              assignmentState.data.mapping.buttons.face.l3 =
-                assignmentState.data.mapping.sticks.left ?
-                assignmentState.data.mapping.sticks.left.button || null : null
-              assignmentState.data.mapping.buttons.face.r3 =
-                assignmentState.data.mapping.sticks.right ?
-                assignmentState.data.mapping.sticks.right.button || null : null
             
             if (inputToBeSkipped || aborting) {
               // required input is found so increase the index and finish assignment

@@ -1,9 +1,12 @@
 @import 'common';
 
-body {
+html, body {
   margin: 0;
   width: 4 * $canvas-width + 3 * $canvas-gap;
   height: 4 * $canvas-height + 3 * $canvas-gap;
+}
+
+body {
   font-size: $default-font-size;
   font-family: "Fira Code", monospace;
   // this color will be changed to 'transparent' by default in OBS.

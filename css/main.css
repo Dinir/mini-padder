@@ -1,8 +1,10 @@
 @charset "UTF-8";
-body {
+html, body {
   margin: 0;
   width: 1048px;
-  height: 600px;
+  height: 600px; }
+
+body {
   font-size: 16px;
   font-family: "Fira Code", monospace;
   background-color: black; }

@@ -397,7 +397,7 @@ class MappingManager {
       {
         label: 'left stick to right',
         group: 'axes',
-        mappedGroup: 'sticks',
+        renderGroup: 'sticks',
         virtualInput: { "left": {
             "value": [1, 0, null],
             "pressed": null,
@@ -412,7 +412,7 @@ class MappingManager {
       {
         label: 'left stick to down',
         group: 'axes',
-        mappedGroup: 'sticks',
+        renderGroup: 'sticks',
         virtualInput: { "left": {
             "value": [0, 1, null],
             "pressed": null,
@@ -423,7 +423,7 @@ class MappingManager {
       {
         label: 'left stick button',
         group: 'buttons',
-        mappedGroup: 'sticks',
+        renderGroup: 'sticks',
         virtualInput: { "left": {
             "value": [0, 0, 1],
             "pressed": true,
@@ -441,7 +441,7 @@ class MappingManager {
       {
         label: 'right stick to right',
         group: 'axes',
-        mappedGroup: 'sticks',
+        renderGroup: 'sticks',
         virtualInput: { "right": {
             "value": [1, 0, null],
             "pressed": null,
@@ -456,7 +456,7 @@ class MappingManager {
       {
         label: 'right stick to down',
         group: 'axes',
-        mappedGroup: 'sticks',
+        renderGroup: 'sticks',
         virtualInput: { "right": {
             "value": [0, 1, null],
             "pressed": null,
@@ -467,7 +467,7 @@ class MappingManager {
       {
         label: 'right stick button',
         group: 'buttons',
-        mappedGroup: 'sticks',
+        renderGroup: 'sticks',
         virtualInput: { "right": {
             "value": [0, 0, 1],
             "pressed": true,
@@ -782,7 +782,7 @@ class MappingManager {
       
       if (buttonInfo) {
         processedGamepadChangeTemplate[
-          buttonInfo.mappedGroup || buttonInfo.group
+          buttonInfo.renderGroup || buttonInfo.group
         ] =
           buttonInfo.virtualInput
       }

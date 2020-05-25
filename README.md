@@ -1,6 +1,9 @@
 # Mini Padder
 
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)][JavaScript Standard Style]
+[![commits since latest release](https://img.shields.io/github/commits-since/Dinir/mini-padder/latest?sort=semver)](https://github.com/Dinir/mini-padder/commits/master)
+[![search hits](https://img.shields.io/github/search/Dinir/mini-padder/input%20overlay?label=%27input%20overlay%27%20counter&logo=github)](https://github.com/search?q=input+overlay)
+[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+[![stargazers](https://img.shields.io/github/stars/Dinir/mini-padder?style=social&link=https://github.com/Dinir/mini-padder&link=https://github.com/Dinir/mini-padder/stargazers)](https://github.com/Dinir/mini-padder/stargazers)
 
 ![Default Skins]
 
@@ -49,4 +52,3 @@ Thank you for reading all the way to the end! 😁
 
 [hosted webpage]: https://dinir.github.io/mini-padder/
 [latest release]: https://github.com/Dinir/mini-padder/releases/latest
-[JavaScript Standard Style]: https://standardjs.com

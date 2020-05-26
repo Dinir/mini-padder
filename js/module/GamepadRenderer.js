@@ -9,27 +9,31 @@
  * if the gamepad which issued the change has changed, that it needs to
  * recreate a skin slot for the new gamepad.
  *
- * @property {{left: boolean, right: boolean}} stickButtonState
- * last stick button state, stored for rendering.
+ * @property {string[]} properties
+ * contains skin properties
  *
- * Why is it in a renderer class?
- * MappingManager will always only transfer 'changes',
- * which works for usages that don't need to bind anything together:
- * a logic dealing each of the inputs separately can only work whenever
- * a change occurred therefore it's transferred from MappingManager,
- * and it won't be out of sync to a present state of the gamepad.
+ * @property {boolean} activeStateReady
+ * indicates if `activeState` is populated
  *
- * But here the renderer will try to draw button press states
- * 'on' the position of each sticks, which should be updated every time
- * a corresponding stick moves, regardless of changes on the buttons.
+ * @property {Object} activeState
+ * stores the last seen states of sticks and buttons.
+ * Value is boolean, the structure follows that of the skin config,
+ * and a stick value is an array containing two booleans -
+ * one for stick movement and one for stick button press.
  *
- * So it should bind the position and the button state of a stick.
+ * @property {Object} lastActive
+ * Contains timestamp the last time a stick or a button is active.
+ * The structure follows that of the skin config.
  *
- * Stick position is always included in processedGamepadChange
- * to avoid stick state considered 'inactive' when it's pushed
- * all the way along a single axis.
- * And with that, the renderer only need to remember the other one,
- * the button state of the stick.
+ * @property {Object} alpha
+ * Contains alpha values for sticks and buttons.
+ * The structure follows that of the skin config.
+ *
+ * @property {boolean} assigning
+ * true when assignment is in process
+ *
+ * @property {number} messageDisplayTimeLeft
+ * deduct at every frame, remove the message when it reaches 0, then deduct one more time.
  *
  * @property {HTMLImageElement[]} src
  * reference to an image element containing a spritesheet,
@@ -606,46 +610,11 @@ class GamepadRenderer {
       buttons: skin.config.buttons
     }
     skinSlot.properties = config.properties
-    /**
-     * It's false when `activeState` is an empty object.
-     * @type {boolean}
-     */
     skinSlot.activeStateReady = false
-    /**
-     * Stores the last seen states of sticks and buttons.
-     *
-     * Value is boolean, the structure follows that of the skin config,
-     * and a stick value is an array containing two booleans -
-     * one for stick movement and one for stick button press.
-     *
-     * @type {Object}
-     */
     skinSlot.activeState = {}
-    /**
-     * Contains timestamp the last time a stick or a button is active.
-     *
-     * The structure follows that of the skin config.
-     *
-     * @type {Object}
-     */
     skinSlot.lastActive = {}
-    /**
-     * Contains alpha values for sticks and buttons.
-     *
-     * The structure follows that of the skin config.
-     *
-     * @type {Object}
-     */
     skinSlot.alpha = {}
-    /**
-     * true when assignment is in process
-     * @type {boolean}
-     */
     skinSlot.assigning = false
-    /**
-     * deduct at every frame, remove the message when it reaches 0, then deduct one more time.
-     * @type {number}
-     */
     skinSlot.messageDisplayTimeLeft = -1
   
     const altMessage = `a layer of canvas to display inputs of gamepad ${slot}`
@@ -693,6 +662,7 @@ class GamepadRenderer {
   }
   removeSkinFromSlot (slot) {
     delete this.skinSlot[slot].gamepadId
+    delete this.skinSlot[slot].properties
     delete this.skinSlot[slot].activeStateReady
     delete this.skinSlot[slot].activeState
     delete this.skinSlot[slot].lastActive

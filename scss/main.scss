@@ -15,7 +15,27 @@ body {
 
 // symantic markups
 address {
+  position: relative;
   font-style: inherit;
+  .link-list {
+    a:after {
+      content: ',';
+    }
+    a.head:after {
+      content: ':';
+    }
+    a:last-child:after {
+      content: '';
+    }
+    // remove underline on the separators
+    a:after {
+      display: inline-block;
+    }
+  }
+  .align-right {
+    position: absolute;
+    right: 0;
+  }
 }
 
 sub {
@@ -121,6 +141,11 @@ sub {
   }
   label {
     display: inline-block;
+  }
+  address {
+    a {
+      color: #171717;
+    }
   }
   
   @media (max-height: 599px) and (orientation: landscape) {

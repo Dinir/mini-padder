@@ -10,7 +10,19 @@ body {
   background-color: black; }
 
 address {
+  position: relative;
   font-style: inherit; }
+  address .link-list a:after {
+    content: ','; }
+  address .link-list a.head:after {
+    content: ':'; }
+  address .link-list a:last-child:after {
+    content: ''; }
+  address .link-list a:after {
+    display: inline-block; }
+  address .align-right {
+    position: absolute;
+    right: 0; }
 
 sub {
   vertical-align: baseline;
@@ -87,6 +99,8 @@ sub {
       display: inline; }
   .control-panel label {
     display: inline-block; }
+  .control-panel address a {
+    color: #171717; }
   @media (max-height: 599px) and (orientation: landscape) {
     .control-panel {
       height: auto;

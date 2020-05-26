@@ -103,7 +103,7 @@
     <span class="description">
       <b>Display Size</b><br>
       <span>&nbsp;256x144</span> (one gamepad)<br>
-      <span></span> (all gamepads)
+      <span id="displaySizeDescriptor"></span> (all gamepads)
     </span>
   </div>
   <div class="option half-width no-divider" data-name="fade">
@@ -165,9 +165,7 @@
   const canvasContainer = document.getElementById('canvas-container')
   const canvas = Array.from(canvasContainer.querySelectorAll('div'))
   const cpDom = document.getElementById('control-panel')
-  const cpDomSizeDescriptor = cpDom.querySelector(
-    'div[data-name="displayWidth"] .description'
-  )
+  const cpDomSizeDescriptor = document.getElementById('displaySizeDescriptor')
 </script>
 
 <!-- store error logs -->
@@ -239,7 +237,7 @@
   cpPanel.displayWidth.assign(
     cpDom.querySelector('div[data-name="displayWidth"] input'), e => {
       canvasContainer.dataset.width = e.target.value
-      cpDomSizeDescriptor.children[4].innerHTML =
+      cpDomSizeDescriptor.innerHTML =
         (canvasContainer.offsetWidth < 1000 ? '&nbsp;' : '') +
         canvasContainer.offsetWidth +
         '×' + canvasContainer.offsetHeight

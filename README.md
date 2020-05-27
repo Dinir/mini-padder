@@ -27,7 +27,7 @@ Simple gamepad input overlay for streaming, with default skins that keep a good 
 - To make a change using the control panel, right click the source and select *Interact*.
 - The page will start showing gamepads when any input is made on them.
 
-To add or customize skins, you have to download the application and host it yourself.
+For skin customization, check [the wiki page](https://github.com/Dinir/mini-padder/wiki/Making-a-Skin).
 
 # Exporting & Importing Settings
 

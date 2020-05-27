@@ -138,6 +138,25 @@
       store them in the local storage of this web page.
     </span>
   </div>
+  <div class="option" data-name="custom-skin">
+    <label id="customSkinLoadArea">
+      <b>Import Custom Skin</b>
+      <span class="after-margin file-input-container">
+        <input class="visually-hidden"
+               type="file" accept="application/json,image/*" multiple>
+        <button data-name="fileSelect">Choose Files</button>
+        <span class="inactive">
+          Currently Loaded:
+          <span id="currentlyLoadedCustomSkin">Nothing</span>
+        </span>
+      </span>
+      <span class="description">
+        Upload a json and up to 4 images for the custom skin.
+        New files replace old ones.
+        Click anywhere in this area to bring the file select screen.
+      </span>
+    </label>
+  </div>
   <div>
     <div>
       <b class="inline">Mini Padder</b><sub> <span class="version"></span></sub>
@@ -166,6 +185,12 @@
   const canvas = Array.from(canvasContainer.querySelectorAll('div'))
   const cpDom = document.getElementById('control-panel')
   const cpDomSizeDescriptor = document.getElementById('displaySizeDescriptor')
+  const cpDomSkinUploader = {
+    droparea: cpDom.querySelector('#customSkinLoadArea'),
+    input: cpDom.querySelector('#customSkinLoadArea input'),
+    button: cpDom.querySelector('#customSkinLoadArea button[data-name="fileSelect"]'),
+    indicator: document.getElementById('currentlyLoadedCustomSkin')
+  }
 </script>
 
 <!-- store error logs -->
@@ -206,7 +231,8 @@
     layout: 'selectFromList',
     displayWidth: 'slider',
     fadeout: 'textArray',
-    management: 'buttons'
+    management: 'buttons',
+    customSkin: 'uploader'
   }, [
     'gamepadconnected', 'gamepaddisconnected'
   ])
@@ -291,6 +317,14 @@
           break
       }
     }
+  )
+  
+  cpPanel.customSkin.assign(
+    cpDomSkinUploader.input,
+    cpDomSkinUploader.droparea,
+    cpDomSkinUploader.button,
+    f => true,
+    cpDomSkinUploader.indicator
   )
 </script>
 

@@ -28,6 +28,13 @@ sub {
   vertical-align: baseline;
   font-size: x-small; }
 
+.visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px); }
+
 .inline {
   display: inline; }
 
@@ -77,8 +84,19 @@ sub {
     .control-panel > div.half-width {
       width: 48%;
       display: inline-block; }
+  .control-panel b {
+    display: block;
+    margin-bottom: 0.5em; }
+    .control-panel b.inline {
+      display: inline; }
+  .control-panel label {
+    display: inline-block; }
+  .control-panel address a {
+    color: #171717; }
   .control-panel .after-margin {
     margin-bottom: 0.25em; }
+  .control-panel span.after-margin {
+    display: block; }
   .control-panel .full-width {
     display: block; }
   .control-panel .inactive {
@@ -92,15 +110,6 @@ sub {
     border-radius: 8px; }
     .control-panel .caution:before {
       content: '⚠️ '; }
-  .control-panel b {
-    display: block;
-    margin-bottom: 0.5em; }
-    .control-panel b.inline {
-      display: inline; }
-  .control-panel label {
-    display: inline-block; }
-  .control-panel address a {
-    color: #171717; }
   @media (max-height: 599px) and (orientation: landscape) {
     .control-panel {
       height: auto;

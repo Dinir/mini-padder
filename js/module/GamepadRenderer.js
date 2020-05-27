@@ -550,6 +550,8 @@ class GamepadRenderer {
     }
     this.addSkinToSkinList(dirname)
     const skin = this.skins[dirname]
+    
+    // load from the hosted space
     const path = `./skin/${dirname}`
     fetch(`${path}/config.json`)
       .then(response => response.json())

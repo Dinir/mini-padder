@@ -35,7 +35,7 @@ class ControlPanel {
   
   static get recognizedTypes () {
     return [
-      'dynamicButtons', 'selectFromList', 'slider', 'textArray', 'buttons'
+      'dynamicButtons', 'selectFromList', 'slider', 'textArray', 'buttons', 'uploader'
     ]
   }
   
@@ -419,6 +419,57 @@ class ControlPanel {
           this.updatePanelValue(this.panelValue)
           this.callback(this.panelValue)
         })
+      }
+    }
+  }
+  
+  getControlForUploader (name) {
+    return {
+      name: name,
+      /** @type {string[]} */
+      panelValue: null,
+      applyPanelValue: function () {
+      
+      },
+      assign: function (input, droparea, visibleButton, typeCheckFunction, textIndicator) {
+        this.input = input
+        this.droparea = droparea
+        this.replaceInput = Boolean(visibleButton)
+        this.button = visibleButton || null
+        this.typeCheck = typeCheckFunction
+        this.indicator = textIndicator
+        
+        // receive dropped files just in case
+        this.droparea.addEventListener('dragenter', this._preventDefault, false)
+        this.droparea.addEventListener('dragover', this._preventDefault, false)
+        this.droparea.addEventListener('drop', e => {
+          this._preventDefault(e)
+          this._handleFiles(e.dataTransfer.files)
+        }, false)
+        
+        this.input.addEventListener('change', e => {
+          this._preventDefault(e)
+          this._handleFiles(e.target.files)
+        })
+        if (this.replaceInput) {
+          this.button.addEventListener('click', () => {
+            this.input.click()
+          }, false)
+        }
+      },
+      _preventDefault: function (e) {
+        e.stopPropagation()
+        e.preventDefault()
+      },
+      _handleFiles: function (files) {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i]
+          const type = file.type === 'application/json' ? 'json' :
+            file.type.startsWith('image/') ? 'image' : null
+          if (!type) { continue } // do something to alert
+          
+          console.log(file)
+        }
       }
     }
   }

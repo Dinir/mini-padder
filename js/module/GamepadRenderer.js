@@ -560,8 +560,11 @@ class GamepadRenderer {
         skin.config = data
         skin.src = []
         for (let i = 0; i < skin.config.src.length; i++) {
+          const src = skin.config.src[i]
           skin.src[i] = new Image()
-          skin.src[i].src = `${skin.path}/${skin.config.src[i]}`
+          
+          skin.src[i].src = src.startsWith('data:image/') ?
+            src : `${skin.path}/${src}`
         }
         skin.loaded = true
         GamepadRenderer.announceMessage(

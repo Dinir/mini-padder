@@ -782,7 +782,7 @@ class GamepadRenderer {
       } else if (skinSlot) {
         // no changes are received, but skin slot for the index exists
         if (!skinSlot.activeStateReady) {
-          // skinSlot might be recreated - active state should be made
+          // skinSlot might has been recreated - active state should be made
           this.renderFrame(gamepadIndex)
         } else if (this.timingForFps(this.fadeoutFps)) {
           // skin is loaded and active state also exist

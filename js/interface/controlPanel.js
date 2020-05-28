@@ -447,8 +447,8 @@ class ControlPanel {
       
       },
       assign: function (
-        input, droparea, visibleButton, typeCheckFunction, textIndicator, {
-          indicatorUpdateCallback, customCallback
+        input, droparea, visibleButton, textIndicator, {
+          typeCheckFunction, indicatorUpdateCallback, customCallback
         }) {
         this.maxFileAmount = 5
         
@@ -495,9 +495,8 @@ class ControlPanel {
          */
         for (let i = 0; i < fileAmount ; i++) {
           const file = files[i]
-          const type =
-            file.type === 'application/json' ? 'json' :
-            file.type.startsWith('image/') ? 'image' : null
+          const type = this.typeCheck ?
+            this.typeCheck(file.type) : file.type
           
           if (!type) {
             ControlPanel.announceMessage(new Error(

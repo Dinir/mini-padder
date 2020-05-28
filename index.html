@@ -320,8 +320,10 @@
     cpDomSkinUploader.input,
     cpDomSkinUploader.droparea,
     cpDomSkinUploader.button,
-    f => true,
     cpDomSkinUploader.indicator, {
+      typeCheckFunction: typeString =>
+        typeString === 'application/json' ? 'json' :
+          typeString.startsWith('image/') ? 'image' : null,
       indicatorUpdateCallback: text => {
         cpDomSkinUploader.indicator.innerHTML = text
         cpDomSkinUploader.indicator.classList.remove('inactive')

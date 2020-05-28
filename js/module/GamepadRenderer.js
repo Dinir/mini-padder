@@ -303,6 +303,13 @@ class GamepadRenderer {
       this.fadeout.duration
     
     this.saveFadeoutOption()
+    // refresh active state of all skinSlots
+    if (this.skinSlot) {
+      for (let i = 0; i < this.skinSlot.length; i++) {
+        if (!this.skinSlot[i]) { continue }
+        this.skinSlot[i].activeStateReady = false
+      }
+    }
   }
   /**
    * Convert fade-out options given in input elements

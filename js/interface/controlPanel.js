@@ -535,11 +535,25 @@ class ControlPanel {
         Promise.all(dataPrepared).then(dataArray => {
           // parse first data - which is expected to be a json
           dataArray[0] = JSON.parse(dataArray[0])
-          // make object with key as the file name and value as the data
-          const dataObj = {}
-          fileNames.forEach((name, i) => dataObj[name] = dataArray[i])
-          this.updateIndicator(dataObj['config.json'].name)
-          this.callback(dataObj)
+          const config = dataArray[0]
+          
+          // replace image file name with corresponding data url
+          for (let i = 0; i < config.src.length; i++) {
+            const srcName = config.src[i]
+            const srcIndexInFiles = fileNames.indexOf(srcName)
+            if (srcIndexInFiles === -1) {
+              // for typo in config.json
+              ControlPanel.announceMessage(new Error(
+                `src file name \`${srcName}\` doesn't match any actual file.`
+              ))
+              return this.callback(false)
+            }
+            
+            config.src[i] = dataArray[srcIndexInFiles]
+          }
+  
+          this.updateIndicator(config.name)
+          this.callback(config)
         }, reason => {
           ControlPanel.announceMessage(new Error(reason))
         })

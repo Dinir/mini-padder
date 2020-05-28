@@ -29,5 +29,13 @@
         }
       }
     }
+    
+    // item specific styles
+    &[data-name="custom-skin"] {
+      #currentlyLoadedCustomSkin:before {
+        content: 'Currently Loaded: ';
+        font-size: 0.75em;
+      }
+    }
   }
 }

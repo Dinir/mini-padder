@@ -446,13 +446,20 @@ class ControlPanel {
       applyPanelValue: function () {
       
       },
-      assign: function (input, droparea, visibleButton, typeCheckFunction, textIndicator) {
+      assign: function (
+        input, droparea, visibleButton, typeCheckFunction, textIndicator, {
+          indicatorUpdateCallback, customCallback
+        }) {
+        this.maxFileAmount = 5
+        
         this.input = input
         this.droparea = droparea
         this.replaceInput = Boolean(visibleButton)
         this.button = visibleButton || null
         this.typeCheck = typeCheckFunction
         this.indicator = textIndicator
+        this.updateIndicator = indicatorUpdateCallback
+        this.callback = customCallback
         
         // receive dropped files just in case
         this.droparea.addEventListener('dragenter', this._preventDefault, false)
@@ -476,15 +483,66 @@ class ControlPanel {
         e.stopPropagation()
         e.preventDefault()
       },
-      _handleFiles: function (files) {
-        for (let i = 0; i < files.length; i++) {
+      _handleFiles: function (files, maxAmount = this.maxFileAmount) {
+        const fileAmount = Math.min(files.length, maxAmount)
+        const fileNames = []
+        const dataPrepared = []
+        
+        /*
+         * restrictions are currently handled here:
+         * - up to 5 files total
+         * - either json or image
+         */
+        for (let i = 0; i < fileAmount ; i++) {
           const file = files[i]
-          const type = file.type === 'application/json' ? 'json' :
+          const type =
+            file.type === 'application/json' ? 'json' :
             file.type.startsWith('image/') ? 'image' : null
-          if (!type) { continue } // do something to alert
           
-          console.log(file)
+          if (!type) {
+            ControlPanel.announceMessage(new Error(
+              'wrong file type is given:', file.type
+            ))
+            continue
+          }
+          
+          const dataPromise = new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            switch (type) {
+              case 'json': reader.readAsText(file); break
+              case 'image': reader.readAsDataURL(file); break
+              default:
+                reject('wrong file type is given: ' + file.type)
+                break
+            }
+            reader.onload = () => resolve(reader.result)
+          })
+          
+          // put json as the first data in the array
+          switch (type) {
+            case 'json':
+              fileNames.unshift(file.name)
+              dataPrepared.unshift(dataPromise)
+              break
+            default:
+              fileNames.push(file.name)
+              dataPrepared.push(dataPromise)
+              break
+          }
         }
+        
+        // send loaded data to given callbacks
+        Promise.all(dataPrepared).then(dataArray => {
+          // parse first data - which is expected to be a json
+          dataArray[0] = JSON.parse(dataArray[0])
+          // make object with key as the file name and value as the data
+          const dataObj = {}
+          fileNames.forEach((name, i) => dataObj[name] = dataArray[i])
+          this.updateIndicator(dataObj['config.json'].name)
+          this.callback(dataObj)
+        }, reason => {
+          ControlPanel.announceMessage(new Error(reason))
+        })
       }
     }
   }

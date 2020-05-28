@@ -19,4 +19,8 @@
   #control-panel div.option.half-width > label input[type=text] {
     width: 60%; }
 
+#control-panel div.option[data-name="custom-skin"] #currentlyLoadedCustomSkin:before {
+  content: 'Currently Loaded: ';
+  font-size: 0.75em; }
+
 /*# sourceMappingURL=controlPanel.css.map */

@@ -145,10 +145,7 @@
         <input class="visually-hidden"
                type="file" accept="application/json,image/*" multiple>
         <button data-name="fileSelect">Choose Files</button>
-        <span class="inactive">
-          Currently Loaded:
-          <span id="currentlyLoadedCustomSkin">Nothing</span>
-        </span>
+        <span id="currentlyLoadedCustomSkin" class="inactive">Nothing</span>
       </span>
       <span class="description">
         Upload a json and up to 4 images for the custom skin.
@@ -324,7 +321,13 @@
     cpDomSkinUploader.droparea,
     cpDomSkinUploader.button,
     f => true,
-    cpDomSkinUploader.indicator
+    cpDomSkinUploader.indicator, {
+      indicatorUpdateCallback: text => {
+        cpDomSkinUploader.indicator.innerHTML = text
+        cpDomSkinUploader.indicator.classList.remove('inactive')
+      },
+      customCallback: dataArray => {console.log(dataArray)}
+    }
   )
 </script>
 

@@ -500,7 +500,7 @@ class ControlPanel {
           
           if (!type) {
             ControlPanel.announceMessage(new Error(
-              'wrong file type is given:', file.type
+              'wrong file type is given: ' + file.type
             ))
             continue
           }

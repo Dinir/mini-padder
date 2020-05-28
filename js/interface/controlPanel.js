@@ -33,6 +33,21 @@ class ControlPanel {
     this.setPanelValuesInBulk = this.setPanelValuesInBulk.bind(this)
   }
   
+  static announceMessage (message, type) {
+    const messageType = {
+      log: 'log',
+      error: 'error'
+    }
+    window.dispatchEvent(new CustomEvent('GPVMessage', {
+      detail: {
+        from: 'Control Panel',
+        type: message instanceof Error ?
+          messageType.error : ( messageType[type] || messageType.log ),
+        message: message
+      }
+    }))
+  }
+  
   static get recognizedTypes () {
     return [
       'dynamicButtons', 'selectFromList', 'slider', 'textArray', 'buttons', 'uploader'

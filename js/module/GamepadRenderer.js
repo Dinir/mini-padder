@@ -679,16 +679,33 @@ class GamepadRenderer {
   
     const altMessage = `a layer of canvas to display inputs of gamepad ${slot}`
     for (let l = 0; l < config.layer.length; l++) {
-      const layer = GamepadRenderer.newCanvasLayer(
-        config.layer[l].width,
-        config.layer[l].height,
-        config.layer[l].x,
-        config.layer[l].y
-      )
-      layer.innerHTML = altMessage
+      const layerData = config.layer[l]
       
+      const isStatic = 
+        layerData.hasOwnProperty('background') &&
+        typeof layerData.background === 'number'
+      
+      let layer
+      if (isStatic) {
+        layer = document.createElement('div')
+        layer.style.backgroundImage = 'url(' + skinSlot.src[layerData.background].src + ')'
+        layer.style.width = layerData.width + 'px'
+        layer.style.height = layerData.height + 'px'
+        layer.style.left = layerData.x + 'px'
+        layer.style.top = layerData.y + 'px'
+        skinSlot.ctx.push(null)
+      } else {
+        layer = GamepadRenderer.newCanvasLayer(
+          layerData.width,
+          layerData.height,
+          layerData.x,
+          layerData.y
+        )
+        layer.innerHTML = altMessage
+        skinSlot.ctx.push(layer.getContext('2d'))
+      }
+  
       skinSlot.layer.push(layer)
-      skinSlot.ctx.push(layer.getContext('2d'))
       canvas.appendChild(layer)
     }
   

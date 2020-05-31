@@ -236,6 +236,35 @@ class GamepadRenderer {
     skinSlot.alpha.sticks.left = 1
   }
   
+  /**
+   * build SkinData from the config object, parsed from `config.json`.
+   * built SkinData is stored at where `skinData` property refers to.
+   *
+   * Used by `GamepadRenderer.loadSkin`.
+   *
+   * @param {SkinData} skinData reference to SkinData the result will be stored
+   * @param {Object} configObj `config.json` parsed into an object
+   * @param {?string} [path=null]
+   * @private
+   */
+  static _buildSkinFromConfig (skinData, configObj, path = null) {
+    skinData.path = path
+    skinData.config = configObj
+    skinData.src = []
+    for (let i = 0; i < skinData.config.src.length; i++) {
+      skinData.src[i] = new Image()
+      const src = skinData.config.src[i]
+      const srcIsExternal =
+        !skinData.path ||
+        src.startsWith('data:image/') || src.startsWith('http')
+      skinData.src[i].src = srcIsExternal ? src : `${skinData.path}/${src}`
+    }
+    skinData.loaded = true
+    GamepadRenderer.announceMessage(
+      `Skin '${skinData.config.name}' is loaded.`
+    )
+  }
+  
   tickFpsCounter () {
     this.counterFor30fps = !this.counterFor30fps
     this.counterFor20fps = (this.counterFor20fps + 1) % 3
@@ -566,28 +595,14 @@ class GamepadRenderer {
     
     // load from the hosted space
     const path = `./skin/${dirname}`
-    fetch(`${path}/config.json`)
-      .then(response => response.json())
-      .then(data => {
-        skin.path = path
-        skin.config = data
-        skin.src = []
-        for (let i = 0; i < skin.config.src.length; i++) {
-          skin.src[i] = new Image()
-          const src = skin.config.src[i]
-          const srcIsExternal =
-            src.startsWith('data:image/') || src.startsWith('http')
-          skin.src[i].src = srcIsExternal ? src : `${skin.path}/${src}`
-        }
-        skin.loaded = true
-        GamepadRenderer.announceMessage(
-          `Skin '${skin.config.name}' is loaded.`
-        )
-      })
-      .catch(error => {
-        this.unloadSkin(dirname)
-        GamepadRenderer.announceMessage(error, 'error')
-      })
+    fetch(`${path}/config.json`).then(response =>
+      response.json()
+    ).then(data => {
+      GamepadRenderer._buildSkinFromConfig(skin, data, path)
+    }).catch(e => {
+      this.unloadSkin(dirname)
+      GamepadRenderer.announceMessage(new Error(e))
+    })
   }
   unloadSkin (dirname) {
     const skinName = this.skins[dirname] && this.skins[dirname].config ?

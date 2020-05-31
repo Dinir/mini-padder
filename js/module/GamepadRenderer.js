@@ -51,6 +51,19 @@
  * It's a reference to `config.sticks` and `config.buttons`.
  */
 /**
+ * @typedef {Object} SkinData
+ * @memberOf GamepadRenderer#
+ * @description contains skin data obtained from `config.json` for the skin.
+ *
+ * @property {boolean} loaded `true` when loading is complete
+ * @property {?string} path
+ * path to the skin directory, relative to the root of the page. `null` if it's loaded from an external source.
+ * @property {HTMLImageElement[]} src
+ * contains image required for the skin
+ * @property {Object} config
+ * data from `config.json` in the skin directory
+ */
+/**
  *
  * @class
  * @listens MappingManager#processedGamepadChange
@@ -103,15 +116,8 @@ class GamepadRenderer {
   
     this.loadFadeoutOption()
     /**
-     * Contains skin data obtained from each `config.json` in their directories. Key value is their directory names.
-     * @type {Object.<string, Object>}
-     * @property {boolean} loaded `true` when loading is complete
-     * @property {string} path
-     * path to the skin directory, relative to the root of the page
-     * @property {HTMLImageElement[]} src
-     * contains image required for the skin
-     * @property {Object} config
-     * data from `config.json` in the skin directory
+     * Contains skin data obtained from each `config.json` for skins. Key value is their directory names.
+     * @type {Object.<string, SkinData>}
      */
     this.skins = {}
   

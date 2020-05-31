@@ -611,6 +611,12 @@ class GamepadRenderer {
     delete this.skins[dirname]
     this.removeSkinFromSkinList(dirname)
     GamepadRenderer.announceMessage(`Unloaded skin ${skinName}.`)
+    // change skinMapping for gamepads using the now removed skin
+    for (const gamepadId in this.skinMapping) {
+      if (!this.skinMapping.hasOwnProperty(gamepadId)) { continue }
+      if (this.skinMapping[gamepadId] !== dirname) { continue }
+      this.setSkinMapping(gamepadId, GamepadRenderer.findDefaultSkin(gamepadId))
+    }
   }
   /**
    * setup a loaded skin for one of four canvas
@@ -711,8 +717,13 @@ class GamepadRenderer {
     }
   }
   changeSkinOfSlot (slot, gamepadId, skinDirname = null) {
-    if (skinDirname) {
-      const skinMappingUpdated = this.setSkinMapping(gamepadId, skinDirname)
+    const ExistingSkinDir =
+      skinDirname ||
+      this.skinMapping[gamepadId] ||
+      GamepadRenderer.findDefaultSkin(gamepadId)
+    
+    if (ExistingSkinDir) {
+      const skinMappingUpdated = this.setSkinMapping(gamepadId, ExistingSkinDir)
       if (!skinMappingUpdated) {
         GamepadRenderer.announceMessage(new Error(
           `Skin for the slot ${slot} couldn't be changed.`
@@ -722,8 +733,6 @@ class GamepadRenderer {
     }
     this.removeSkinFromSlot(slot)
   
-    const ExistingSkinDir =
-      skinDirname || GamepadRenderer.findDefaultSkin(gamepadId)
     return this.applySkinToSlot(
       ExistingSkinDir,
       slot,

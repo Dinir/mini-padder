@@ -317,10 +317,32 @@ class ControlPanel {
         const existingValues = this.getExistingValues()
         // remove ones that doesn't exist in valueArray
         // i === 0 is the placeholder
-        for(let i = 1; i < existingValues.length; i++) {
-          if (valueArray.indexOf(existingValues[i]) === -1) {
-            this.removeItem(existingValues[i])
+        for (let i = 1; i < existingValues.length; i++) {
+          if (valueArray.indexOf(existingValues[i]) !== -1) { continue }
+          // update all selects that were pointing at this index
+          /*
+           * this will only work if the lists are stored as references to
+           * actual lists properly being updated before this method is called.
+           */
+          for (let s = 0; s < this.selects.length; s++) {
+            const select = this.selects[s]
+            if (select.selectedIndex !== i) { continue }
+            const gamepadId = this.texts[s].dataset.gamepadId
+            const mappedItem = this.defaultSelectedList[gamepadId]
+            const indexOfMappedItem = this.list.indexOf(mappedItem)
+            // selectIndex === listIndex + 1 (there's a placeholder at index 0)
+            select.selectedIndex = indexOfMappedItem !== -1 ? indexOfMappedItem + 1 : 0
+            /*
+             * for the skin list usage, these are the references:
+             * - list === Renderer.skinList
+             * - defaultSelectedList === Renderer.skinMapping
+             * The final chosen index will be one decided by
+             * `GamepadRenderer.findDefaultSkin`,
+             * which is applied to skinMapping before this method is called.
+             */
           }
+          // remove the index
+          this.removeItem(existingValues[i])
         }
         // call addItems which will skip items already existing in valueArray
         this.addItems(valueArray)

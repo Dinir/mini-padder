@@ -501,6 +501,7 @@ class GamepadRenderer {
   
   setSkinMapping (gamepadId, skinDirname) {
     if (!GamepadRenderer.isDirnameOkay(skinDirname)) { return false }
+    if (this.skinMapping[gamepadId] === skinDirname) { return true }
     this.skinMapping[gamepadId] = skinDirname
     this.saveSkinMapping()
     return true

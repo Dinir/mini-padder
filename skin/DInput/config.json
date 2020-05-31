@@ -6,11 +6,11 @@
 	],
 	"layer": [
 		{
-			"name": "stick", "src": 0,
+			"name": "stick",
 			"x": 0, "y": 40, "width": 256, "height": 96
 		},
 		{
-			"name": "button", "src": 1,
+			"name": "button",
 			"x": 0, "y": 8, "width": 256, "height": 128
 		}
 	],

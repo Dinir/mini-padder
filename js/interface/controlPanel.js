@@ -463,13 +463,10 @@ class ControlPanel {
   getControlForUploader (name) {
     return {
       name: name,
-      /** @type {string[]} */
-      panelValue: null,
-      applyPanelValue: function () {
-      
-      },
       assign: function (
-        input, droparea, visibleButton, textIndicator, {
+        localStorageKey, {
+          input, droparea, visibleButton, indicator, removeButton
+        }, {
           typeCheckFunction, indicatorUpdateCallback, customCallback
         }) {
         this.maxFileAmount = 5
@@ -479,9 +476,12 @@ class ControlPanel {
         this.replaceInput = Boolean(visibleButton)
         this.button = visibleButton || null
         this.typeCheck = typeCheckFunction
-        this.indicator = textIndicator
+        this.removeButton = removeButton
         this.updateIndicator = indicatorUpdateCallback
         this.callback = customCallback
+        
+        this.localStorageKey = localStorageKey
+        this.loadedData = this.loadData()
         
         // receive dropped files just in case
         this.droparea.addEventListener('dragenter', this._preventDefault, false)
@@ -500,21 +500,57 @@ class ControlPanel {
             this.input.click()
           }, false)
         }
+        this.removeButton.addEventListener('click', this.removeData.bind(this), false)
       },
       _preventDefault: function (e) {
         e.stopPropagation()
         e.preventDefault()
       },
+      
+      // the data will be too big with images as dataURI,
+      // so I give this type its own local storage control
+      setData: function (dataObj) {
+        this.loadedData = dataObj
+        this.saveData(dataObj)
+      },
+      saveData: function (dataObj) {
+        if (!dataObj) {
+          window.localStorage.removeItem(this.localStorageKey)
+          return
+        }
+        const dataJson = JSON.stringify(dataObj)
+        window.localStorage.setItem(this.localStorageKey, dataJson)
+      },
+      loadData: function () {
+        try {
+          const dataObj = JSON.parse(window.localStorage.getItem(this.localStorageKey))
+          if (dataObj) {
+            this.setData(dataObj)
+            this.applyData()
+          }
+        } catch (e) {
+          ControlPanel.announceMessage(new Error(e))
+        }
+      },
+      removeData: function () {
+        this.setData(null)
+        this.applyData(null)
+      },
+      applyData: function (dataObj = this.loadedData) {
+        if (!dataObj) {
+          this.updateIndicator('')
+          this.callback(null)
+          return
+        }
+        this.updateIndicator(dataObj.name)
+        this.callback(dataObj)
+      },
+      
       _handleFiles: function (files, maxAmount = this.maxFileAmount) {
         const fileAmount = Math.min(files.length, maxAmount)
         const fileNames = []
         const dataPrepared = []
         
-        /*
-         * restrictions are currently handled here:
-         * - up to 5 files total
-         * - either json or image
-         */
         for (let i = 0; i < fileAmount ; i++) {
           const file = files[i]
           const type = this.typeCheck ?
@@ -576,8 +612,8 @@ class ControlPanel {
             config.src[i] = dataArray[srcIndexInFiles]
           }
   
-          this.updateIndicator(config.name)
-          this.callback(config)
+          this.setData(config)
+          this.applyData()
         }, reason => {
           ControlPanel.announceMessage(new Error(reason))
         })

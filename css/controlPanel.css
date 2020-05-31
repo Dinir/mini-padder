@@ -19,8 +19,22 @@
   #control-panel div.option.half-width > label input[type=text] {
     width: 60%; }
 
-#control-panel div.option[data-name="custom-skin"] #currentlyLoadedCustomSkin:before {
-  content: 'Currently Loaded: ';
-  font-size: 0.75em; }
+#control-panel div.option[data-name="custom-skin"] .file-input-container {
+  position: relative; }
+  #control-panel div.option[data-name="custom-skin"] .file-input-container.inactive #currentlyLoadedCustomSkin, #control-panel div.option[data-name="custom-skin"] .file-input-container.inactive button[data-name="remove"] {
+    display: none; }
+
+#control-panel div.option[data-name="custom-skin"] #currentlyLoadedCustomSkin {
+  display: inline-block;
+  width: 70%;
+  height: 1.25em;
+  vertical-align: middle;
+  overflow: hidden;
+  word-break: break-all; }
+  #control-panel div.option[data-name="custom-skin"] #currentlyLoadedCustomSkin.inactive {
+    display: none; }
+  #control-panel div.option[data-name="custom-skin"] #currentlyLoadedCustomSkin:before {
+    content: 'Currently Loaded: ';
+    font-size: 0.75em; }
 
 /*# sourceMappingURL=controlPanel.css.map */

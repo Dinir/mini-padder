@@ -20,9 +20,6 @@ address {
     content: ''; }
   address .link-list a:after {
     display: inline-block; }
-  address .align-right {
-    position: absolute;
-    right: 0; }
 
 sub {
   vertical-align: baseline;
@@ -40,6 +37,10 @@ sub {
 
 .normal-font-size {
   font-size: 1em; }
+
+.align-right {
+  position: absolute;
+  right: 0; }
 
 .version {
   font-family: sans-serif; }

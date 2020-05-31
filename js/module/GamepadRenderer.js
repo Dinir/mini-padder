@@ -127,10 +127,13 @@ class GamepadRenderer {
      */
     this.skinList = []
     this.defaultSkins = ['XInput', 'DInput', 'Joystick']
-    // push name of default skins
+    // local storage key to find custom skin config
+    this.customSkinLocalStorageKey = 'customSkin'
+    // push names of predefined skins
     for (let i = 0; i < this.defaultSkins.length; i++) {
       this.skinList.push(this.defaultSkins[i])
     }
+    this.skinList.push(this.customSkinLocalStorageKey)
     // then load and add any existing additional skins to the list
     this.loadSkinList()
     /**
@@ -594,16 +597,33 @@ class GamepadRenderer {
     this.addSkinToSkinList(dirname)
     const skin = this.skins[dirname]
     
-    // load from the hosted space
-    const path = `./skin/${dirname}`
-    fetch(`${path}/config.json`).then(response =>
-      response.json()
-    ).then(data => {
-      GamepadRenderer._buildSkinFromConfig(skin, data, path)
-    }).catch(e => {
-      this.unloadSkin(dirname)
-      GamepadRenderer.announceMessage(new Error(e))
-    })
+    const isCustomSkin = dirname === this.customSkinLocalStorageKey
+    
+    if (isCustomSkin) {
+      // load from local storage
+      const customSkinConfig =
+        JSON.parse(window.localStorage.getItem(this.customSkinLocalStorageKey))
+      GamepadRenderer.announceMessage('Loading a custom skin...')
+      try {
+        GamepadRenderer._buildSkinFromConfig(skin, customSkinConfig)
+      } catch (e) {
+        GamepadRenderer.announceMessage(
+          'Custom skin is not found or invalid, unloading the entry.'
+        )
+        this.unloadSkin(dirname)
+      }
+    } else {
+      // load from the hosted space
+      const path = `./skin/${dirname}`
+      fetch(`${path}/config.json`).then(response =>
+        response.json()
+      ).then(data => {
+        GamepadRenderer._buildSkinFromConfig(skin, data, path)
+      }).catch(e => {
+        this.unloadSkin(dirname)
+        GamepadRenderer.announceMessage(new Error(e))
+      })
+    }
   }
   unloadSkin (dirname) {
     const skinName = this.skins[dirname] && this.skins[dirname].config ?

@@ -141,11 +141,12 @@
   <div class="option" data-name="custom-skin">
     <label id="customSkinLoadArea">
       <b>Import Custom Skin</b>
-      <span class="after-margin file-input-container">
+      <span class="after-margin file-input-container inactive">
         <input class="visually-hidden"
                type="file" accept="application/json,image/*" multiple>
         <button data-name="fileSelect">Choose Files</button>
-        <span id="currentlyLoadedCustomSkin" class="inactive">Nothing</span>
+        <span id="currentlyLoadedCustomSkin">Nothing</span>
+        <button data-name="remove" class="align-right">X</button>
       </span>
       <span class="description">
         Upload a json and up to 4 images for the custom skin.
@@ -186,7 +187,8 @@
     droparea: cpDom.querySelector('#customSkinLoadArea'),
     input: cpDom.querySelector('#customSkinLoadArea input'),
     button: cpDom.querySelector('#customSkinLoadArea button[data-name="fileSelect"]'),
-    indicator: document.getElementById('currentlyLoadedCustomSkin')
+    indicator: document.getElementById('currentlyLoadedCustomSkin'),
+    removeButton: cpDom.querySelector('#customSkinLoadArea button[data-name="remove"]')
   }
 </script>
 
@@ -316,26 +318,38 @@
     }
   )
   
+  const customSkinLocalStorageKey = 'customSkin'
   cpPanel.customSkin.assign(
-    cpDomSkinUploader.input,
-    cpDomSkinUploader.droparea,
-    cpDomSkinUploader.button,
-    cpDomSkinUploader.indicator, {
+    customSkinLocalStorageKey, {
+      input: cpDomSkinUploader.input,
+      droparea: cpDomSkinUploader.droparea,
+      visibleButton: cpDomSkinUploader.button,
+      removeButton: cpDomSkinUploader.removeButton
+    }, {
       typeCheckFunction: typeString =>
         typeString === 'application/json' ? 'json' :
-          typeString.startsWith('image/') ? 'image' : null,
-      indicatorUpdateCallback: text => {
+          typeString.startsWith('image/') ? 'image' : null
+      , indicatorUpdateCallback: text => {
         cpDomSkinUploader.indicator.innerHTML = text
-        cpDomSkinUploader.indicator.classList.remove('inactive')
-      },
-      customCallback: dataArray => {console.log(dataArray)}
+        if (text && text.length) {
+          cpDomSkinUploader.indicator.parentElement.classList.remove('inactive')
+        } else {
+          cpDomSkinUploader.indicator.parentElement.classList.add('inactive')
+        }
+      }, customCallback: customSkinConfig => {
+        if (!customSkinConfig) {
+          Renderer.unloadSkin(customSkinLocalStorageKey)
+          return
+        }
+        Renderer.loadSkin(customSkinLocalStorageKey)
+      }
     }
   )
 </script>
 
 <!-- updater -->
 <script>
-  const version = '3.0.1'
+  const version = '3.1.0'
   const MPUpdater = new MiniPadderUpdater(version)
   const versionDoms = document.getElementsByClassName('version')
   Array.from(versionDoms).forEach(v => v.innerHTML = version)

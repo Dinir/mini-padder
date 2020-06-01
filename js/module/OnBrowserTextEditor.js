@@ -164,7 +164,7 @@ class OnBrowserTextEditor {
     }
     OnBrowserTextEditor.announceMessage(`Saving ${this.dataTitle} from the editor...`)
     try {
-      const parsedInput = JSON.parse(this.dom.textarea.value)
+      const parsedInput = JSON.parse(this.dom.textarea.value || null)
       // first need to bind the callback to the instance they're from
       const result = this.reference.callback(parsedInput)
       if (result === true) {

@@ -110,10 +110,10 @@ class ControlPanel {
   }
   setPanelValuesInBulk (keyValuePairs) {
     if (
-      typeof keyValuePairs !== 'object' ||
+      !(keyValuePairs instanceof Object) ||
       Object.keys(keyValuePairs).length === 0
     ) {
-      return false
+      return new Error('invalid pairs for panel values')
     }
     
     this.resetPanelValues()

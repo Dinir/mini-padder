@@ -557,7 +557,7 @@ class GamepadRenderer {
    * @param {string[]} newSkinList
    */
   reloadSkins (newSkinList) {
-    if (typeof newSkinList === 'undefined') {
+    if (!(newSkinList instanceof Array)) {
       this.loadAllListedSkins()
       return true
     }

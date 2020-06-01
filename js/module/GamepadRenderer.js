@@ -985,7 +985,7 @@ class GamepadRenderer {
         } else if (this.timingForFps(this.fadeoutFps)) {
           const timeInactive =
             timestampAtStart - lastActive.sticks[stickName]
-          let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
+          let deltaOpacity = this.getFadeoutState(timeInactive)[1]
   
           alpha.sticks[stickName] = this.getMultipliedAlpha(
             alpha.sticks[stickName], deltaOpacity
@@ -1326,7 +1326,6 @@ class GamepadRenderer {
     const src = skinSlot.src
     const ctx = skinSlot.ctx
     const inst = skinSlot.instruction
-    const properties = skinSlot.properties
     if (!src || !ctx || !inst) {
       GamepadRenderer.announceMessage({
         message: 'Renderer is ready to draw but tools are somehow missing.',

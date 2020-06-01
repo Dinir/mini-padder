@@ -119,8 +119,10 @@ class OnBrowserTextEditor {
     window.dispatchEvent(new CustomEvent('GPVMessage', {
       detail: {
         from: 'On-Browser Text Editor',
-        type: messageType[type] || messageType.log,
-        message: message
+        type: message instanceof Error ?
+          messageType.error : ( messageType[type] || messageType.log ),
+        message: type === 'error' ?
+          new Error(JSON.stringify(message)) : message
       }
     }))
   }
@@ -172,7 +174,7 @@ class OnBrowserTextEditor {
         OnBrowserTextEditor.announceMessage(`Saved ${this.dataTitle} from the editor.`)
       } else {
         this.notify('Data weren\'t accepted! Check the error log.')
-        OnBrowserTextEditor.announceMessage(new Error(result), 'error')
+        OnBrowserTextEditor.announceMessage(new Error(JSON.stringify(result)), 'error')
       }
     } catch (e) {
       this.notify('Data can\'t be saved. Check the error log.', true)

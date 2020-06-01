@@ -176,7 +176,8 @@ class GamepadRenderer {
         from: 'Gamepad Renderer',
         type: message instanceof Error ?
           messageType.error : ( messageType[type] || messageType.log ),
-        message: message
+        message: type === 'error' ?
+          new Error(JSON.stringify(message)) : message
       }
     }))
   }

@@ -193,7 +193,8 @@ class MappingManager {
         from: 'Mapping Manager',
         type: message instanceof Error ?
           messageType.error : ( messageType[type] || messageType.log ),
-        message: message
+        message: type === 'error' ?
+          new Error(JSON.stringify(message)) : message
       }
     }))
   }
@@ -214,7 +215,12 @@ class MappingManager {
       !mappings ||
       mappings.constructor !== Object ||
       Object.keys(mappings).length === 0
-    ) { return false }
+    ) {
+      return {
+        valid: false,
+        isBasicallyObject: false
+      }
+    }
     const issue = {}
     let invalidityFound = false
     for (const gamepadId in mappings) {

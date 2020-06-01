@@ -614,6 +614,7 @@ class MappingManager {
           switch (assignmentState.index) {
             case 4: // dpad-down
               buttonInfo.nullInput(assignmentState.data.mapping)
+              // fallthrough
             case 5: // dpad-left
             case 6: // dpad-up
             case 7: // dpad-right
@@ -621,6 +622,7 @@ class MappingManager {
               break
             case 12: // lb/l1
               buttonInfo.nullInput(assignmentState.data.mapping)
+              // fallthrough
             case 14: // lt/l2
               assignmentState.index = 16
               break

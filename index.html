@@ -129,6 +129,7 @@
     <div class="after-margin">
       <button data-name="mappings">Gamepad Mappings</button>
       <button data-name="skinList">Skin List</button>
+      <button data-name="customSkin">Custom Skin</button>
       <button data-name="controlPanel">Control Panel Settings</button>
       <button data-name="errorLog">Error Log</button>
     </div>
@@ -339,6 +340,14 @@
             'Skin List',
             Renderer.skinList,
             Renderer.reloadSkins
+          )
+          break
+        case 'customSkin':
+          Obte.changeFocus(
+            'Custom Skin',
+            cpPanel.customSkin.loadedData,
+            cpPanel.customSkin.loadDataObj,
+            { nospace: true }
           )
           break
         case 'controlPanel':

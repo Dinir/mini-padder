@@ -503,6 +503,8 @@ class ControlPanel {
           }, false)
         }
         this.removeButton.addEventListener('click', this.removeData.bind(this), false)
+        
+        this.loadDataObj = this.loadDataObj.bind(this)
       },
       _preventDefault: function (e) {
         e.stopPropagation()
@@ -547,6 +549,15 @@ class ControlPanel {
           }
         } catch (e) {
           ControlPanel.announceMessage(new Error(e))
+        }
+      },
+      loadDataObj: function (dataObj) {
+        try {
+          this.setData(dataObj)
+          return true
+        } catch (e) {
+          ControlPanel.announceMessage(new Error(e))
+          return false
         }
       },
       removeData: function () {

@@ -6,7 +6,8 @@
 [![stargazers](https://img.shields.io/github/stars/Dinir/mini-padder?style=social&link=https://github.com/Dinir/mini-padder&link=https://github.com/Dinir/mini-padder/stargazers)](https://github.com/Dinir/mini-padder/stargazers)
 
 [![GitHub Wiki](https://img.shields.io/static/v1?label=&message=Wiki&color=24292e&logo=github)][GitHub Wiki]
-[![OBS Forum](https://img.shields.io/static/v1?label=&message=Forum&color=162458&logo=obs-studio)][OBS Forum]
+[![Trello](https://img.shields.io/static/v1?label=&message=Board&color=0079bf&logo=trello)][Trello]
+[![OBS Forum](https://img.shields.io/static/v1?label=&message=Forum&color=302e31&logo=obs-studio)][OBS Tool Page]
 
 ![Default Skins]
 
@@ -52,7 +53,9 @@ Thank you for reading all the way to the end! 😁
 [Default Skins]: ./image/open-graph-image-0_5x.png 'All default skins'
 
 [GitHub Wiki]: https://github.com/Dinir/mini-padder/wiki
-[OBS Forum]: https://obsproject.com/forum/resources/mini-padder.944/
+[Trello]: https://trello.com/b/JvScNymb/mini-padder
+[OBS Tool Page]: https://obsproject.com/forum/resources/mini-padder.944/
+
 [hosted webpage]: https://dinir.github.io/mini-padder/
 [latest release]: https://github.com/Dinir/mini-padder/releases/latest
 

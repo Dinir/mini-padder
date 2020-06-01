@@ -596,8 +596,11 @@ class ControlPanel {
           // replace image file name with corresponding data url
           for (let i = 0; i < config.src.length; i++) {
             const srcName = config.src[i]
-            // skip conversion if the source is a link
-            if (srcName.startsWith('http')) { continue }
+            // skip conversion if the source is a data url or a link
+            if (
+              srcName.startsWith('data:image/') ||
+              srcName.startsWith('http')
+            ) { continue }
             
             const srcIndexInFiles = fileNames.indexOf(srcName)
             if (srcIndexInFiles === -1) {

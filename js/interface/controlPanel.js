@@ -118,6 +118,7 @@ class ControlPanel {
     
     this.resetPanelValues()
     for (const key in keyValuePairs) {
+      if (!keyValuePairs.hasOwnProperty(key)) { continue }
       this.setPanelValue(key, keyValuePairs[key])
       if (this.panel.hasOwnProperty(key)) {
         this.panel[key].receivePanelValue(this.panelValues[key])
@@ -451,8 +452,7 @@ class ControlPanel {
         this.container.addEventListener('change', e => {
           if (e.target.tagName !== 'INPUT') return
           const index = e.target.dataset.index
-          const value = e.target.value
-          this.panelValue[index] = value
+          this.panelValue[index] = e.target.value
           this.updatePanelValue(this.panelValue)
           this.callback(this.panelValue)
         })

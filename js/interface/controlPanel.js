@@ -33,9 +33,25 @@ class ControlPanel {
     this.setPanelValuesInBulk = this.setPanelValuesInBulk.bind(this)
   }
   
+  static announceMessage (message, type) {
+    const messageType = {
+      log: 'log',
+      error: 'error'
+    }
+    window.dispatchEvent(new CustomEvent('GPVMessage', {
+      detail: {
+        from: 'Control Panel',
+        type: message instanceof Error ?
+          messageType.error : ( messageType[type] || messageType.log ),
+        message: type === 'error' ?
+          new Error(JSON.stringify(message)) : message
+      }
+    }))
+  }
+  
   static get recognizedTypes () {
     return [
-      'dynamicButtons', 'selectFromList', 'slider', 'textArray', 'buttons'
+      'dynamicButtons', 'selectFromList', 'slider', 'textArray', 'buttons', 'uploader'
     ]
   }
   
@@ -95,14 +111,15 @@ class ControlPanel {
   }
   setPanelValuesInBulk (keyValuePairs) {
     if (
-      typeof keyValuePairs !== 'object' ||
+      !(keyValuePairs instanceof Object) ||
       Object.keys(keyValuePairs).length === 0
     ) {
-      return false
+      return new Error('invalid pairs for panel values')
     }
     
     this.resetPanelValues()
     for (const key in keyValuePairs) {
+      if (!keyValuePairs.hasOwnProperty(key)) { continue }
       this.setPanelValue(key, keyValuePairs[key])
       if (this.panel.hasOwnProperty(key)) {
         this.panel[key].receivePanelValue(this.panelValues[key])
@@ -240,7 +257,7 @@ class ControlPanel {
         this.addPlaceholder()
         this.addItems(this.list)
         this.callback = customCallback
-        this.container.addEventListener('mouseenter', e => {
+        this.container.addEventListener('mouseenter', () => {
           this.updateItems(this.list)
         })
         this.container.addEventListener('change', e => {
@@ -302,10 +319,32 @@ class ControlPanel {
         const existingValues = this.getExistingValues()
         // remove ones that doesn't exist in valueArray
         // i === 0 is the placeholder
-        for(let i = 1; i < existingValues.length; i++) {
-          if (valueArray.indexOf(existingValues[i]) === -1) {
-            this.removeItem(existingValues[i])
+        for (let i = 1; i < existingValues.length; i++) {
+          if (valueArray.indexOf(existingValues[i]) !== -1) { continue }
+          // update all selects that were pointing at this index
+          /*
+           * this will only work if the lists are stored as references to
+           * actual lists properly being updated before this method is called.
+           */
+          for (let s = 0; s < this.selects.length; s++) {
+            const select = this.selects[s]
+            if (select.selectedIndex !== i) { continue }
+            const gamepadId = this.texts[s].dataset.gamepadId
+            const mappedItem = this.defaultSelectedList[gamepadId]
+            const indexOfMappedItem = this.list.indexOf(mappedItem)
+            // selectIndex === listIndex + 1 (there's a placeholder at index 0)
+            select.selectedIndex = indexOfMappedItem !== -1 ? indexOfMappedItem + 1 : 0
+            /*
+             * for the skin list usage, these are the references:
+             * - list === Renderer.skinList
+             * - defaultSelectedList === Renderer.skinMapping
+             * The final chosen index will be one decided by
+             * `GamepadRenderer.findDefaultSkin`,
+             * which is applied to skinMapping before this method is called.
+             */
           }
+          // remove the index
+          this.removeItem(existingValues[i])
         }
         // call addItems which will skip items already existing in valueArray
         this.addItems(valueArray)
@@ -414,10 +453,189 @@ class ControlPanel {
         this.container.addEventListener('change', e => {
           if (e.target.tagName !== 'INPUT') return
           const index = e.target.dataset.index
-          const value = e.target.value
-          this.panelValue[index] = value
+          this.panelValue[index] = e.target.value
           this.updatePanelValue(this.panelValue)
           this.callback(this.panelValue)
+        })
+      }
+    }
+  }
+  
+  getControlForUploader (name) {
+    return {
+      name: name,
+      assign: function (
+        localStorageKey, {
+          input, droparea, visibleButton, indicator, removeButton
+        }, {
+          typeCheckFunction, indicatorUpdateCallback, customCallback
+        }) {
+        this.maxFileAmount = 5
+        
+        this.input = input
+        this.droparea = droparea
+        this.replaceInput = Boolean(visibleButton)
+        this.button = visibleButton || null
+        this.typeCheck = typeCheckFunction
+        this.removeButton = removeButton
+        this.updateIndicator = indicatorUpdateCallback
+        this.callback = customCallback
+        
+        this.localStorageKey = localStorageKey
+        this.loadedData = {}
+        this.loadData(undefined, false)
+        
+        // receive dropped files just in case
+        this.droparea.addEventListener('dragenter', this._preventDefault, false)
+        this.droparea.addEventListener('dragover', this._preventDefault, false)
+        this.droparea.addEventListener('drop', e => {
+          this._preventDefault(e)
+          this._handleFiles(e.dataTransfer.files)
+        }, false)
+        
+        this.input.addEventListener('change', e => {
+          this._preventDefault(e)
+          this._handleFiles(e.target.files)
+        })
+        if (this.replaceInput) {
+          this.button.addEventListener('click', () => {
+            this.input.click()
+          }, false)
+        }
+        this.removeButton.addEventListener('click', this.removeData.bind(this), false)
+        
+        this.loadDataObj = this.loadDataObj.bind(this)
+      },
+      _preventDefault: function (e) {
+        e.stopPropagation()
+        e.preventDefault()
+      },
+      _applyData: function (dataObj = this.loadedData, runCallback = true) {
+        if (!dataObj) {
+          this.updateIndicator('')
+          if (runCallback) { this.callback(null) }
+          return
+        }
+        this.updateIndicator(dataObj.name)
+        if (runCallback) { this.callback(dataObj) }
+      },
+      
+      // the data will be too big with images as dataURI,
+      // so I give this type its own local storage control
+      setData: function (dataObj, runCallback = true) {
+        for (const property in this.loadedData) {
+          if (!this.loadedData.hasOwnProperty(property)) { continue }
+          delete this.loadedData[property]
+        }
+        Object.assign(this.loadedData, dataObj || {})
+        this.saveData(dataObj)
+        this._applyData(dataObj, runCallback)
+      },
+      saveData: function (dataObj) {
+        if (!dataObj) {
+          window.localStorage.removeItem(this.localStorageKey)
+          return
+        }
+        const dataJson = JSON.stringify(dataObj)
+        window.localStorage.setItem(this.localStorageKey, dataJson)
+      },
+      loadData: function (dataJson, runCallback = true) {
+        try {
+          const dataObj = JSON.parse(
+            dataJson || window.localStorage.getItem(this.localStorageKey)
+          )
+          if (dataObj) {
+            this.setData(dataObj, runCallback)
+          }
+        } catch (e) {
+          ControlPanel.announceMessage(new Error(e))
+        }
+      },
+      loadDataObj: function (dataObj) {
+        try {
+          this.setData(dataObj)
+          return true
+        } catch (e) {
+          ControlPanel.announceMessage(new Error(e))
+          return false
+        }
+      },
+      removeData: function () {
+        this.setData(null)
+      },
+      
+      _handleFiles: function (files, maxAmount = this.maxFileAmount) {
+        const fileAmount = Math.min(files.length, maxAmount)
+        const fileNames = []
+        const dataPrepared = []
+        
+        for (let i = 0; i < fileAmount ; i++) {
+          const file = files[i]
+          const type = this.typeCheck ?
+            this.typeCheck(file.type) : file.type
+          
+          if (!type) {
+            ControlPanel.announceMessage(new Error(
+              'wrong file type is given: ' + file.type
+            ))
+            continue
+          }
+          
+          const dataPromise = new Promise((resolve, reject) => {
+            const reader = new FileReader()
+            switch (type) {
+              case 'json': reader.readAsText(file); break
+              case 'image': reader.readAsDataURL(file); break
+              default:
+                reject('wrong file type is given: ' + file.type)
+                break
+            }
+            reader.onload = () => resolve(reader.result)
+          })
+          
+          // put json as the first data in the array
+          switch (type) {
+            case 'json':
+              fileNames.unshift(file.name)
+              dataPrepared.unshift(dataPromise)
+              break
+            default:
+              fileNames.push(file.name)
+              dataPrepared.push(dataPromise)
+              break
+          }
+        }
+        
+        // send loaded data to given callbacks
+        Promise.all(dataPrepared).then(dataArray => {
+          // parse first data - which is expected to be a json
+          dataArray[0] = JSON.parse(dataArray[0])
+          const config = dataArray[0]
+          
+          // replace image file name with corresponding data url
+          for (let i = 0; i < config.src.length; i++) {
+            const srcName = config.src[i]
+            // skip conversion if the source is a data url or a link
+            if (
+              srcName.startsWith('data:image/') ||
+              srcName.startsWith('http')
+            ) { continue }
+            
+            const srcIndexInFiles = fileNames.indexOf(srcName)
+            if (srcIndexInFiles === -1) {
+              // for typo in config.json
+              ControlPanel.announceMessage(new Error(
+                `src file name \`${srcName}\` doesn't match any actual file.`
+              ))
+              return this.callback(false)
+            }
+            
+            config.src[i] = dataArray[srcIndexInFiles]
+          }
+  
+          this.setData(config)
+        }, reason => {
+          ControlPanel.announceMessage(new Error(reason))
         })
       }
     }

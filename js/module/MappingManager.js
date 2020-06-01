@@ -193,7 +193,8 @@ class MappingManager {
         from: 'Mapping Manager',
         type: message instanceof Error ?
           messageType.error : ( messageType[type] || messageType.log ),
-        message: message
+        message: type === 'error' ?
+          new Error(JSON.stringify(message)) : message
       }
     }))
   }
@@ -214,7 +215,12 @@ class MappingManager {
       !mappings ||
       mappings.constructor !== Object ||
       Object.keys(mappings).length === 0
-    ) { return false }
+    ) {
+      return {
+        valid: false,
+        isBasicallyObject: false
+      }
+    }
     const issue = {}
     let invalidityFound = false
     for (const gamepadId in mappings) {
@@ -614,6 +620,7 @@ class MappingManager {
           switch (assignmentState.index) {
             case 4: // dpad-down
               buttonInfo.nullInput(assignmentState.data.mapping)
+              // fallthrough
             case 5: // dpad-left
             case 6: // dpad-up
             case 7: // dpad-right
@@ -621,6 +628,7 @@ class MappingManager {
               break
             case 12: // lb/l1
               buttonInfo.nullInput(assignmentState.data.mapping)
+              // fallthrough
             case 14: // lt/l2
               assignmentState.index = 16
               break

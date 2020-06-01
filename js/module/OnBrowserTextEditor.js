@@ -119,8 +119,10 @@ class OnBrowserTextEditor {
     window.dispatchEvent(new CustomEvent('GPVMessage', {
       detail: {
         from: 'On-Browser Text Editor',
-        type: messageType[type] || messageType.log,
-        message: message
+        type: message instanceof Error ?
+          messageType.error : ( messageType[type] || messageType.log ),
+        message: type === 'error' ?
+          new Error(JSON.stringify(message)) : message
       }
     }))
   }
@@ -137,13 +139,17 @@ class OnBrowserTextEditor {
    * before it is changed by the callback, until the editor get to 'change the focus' again
    * and to update the reference stored in it.
    * @param {boolean} raw Display data without converting it to JSON if set to true.
+   * @param {boolean} nospace Display data with spaces and newlines omitted.
    */
-  changeFocus (title, dataRef, callback, raw = false) {
+  changeFocus (
+    title, dataRef, callback, {raw, nospace} = {
+      raw: false, nospace: false
+    }) {
     this.dataTitle = title
     this.dom.title.innerText = title
     this.reference.data = dataRef
     this.reference.callback = callback
-    this.reference.raw = raw
+    this.reference.format = { raw, nospace }
     if (!callback) {
       setTimeout(() => {
         this.dom.saveButton.setAttribute('disabled', '')
@@ -160,7 +166,7 @@ class OnBrowserTextEditor {
     }
     OnBrowserTextEditor.announceMessage(`Saving ${this.dataTitle} from the editor...`)
     try {
-      const parsedInput = JSON.parse(this.dom.textarea.value)
+      const parsedInput = JSON.parse(this.dom.textarea.value || null)
       // first need to bind the callback to the instance they're from
       const result = this.reference.callback(parsedInput)
       if (result === true) {
@@ -168,7 +174,7 @@ class OnBrowserTextEditor {
         OnBrowserTextEditor.announceMessage(`Saved ${this.dataTitle} from the editor.`)
       } else {
         this.notify('Data weren\'t accepted! Check the error log.')
-        OnBrowserTextEditor.announceMessage(new Error(result), 'error')
+        OnBrowserTextEditor.announceMessage(new Error(JSON.stringify(result)), 'error')
       }
     } catch (e) {
       this.notify('Data can\'t be saved. Check the error log.', true)
@@ -178,8 +184,9 @@ class OnBrowserTextEditor {
   loadToEditor () {
     OnBrowserTextEditor.announceMessage(`Loading ${this.dataTitle} to the editor...`)
     try {
-      this.dom.textarea.value = this.reference.raw ?
-        this.reference.data :
+      this.dom.textarea.value =
+        this.reference.format.raw ? this.reference.data :
+        this.reference.format.nospace ? JSON.stringify(this.reference.data) :
         JSON.stringify(this.reference.data, null, 2)
       this.notify('Data are loaded.')
       OnBrowserTextEditor.announceMessage(`Loaded ${this.dataTitle} to the editor.`)

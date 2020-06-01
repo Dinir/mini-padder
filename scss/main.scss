@@ -13,7 +13,6 @@ body {
   background-color: black;
 }
 
-// symantic markups
 address {
   position: relative;
   font-style: inherit;
@@ -32,22 +31,28 @@ address {
       display: inline-block;
     }
   }
-  .align-right {
-    position: absolute;
-    right: 0;
-  }
 }
-
 sub {
   vertical-align: baseline;
   font-size: x-small;
 }
 
+.visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+}
 .inline {
   display: inline;
 }
 .normal-font-size {
   font-size: 1em;
+}
+.align-right {
+  position: absolute;
+  right: 0;
 }
 .version {
   font-family: sans-serif;
@@ -107,8 +112,28 @@ sub {
     }
   }
   
+  b {
+    // control panel section name
+    display: block;
+    margin-bottom: 0.5em;
+    &.inline {
+      display: inline;
+    }
+  }
+  label {
+    display: inline-block;
+  }
+  address {
+    a {
+      color: #171717;
+    }
+  }
+  
   .after-margin {
     margin-bottom: 0.25em;
+  }
+  span.after-margin {
+    display: block;
   }
   .full-width {
     display: block;
@@ -128,23 +153,6 @@ sub {
     border-radius: 8px;
     &:before {
       content: '⚠️ ';
-    }
-  }
-  
-  b {
-    // control panel section name
-    display: block;
-    margin-bottom: 0.5em;
-    &.inline {
-      display: inline;
-    }
-  }
-  label {
-    display: inline-block;
-  }
-  address {
-    a {
-      color: #171717;
     }
   }
   

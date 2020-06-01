@@ -21,7 +21,7 @@
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width"  content="1280">
   <meta property="og:image:height" content="640">
-  <meta property="og:image:alt" content="An overlay of four gamepads. They resemble DInput, 8-button Joystick, XInput, and 6-button gamepad. Some buttons in all gamepads are being pressed. For DInput they are D-pad at upright, X, and R1. For Joystick they are D-pad at upright, first and last face buttons. For XInput they are left stick at upright, right stick at two-third down, LB, and RT at two-third. For 6-button gamepad they're D-pad at upright, B, and C.">
+  <meta property="og:image:alt" content="An overlay of four gamepads. They resemble DInput, 8-button Joystick, XInput, and 6-button gamepad. Some buttons in all gamepads are being pressed. For DInput they are D-pad at upright, X, and R1. For Joystick they are D-pad at upright, first and last face buttons. For XInput they are left stick at upright, right stick at three-quarter down, LB, and RT at two-third. For 6-button gamepad they're D-pad at upright, B, and C.">
   <meta property="og:type" content="website">
   <meta name="twitter:card" content="summary_large_image">
   
@@ -129,6 +129,7 @@
     <div class="after-margin">
       <button data-name="mappings">Gamepad Mappings</button>
       <button data-name="skinList">Skin List</button>
+      <button data-name="customSkin">Custom Skin</button>
       <button data-name="controlPanel">Control Panel Settings</button>
       <button data-name="errorLog">Error Log</button>
     </div>
@@ -137,6 +138,23 @@
       or paste from such text file and
       store them in the local storage of this web page.
     </span>
+  </div>
+  <div class="option" data-name="custom-skin">
+    <label id="customSkinLoadArea">
+      <b>Import Custom Skin</b>
+      <span class="after-margin file-input-container inactive">
+        <input class="visually-hidden"
+               type="file" accept="application/json,image/*" multiple>
+        <button data-name="fileSelect">Choose Files</button>
+        <span id="currentlyLoadedCustomSkin">Nothing</span>
+        <button data-name="remove" class="align-right">X</button>
+      </span>
+      <span class="description">
+        Upload a json and up to 4 images for the custom skin.
+        New files replace old ones.
+        Click anywhere in this area to bring the file select screen.
+      </span>
+    </label>
   </div>
   <div>
     <div>
@@ -166,6 +184,13 @@
   const canvas = Array.from(canvasContainer.querySelectorAll('div'))
   const cpDom = document.getElementById('control-panel')
   const cpDomSizeDescriptor = document.getElementById('displaySizeDescriptor')
+  const cpDomSkinUploader = {
+    droparea: cpDom.querySelector('#customSkinLoadArea'),
+    input: cpDom.querySelector('#customSkinLoadArea input'),
+    button: cpDom.querySelector('#customSkinLoadArea button[data-name="fileSelect"]'),
+    indicator: document.getElementById('currentlyLoadedCustomSkin'),
+    removeButton: cpDom.querySelector('#customSkinLoadArea button[data-name="remove"]')
+  }
 </script>
 
 <!-- store error logs -->
@@ -206,7 +231,8 @@
     layout: 'selectFromList',
     displayWidth: 'slider',
     fadeout: 'textArray',
-    management: 'buttons'
+    management: 'buttons',
+    customSkin: 'uploader'
   }, [
     'gamepadconnected', 'gamepaddisconnected'
   ])
@@ -257,6 +283,48 @@
     )
   }
 
+  const customSkinLocalStorageKey = 'customSkin'
+  cpPanel.customSkin.assign(
+    customSkinLocalStorageKey, {
+      input: cpDomSkinUploader.input,
+      droparea: cpDomSkinUploader.droparea,
+      visibleButton: cpDomSkinUploader.button,
+      removeButton: cpDomSkinUploader.removeButton
+    }, {
+      typeCheckFunction: typeString =>
+        typeString === 'application/json' ? 'json' :
+          typeString.startsWith('image/') ? 'image' : null
+      , indicatorUpdateCallback: text => {
+        cpDomSkinUploader.indicator.innerHTML = text
+        if (text && text.length) {
+          cpDomSkinUploader.indicator.parentElement.classList.remove('inactive')
+        } else {
+          cpDomSkinUploader.indicator.parentElement.classList.add('inactive')
+        }
+      }, customCallback: customSkinConfig => {
+        if (!customSkinConfig) {
+          Renderer.unloadSkin(customSkinLocalStorageKey)
+        } else {
+          Renderer.reloadSkin(customSkinLocalStorageKey)
+        
+          // refresh skin slots using the custom skin
+          for (let i = 0; i < Renderer.skinSlot.length; i++) {
+            const skinSlot = Renderer.skinSlot[i]
+            if (
+              !skinSlot ||
+              !skinSlot.hasOwnProperty('dirname') ||
+              skinSlot.dirname !== customSkinLocalStorageKey
+            ) { continue }
+            Renderer.changeSkinOfSlot(i, skinSlot.gamepadId)
+          }
+        }
+      
+        // update the layout select list
+        cpPanel.layout.updateItems(cpPanel.layout.list)
+      }
+    }
+  )
+
   cpPanel.management.assign(
     cpDom.querySelector('div[data-name="management"]'), e => {
       switch (e.target.dataset.name) {
@@ -274,6 +342,14 @@
             Renderer.reloadSkins
           )
           break
+        case 'customSkin':
+          Obte.changeFocus(
+            'Custom Skin',
+            cpPanel.customSkin.loadedData,
+            cpPanel.customSkin.loadDataObj,
+            { nospace: true }
+          )
+          break
         case 'controlPanel':
           Obte.changeFocus(
             'Control Panel Configuration',
@@ -286,7 +362,7 @@
             'Error Log',
             Logger.errorLog,
             null,
-            true
+            { raw: true }
           )
           break
       }
@@ -296,7 +372,7 @@
 
 <!-- updater -->
 <script>
-  const version = '3.0.1'
+  const version = '3.1.0'
   const MPUpdater = new MiniPadderUpdater(version)
   const versionDoms = document.getElementsByClassName('version')
   Array.from(versionDoms).forEach(v => v.innerHTML = version)

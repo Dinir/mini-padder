@@ -29,5 +29,30 @@
         }
       }
     }
+    
+    // item specific styles
+    &[data-name="custom-skin"] {
+      .file-input-container {
+        position: relative;
+        &.inactive {
+          #currentlyLoadedCustomSkin, button[data-name="remove"] {
+            display: none;
+          }
+        }
+      }
+      #currentlyLoadedCustomSkin {
+        display: inline-block;
+        &.inactive { display: none; }
+        width: 70%;
+        height: 1.25em;
+        vertical-align: middle;
+        overflow: hidden;
+        word-break: break-all;
+        &:before {
+          content: 'Currently Loaded: ';
+          font-size: 0.75em;
+        }
+      }
+    }
   }
 }

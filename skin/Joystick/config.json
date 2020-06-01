@@ -8,7 +8,7 @@
 	],
 	"layer": [
 		{
-			"name": "button", "src": 0,
+			"name": "button",
 			"x": 15, "y": 16, "width": 227, "height": 112
 		}
 	],

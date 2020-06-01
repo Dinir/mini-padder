@@ -257,7 +257,7 @@ class ControlPanel {
         this.addPlaceholder()
         this.addItems(this.list)
         this.callback = customCallback
-        this.container.addEventListener('mouseenter', e => {
+        this.container.addEventListener('mouseenter', () => {
           this.updateItems(this.list)
         })
         this.container.addEventListener('change', e => {

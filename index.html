@@ -282,42 +282,6 @@
     )
   }
 
-  cpPanel.management.assign(
-    cpDom.querySelector('div[data-name="management"]'), e => {
-      switch (e.target.dataset.name) {
-        case 'mappings':
-          Obte.changeFocus(
-            'Gamepad Mappings',
-            Mapper.mappings,
-            Mapper.import
-          )
-          break
-        case 'skinList':
-          Obte.changeFocus(
-            'Skin List',
-            Renderer.skinList,
-            Renderer.reloadSkins
-          )
-          break
-        case 'controlPanel':
-          Obte.changeFocus(
-            'Control Panel Configuration',
-            Cp.panelValues,
-            Cp.setPanelValuesInBulk
-          )
-          break
-        case 'errorLog':
-          Obte.changeFocus(
-            'Error Log',
-            Logger.errorLog,
-            null,
-            true
-          )
-          break
-      }
-    }
-  )
-  
   const customSkinLocalStorageKey = 'customSkin'
   cpPanel.customSkin.assign(
     customSkinLocalStorageKey, {
@@ -356,6 +320,42 @@
         
         // update the layout select list
         cpPanel.layout.updateItems(cpPanel.layout.list)
+      }
+    }
+  )
+
+  cpPanel.management.assign(
+    cpDom.querySelector('div[data-name="management"]'), e => {
+      switch (e.target.dataset.name) {
+        case 'mappings':
+          Obte.changeFocus(
+            'Gamepad Mappings',
+            Mapper.mappings,
+            Mapper.import
+          )
+          break
+        case 'skinList':
+          Obte.changeFocus(
+            'Skin List',
+            Renderer.skinList,
+            Renderer.reloadSkins
+          )
+          break
+        case 'controlPanel':
+          Obte.changeFocus(
+            'Control Panel Configuration',
+            Cp.panelValues,
+            Cp.setPanelValuesInBulk
+          )
+          break
+        case 'errorLog':
+          Obte.changeFocus(
+            'Error Log',
+            Logger.errorLog,
+            null,
+            { raw: true }
+          )
+          break
       }
     }
   )

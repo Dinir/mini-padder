@@ -339,21 +339,23 @@
       }, customCallback: customSkinConfig => {
         if (!customSkinConfig) {
           Renderer.unloadSkin(customSkinLocalStorageKey)
-          return
+        } else {
+          Renderer.unloadSkin(customSkinLocalStorageKey, false)
+          Renderer.loadSkin(customSkinLocalStorageKey)
+          
+          for (let i = 0; i < Renderer.skinSlot.length; i++) {
+            const skinSlot = Renderer.skinSlot[i]
+            if (
+              !skinSlot ||
+              !skinSlot.hasOwnProperty('dirname') ||
+              skinSlot.dirname !== customSkinLocalStorageKey
+            ) { continue }
+            Renderer.changeSkinOfSlot(i, skinSlot.gamepadId)
+          }
         }
         
-        Renderer.unloadSkin(customSkinLocalStorageKey, false)
-        Renderer.loadSkin(customSkinLocalStorageKey)
-        
-        for (let i = 0; i < Renderer.skinSlot.length; i++) {
-          const skinSlot = Renderer.skinSlot[i]
-          if (
-            !skinSlot ||
-            !skinSlot.hasOwnProperty('dirname') ||
-            skinSlot.dirname !== customSkinLocalStorageKey
-          ) { continue }
-          Renderer.changeSkinOfSlot(i, skinSlot.gamepadId)
-        }
+        // update the layout select list
+        cpPanel.layout.updateItems(cpPanel.layout.list)
       }
     }
   )

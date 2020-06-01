@@ -506,12 +506,22 @@ class ControlPanel {
         e.stopPropagation()
         e.preventDefault()
       },
+      _applyData: function (dataObj = this.loadedData) {
+        if (!dataObj) {
+          this.updateIndicator('')
+          this.callback(null)
+          return
+        }
+        this.updateIndicator(dataObj.name)
+        this.callback(dataObj)
+      },
       
       // the data will be too big with images as dataURI,
       // so I give this type its own local storage control
       setData: function (dataObj) {
         this.loadedData = dataObj
         this.saveData(dataObj)
+        this._applyData(dataObj)
       },
       saveData: function (dataObj) {
         if (!dataObj) {
@@ -526,7 +536,6 @@ class ControlPanel {
           const dataObj = JSON.parse(window.localStorage.getItem(this.localStorageKey))
           if (dataObj) {
             this.setData(dataObj)
-            this.applyData()
           }
         } catch (e) {
           ControlPanel.announceMessage(new Error(e))
@@ -534,16 +543,6 @@ class ControlPanel {
       },
       removeData: function () {
         this.setData(null)
-        this.applyData(null)
-      },
-      applyData: function (dataObj = this.loadedData) {
-        if (!dataObj) {
-          this.updateIndicator('')
-          this.callback(null)
-          return
-        }
-        this.updateIndicator(dataObj.name)
-        this.callback(dataObj)
       },
       
       _handleFiles: function (files, maxAmount = this.maxFileAmount) {
@@ -613,7 +612,6 @@ class ControlPanel {
           }
   
           this.setData(config)
-          this.applyData()
         }, reason => {
           ControlPanel.announceMessage(new Error(reason))
         })

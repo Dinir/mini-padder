@@ -625,16 +625,20 @@ class GamepadRenderer {
       })
     }
   }
-  unloadSkin (dirname) {
+  unloadSkin (dirname, updateSkinMapping = true) {
     const skinName = this.skins[dirname] && this.skins[dirname].config ?
       this.skins[dirname].config.name : dirname
     delete this.skins[dirname]
     this.removeSkinFromSkinList(dirname)
     GamepadRenderer.announceMessage(`Unloaded skin ${skinName}.`)
+    
+    if (!updateSkinMapping) { return }
     // change skinMapping for gamepads using the now removed skin
     for (const gamepadId in this.skinMapping) {
-      if (!this.skinMapping.hasOwnProperty(gamepadId)) { continue }
-      if (this.skinMapping[gamepadId] !== dirname) { continue }
+      if (
+        !this.skinMapping.hasOwnProperty(gamepadId) ||
+        this.skinMapping[gamepadId] !== dirname
+      ) { continue }
       this.setSkinMapping(gamepadId, GamepadRenderer.findDefaultSkin(gamepadId))
     }
   }

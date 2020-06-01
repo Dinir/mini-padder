@@ -304,9 +304,9 @@
         if (!customSkinConfig) {
           Renderer.unloadSkin(customSkinLocalStorageKey)
         } else {
-          Renderer.unloadSkin(customSkinLocalStorageKey, false)
-          Renderer.loadSkin(customSkinLocalStorageKey)
-          
+          Renderer.reloadSkin(customSkinLocalStorageKey)
+        
+          // refresh skin slots using the custom skin
           for (let i = 0; i < Renderer.skinSlot.length; i++) {
             const skinSlot = Renderer.skinSlot[i]
             if (

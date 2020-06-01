@@ -129,11 +129,10 @@ class GamepadRenderer {
     this.defaultSkins = ['XInput', 'DInput', 'Joystick']
     // local storage key to find custom skin config
     this.customSkinLocalStorageKey = 'customSkin'
-    // push names of predefined skins
+    // push names of default skins
     for (let i = 0; i < this.defaultSkins.length; i++) {
       this.skinList.push(this.defaultSkins[i])
     }
-    this.skinList.push(this.customSkinLocalStorageKey)
     // then load and add any existing additional skins to the list
     this.loadSkinList()
     /**
@@ -604,7 +603,6 @@ class GamepadRenderer {
       // load from local storage
       const customSkinConfig =
         JSON.parse(window.localStorage.getItem(this.customSkinLocalStorageKey))
-      GamepadRenderer.announceMessage('Loading a custom skin...')
       try {
         GamepadRenderer._buildSkinFromConfig(skin, customSkinConfig)
       } catch (e) {
@@ -631,9 +629,13 @@ class GamepadRenderer {
       this.skins[dirname].config.name : dirname
     delete this.skins[dirname]
     this.removeSkinFromSkinList(dirname)
-    GamepadRenderer.announceMessage(`Unloaded skin ${skinName}.`)
+  
+    if (!updateSkinMapping) {
+      return
+    } else {
+      GamepadRenderer.announceMessage(`Unloaded skin ${skinName}.`)
+    }
     
-    if (!updateSkinMapping) { return }
     // change skinMapping for gamepads using the now removed skin
     for (const gamepadId in this.skinMapping) {
       if (
@@ -642,6 +644,11 @@ class GamepadRenderer {
       ) { continue }
       this.setSkinMapping(gamepadId, GamepadRenderer.findDefaultSkin(gamepadId))
     }
+  }
+  reloadSkin (dirname) {
+    GamepadRenderer.announceMessage(`Replacing skin for ${dirname}...`)
+    this.unloadSkin(dirname, false)
+    this.loadSkin(dirname)
   }
   /**
    * setup a loaded skin for one of four canvas

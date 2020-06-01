@@ -482,7 +482,8 @@ class ControlPanel {
         this.callback = customCallback
         
         this.localStorageKey = localStorageKey
-        this.loadedData = this.loadData()
+        this.loadedData = {}
+        this.loadData(undefined, false)
         
         // receive dropped files just in case
         this.droparea.addEventListener('dragenter', this._preventDefault, false)
@@ -507,22 +508,26 @@ class ControlPanel {
         e.stopPropagation()
         e.preventDefault()
       },
-      _applyData: function (dataObj = this.loadedData) {
+      _applyData: function (dataObj = this.loadedData, runCallback = true) {
         if (!dataObj) {
           this.updateIndicator('')
-          this.callback(null)
+          if (runCallback) { this.callback(null) }
           return
         }
         this.updateIndicator(dataObj.name)
-        this.callback(dataObj)
+        if (runCallback) { this.callback(dataObj) }
       },
       
       // the data will be too big with images as dataURI,
       // so I give this type its own local storage control
-      setData: function (dataObj) {
-        this.loadedData = dataObj
+      setData: function (dataObj, runCallback = true) {
+        for (const property in this.loadedData) {
+          if (!this.loadedData.hasOwnProperty(property)) { continue }
+          delete this.loadedData[property]
+        }
+        Object.assign(this.loadedData, dataObj || {})
         this.saveData(dataObj)
-        this._applyData(dataObj)
+        this._applyData(dataObj, runCallback)
       },
       saveData: function (dataObj) {
         if (!dataObj) {
@@ -532,11 +537,13 @@ class ControlPanel {
         const dataJson = JSON.stringify(dataObj)
         window.localStorage.setItem(this.localStorageKey, dataJson)
       },
-      loadData: function () {
+      loadData: function (dataJson, runCallback = true) {
         try {
-          const dataObj = JSON.parse(window.localStorage.getItem(this.localStorageKey))
+          const dataObj = JSON.parse(
+            dataJson || window.localStorage.getItem(this.localStorageKey)
+          )
           if (dataObj) {
-            this.setData(dataObj)
+            this.setData(dataObj, runCallback)
           }
         } catch (e) {
           ControlPanel.announceMessage(new Error(e))

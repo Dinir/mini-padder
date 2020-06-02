@@ -131,6 +131,16 @@ sub {
   
   .after-margin {
     margin-bottom: 0.25em;
+    &.button-container,
+    &.multiline-button-container {
+      // put space between rows of buttons
+      line-height: 2em;
+      margin-top: -0.25em;
+    }
+    &.button-container {
+      // compensate bottom margin made from line-height
+      margin-bottom: 0.035em;
+    }
   }
   span.after-margin {
     display: block;

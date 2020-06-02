@@ -96,6 +96,11 @@ sub {
     color: #171717; }
   .control-panel .after-margin {
     margin-bottom: 0.25em; }
+    .control-panel .after-margin.button-container, .control-panel .after-margin.multiline-button-container {
+      line-height: 2em;
+      margin-top: -0.25em; }
+    .control-panel .after-margin.button-container {
+      margin-bottom: 0.035em; }
   .control-panel span.after-margin {
     display: block; }
   .control-panel .full-width {

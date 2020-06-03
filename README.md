@@ -1,13 +1,13 @@
 # Mini Padder
 
-[![commits since latest release](https://img.shields.io/github/commits-since/Dinir/mini-padder/latest?sort=semver)](https://github.com/Dinir/mini-padder/commits/master)
-[![search hits](https://img.shields.io/github/search/Dinir/mini-padder/input%20overlay?label=%27input%20overlay%27%20counter&logo=github)](https://github.com/search?q=input+overlay)
-[![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
-[![stargazers](https://img.shields.io/github/stars/Dinir/mini-padder?style=social&link=https://github.com/Dinir/mini-padder&link=https://github.com/Dinir/mini-padder/stargazers)](https://github.com/Dinir/mini-padder/stargazers)
+[![commits since latest release][badge: commit since latest]][commit history]
+[![search hits][badge: search hits]][search page]
+[![JavaScript Style Guide][badge: standard style]][standard style]
+[![stargazers][badge: stargazers]][stargazers]
 
-[![GitHub Wiki](https://img.shields.io/static/v1?label=&message=Wiki&color=24292e&logo=github)][GitHub Wiki]
-[![Trello](https://img.shields.io/static/v1?label=&message=Board&color=0079bf&logo=trello)][Trello]
-[![OBS Forum](https://img.shields.io/static/v1?label=&message=Forum&color=302e31&logo=obs-studio)][OBS Tool Page]
+[![GitHub Wiki][badge: wiki]][GitHub Wiki]
+[![Trello][badge: trello]][Trello]
+[![OBS Forum][badge: obs forum]][OBS Tool Page]
 
 ![Default Skins]
 
@@ -25,7 +25,7 @@ Simple gamepad input overlay for streaming, with default skins that keep a good 
 
 # How to Use
 
-- From OBS browser source, put the address of the [hosted webpage] as URL. Recommended Width and Height is 1048 × 600.
+- From OBS browser source, put the address of [the hosted webpage] as URL. Recommended Width and Height is 1048 × 600.
 - Right click the source, select *Transform -> Edit Transform...* to **crop off outside of the intended display area**.  
   The intended display area vary with the way multiple gamepads are displayed. Single gamepad area is 256 × 144, and the overall area size will be displayed on the control panel. Each gamepad areas are spaced by 8 pixels.
 - To make a change using the control panel, right click the source and select *Interact*.
@@ -52,11 +52,21 @@ Thank you for reading all the way to the end! 😁
 
 [Default Skins]: ./image/open-graph-image-0_5x.png 'All default skins'
 
+[badge: commit since latest]: https://img.shields.io/github/commits-since/Dinir/mini-padder/latest?sort=semver
+[commit history]: https://github.com/Dinir/mini-padder/commits/master
+[badge: search hits]: https://img.shields.io/github/search/Dinir/mini-padder/input%20overlay?label=%27input%20overlay%27%20counter&logo=github
+[search page]: https://github.com/search?q=input+overlay
+[badge: standard style]: https://img.shields.io/badge/code_style-standard-brightgreen.svg
+[standard style]: https://standardjs.com
+[badge: stargazers]: https://img.shields.io/github/stars/Dinir/mini-padder?style=social&link=https://github.com/Dinir/mini-padder&link=https://github.com/Dinir/mini-padder/stargazers
+[stargazers]: https://github.com/Dinir/mini-padder/stargazers
+[badge: wiki]: https://img.shields.io/static/v1?label=&message=Wiki&color=24292e&logo=github
 [GitHub Wiki]: https://github.com/Dinir/mini-padder/wiki
+[badge: trello]: https://img.shields.io/static/v1?label=&message=Board&color=0079bf&logo=trello
 [Trello]: https://trello.com/b/JvScNymb/mini-padder
+[badge: obs forum]: https://img.shields.io/static/v1?label=&message=Forum&color=302e31&logo=obs-studio
 [OBS Tool Page]: https://obsproject.com/forum/resources/mini-padder.944/
 
-[hosted webpage]: https://dinir.github.io/mini-padder/
-[latest release]: https://github.com/Dinir/mini-padder/releases/latest
+[the hosted webpage]: https://dinir.github.io/mini-padder/
 
 [Donation Link]: https://ko-fi.com/dinir

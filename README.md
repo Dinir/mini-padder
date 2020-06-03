@@ -1,13 +1,9 @@
 # Mini Padder
 
-[![commits since latest release][badge: commit since latest]][commit history]
-[![search hits][badge: search hits]][search page]
+[![OBS Forum][badge: obs forum]][OBS Tool Page]
+[![Trello][badge: trello]][Trello]
 [![JavaScript Style Guide][badge: standard style]][standard style]
 [![stargazers][badge: stargazers]][stargazers]
-
-[![GitHub Wiki][badge: wiki]][GitHub Wiki]
-[![Trello][badge: trello]][Trello]
-[![OBS Forum][badge: obs forum]][OBS Tool Page]
 
 ![Default Skins]
 
@@ -52,20 +48,14 @@ Thank you for reading all the way to the end! 😁
 
 [Default Skins]: ./image/open-graph-image-0_5x.png 'All default skins'
 
-[badge: commit since latest]: https://img.shields.io/github/commits-since/Dinir/mini-padder/latest?sort=semver
-[commit history]: https://github.com/Dinir/mini-padder/commits/master
-[badge: search hits]: https://img.shields.io/github/search/Dinir/mini-padder/input%20overlay?label=%27input%20overlay%27%20counter&logo=github
-[search page]: https://github.com/search?q=input+overlay
+[badge: obs forum]: https://img.shields.io/static/v1?label=&message=Forum&color=302e31&logo=obs-studio
+[OBS Tool Page]: https://obsproject.com/forum/resources/mini-padder.944/
+[badge: trello]: https://img.shields.io/static/v1?label=&message=Board&color=0079bf&logo=trello
+[Trello]: https://trello.com/b/JvScNymb/mini-padder
 [badge: standard style]: https://img.shields.io/badge/code_style-standard-brightgreen.svg
 [standard style]: https://standardjs.com
 [badge: stargazers]: https://img.shields.io/github/stars/Dinir/mini-padder?style=social&link=https://github.com/Dinir/mini-padder&link=https://github.com/Dinir/mini-padder/stargazers
 [stargazers]: https://github.com/Dinir/mini-padder/stargazers
-[badge: wiki]: https://img.shields.io/static/v1?label=&message=Wiki&color=24292e&logo=github
-[GitHub Wiki]: https://github.com/Dinir/mini-padder/wiki
-[badge: trello]: https://img.shields.io/static/v1?label=&message=Board&color=0079bf&logo=trello
-[Trello]: https://trello.com/b/JvScNymb/mini-padder
-[badge: obs forum]: https://img.shields.io/static/v1?label=&message=Forum&color=302e31&logo=obs-studio
-[OBS Tool Page]: https://obsproject.com/forum/resources/mini-padder.944/
 
 [the hosted webpage]: https://dinir.github.io/mini-padder/
 

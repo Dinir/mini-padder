@@ -923,184 +923,226 @@ class GamepadRenderer {
     const forJoystick = properties.indexOf('joystick') !== -1
     const dpadInUse = activeState.buttons.dpad && activeState.buttons.dpad.value
     
-    /** @type {{left: ?stickChange, right: ?stickChange}} */
-    const sticks = gamepadChange.sticks
-    const stickLayerIndex = inst.sticks.layer
+    if (inst.sticks) {
+      /** @type {{left: ?stickChange, right: ?stickChange}} */
+      const sticks = gamepadChange.sticks
+      const stickLayerIndex = inst.sticks.layer
+  
+      // give instructions for sticks
+      for (let s = 0; s < this.order.stick.length; s++) {
+        const stickName = this.order.stick[s]
+        const stickInst = inst.sticks[stickName]
+        // skip if the referred instruction is not made
+        if (!stickInst || stickInst.constructor !== Object) { continue }
     
-    // give instructions for sticks
-    for (let s = 0; s < this.order.stick.length; s++) {
-      const stickName = this.order.stick[s]
-      const stickInst = inst.sticks[stickName]
-      // skip if the referred instruction is not made
-      if (!stickInst || stickInst.constructor !== Object) { continue }
+        if (forJoystick && dpadInUse) {
+          // skip rendering sticks because dpad is active
+        } else if (sticks[stickName]) {
+          // change for the stick is confirmed
+          const values = sticks[stickName]
+          let fadingOut = false
+          let deltaOpacity = 1
       
-      if (forJoystick && dpadInUse) {
-        // skip rendering sticks because dpad is active
-      } else if (sticks[stickName]) {
-        // change for the stick is confirmed
-        const values = sticks[stickName]
-        let fadingOut = false
-        let deltaOpacity = 1
-        
-        // update active state last seen
-        activeState.sticks[stickName][0] = values.active
-        if (values.pressed !== null) {
-          // only update button state when a change is found,
-          // otherwise keep the last seen state
-          activeState.sticks[stickName][1] = values.pressed
-        }
-        // update last active time (if active) and alpha value
-        if (
-          activeState.sticks[stickName][0] ||
-          activeState.sticks[stickName][1]
-        ) {
-          lastActive.sticks[stickName] = timestampAtStart
-          alpha.sticks[stickName] = 1
-        } else if (this.timingForFps(this.fadeoutFps)) {
-          const timeInactive =
-            timestampAtStart - lastActive.sticks[stickName]
-          ;[fadingOut, deltaOpacity] = this.getFadeoutState(timeInactive)
-          if (fadingOut) {
-            alpha.sticks[stickName] = this.getMultipliedAlpha(
-              alpha.sticks[stickName], deltaOpacity
-            )
+          // update active state last seen
+          activeState.sticks[stickName][0] = values.active
+          if (values.pressed !== null) {
+            // only update button state when a change is found,
+            // otherwise keep the last seen state
+            activeState.sticks[stickName][1] = values.pressed
           }
-        }
-        
-        this.followInstructions(
-          ctx[stickLayerIndex], src, stickInst.clear,
-          null, alpha.sticks[stickName], null
-        )
-        if (activeState.sticks[stickName][1]) {
-          this.followInstructions(
-            ctx[stickLayerIndex], src, stickInst.on || stickInst.off,
-            values.value, alpha.sticks[stickName], values.delta
-          )
-        } else {
-          this.followInstructions(
-            ctx[stickLayerIndex], src, stickInst.off,
-            values.value, alpha.sticks[stickName], values.delta
-          )
-        }
-      } else if (useFadeout) {
-        // if stick change isn't found, apply fade-out route
-        // if it's actually active, update the lastActive time instead
-        if (
-          activeState.sticks[stickName][0] ||
-          activeState.sticks[stickName][1]
-        ) {
-          lastActive.sticks[stickName] = timestampAtStart
-        } else if (this.timingForFps(this.fadeoutFps)) {
-          const timeInactive =
-            timestampAtStart - lastActive.sticks[stickName]
-          let deltaOpacity = this.getFadeoutState(timeInactive)[1]
-  
-          alpha.sticks[stickName] = this.getMultipliedAlpha(
-            alpha.sticks[stickName], deltaOpacity
-          )
-  
+          // update last active time (if active) and alpha value
+          if (
+            activeState.sticks[stickName][0] ||
+            activeState.sticks[stickName][1]
+          ) {
+            lastActive.sticks[stickName] = timestampAtStart
+            alpha.sticks[stickName] = 1
+          } else if (this.timingForFps(this.fadeoutFps)) {
+            const timeInactive =
+              timestampAtStart - lastActive.sticks[stickName]
+            ;[fadingOut, deltaOpacity] = this.getFadeoutState(timeInactive)
+            if (fadingOut) {
+              alpha.sticks[stickName] = this.getMultipliedAlpha(
+                alpha.sticks[stickName], deltaOpacity
+              )
+            }
+          }
+      
           this.followInstructions(
             ctx[stickLayerIndex], src, stickInst.clear,
             null, alpha.sticks[stickName], null
           )
-          this.followInstructions(
-            ctx[stickLayerIndex], src, stickInst.off,
-            [0, 0, null], alpha.sticks[stickName], [0, 0, null]
-          )
+          if (activeState.sticks[stickName][1]) {
+            this.followInstructions(
+              ctx[stickLayerIndex], src, stickInst.on || stickInst.off,
+              values.value, alpha.sticks[stickName], values.delta
+            )
+          } else {
+            this.followInstructions(
+              ctx[stickLayerIndex], src, stickInst.off,
+              values.value, alpha.sticks[stickName], values.delta
+            )
+          }
+        } else if (useFadeout) {
+          // if stick change isn't found, apply fade-out route
+          // if it's actually active, update the lastActive time instead
+          if (
+            activeState.sticks[stickName][0] ||
+            activeState.sticks[stickName][1]
+          ) {
+            lastActive.sticks[stickName] = timestampAtStart
+          } else if (this.timingForFps(this.fadeoutFps)) {
+            const timeInactive =
+              timestampAtStart - lastActive.sticks[stickName]
+            let deltaOpacity = this.getFadeoutState(timeInactive)[1]
+        
+            alpha.sticks[stickName] = this.getMultipliedAlpha(
+              alpha.sticks[stickName], deltaOpacity
+            )
+        
+            this.followInstructions(
+              ctx[stickLayerIndex], src, stickInst.clear,
+              null, alpha.sticks[stickName], null
+            )
+            this.followInstructions(
+              ctx[stickLayerIndex], src, stickInst.off,
+              [0, 0, null], alpha.sticks[stickName], [0, 0, null]
+            )
+          }
         }
       }
     }
     
-    /**
-     *  @type {Object}
-     *  @property {?Object.<string, ?(buttonChange|basicButtonChange)>} dpad
-     *  @property {?Object.<string, ?buttonChange>} face
-     *  @property {?Object.<string, ?buttonChange>} shoulder
-     */
-    const buttons = gamepadChange.buttons
-    const buttonLayerIndexDefault = inst.buttons.layer
-    
-    // give instructions for buttons
-    for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
-      const buttonGroupName = this.order.buttonGroup[bg]
-      // skip the button group if the skin doesn't include it
-      if (!inst.buttons[buttonGroupName]) { continue }
-      
-      const buttonLayerIndex = typeof inst.buttons[buttonGroupName].layer === 'number' ?
-        inst.buttons[buttonGroupName].layer : buttonLayerIndexDefault
-      
-      // check for changes for a button group
-      if (buttons[buttonGroupName]) {
-        // changes for a button group is confirmed
-        for (let b = 0; b < this.order.button[bg].length; b++) {
-          // skip other dpad instructions on joystick
-          if (forJoystick && bg === 0 && b !== 0) { break }
-          
-          const buttonName = this.order.button[bg][b]
-          const buttonInst = inst.buttons[buttonGroupName][buttonName]
-          // skip if the referred instruction is not made
-          if (!buttonInst || buttonInst.constructor !== Object) { continue }
-    
-          if (buttons[buttonGroupName][buttonName]) {
-            // change for the button is confirmed
-            const value = buttons[buttonGroupName][buttonName].value
-      
-            this.followInstructions(
-              ctx[buttonLayerIndex], src, buttonInst.clear,
-              null, null, null
-            )
+    if (inst.buttons) {
+      /**
+       *  @type {Object}
+       *  @property {?Object.<string, ?(buttonChange|basicButtonChange)>} dpad
+       *  @property {?Object.<string, ?buttonChange>} face
+       *  @property {?Object.<string, ?buttonChange>} shoulder
+       */
+      const buttons = gamepadChange.buttons
+      const buttonLayerIndexDefault = inst.buttons.layer
   
-            // joystick skin uses dpad.value which is [x-axis, y-axis]
-            const valueIsOff = forJoystick && bg === 0 && b === 0 ?
-              value[0] === 0 && value[1] === 0 : value === 0
-            if (valueIsOff) {
+      // give instructions for buttons
+      for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
+        const buttonGroupName = this.order.buttonGroup[bg]
+        // skip the button group if the skin doesn't include it
+        if (!inst.buttons[buttonGroupName]) { continue }
+    
+        const buttonLayerIndex = typeof inst.buttons[buttonGroupName].layer === 'number' ?
+          inst.buttons[buttonGroupName].layer : buttonLayerIndexDefault
+    
+        // check for changes for a button group
+        if (buttons[buttonGroupName]) {
+          // changes for a button group is confirmed
+          for (let b = 0; b < this.order.button[bg].length; b++) {
+            // skip other dpad instructions on joystick
+            if (forJoystick && bg === 0 && b !== 0) { break }
+        
+            const buttonName = this.order.button[bg][b]
+            const buttonInst = inst.buttons[buttonGroupName][buttonName]
+            // skip if the referred instruction is not made
+            if (!buttonInst || buttonInst.constructor !== Object) { continue }
+        
+            if (buttons[buttonGroupName][buttonName]) {
+              // change for the button is confirmed
+              const value = buttons[buttonGroupName][buttonName].value
+          
               this.followInstructions(
-                ctx[buttonLayerIndex], src, buttonInst.off,
+                ctx[buttonLayerIndex], src, buttonInst.clear,
                 null, null, null
               )
-              if (forJoystick && bg === 0 && b === 0) {
-                activeState.sticks.left[0] = false
+          
+              // joystick skin uses dpad.value which is [x-axis, y-axis]
+              const valueIsOff = forJoystick && bg === 0 && b === 0 ?
+                value[0] === 0 && value[1] === 0 : value === 0
+              if (valueIsOff) {
+                this.followInstructions(
+                  ctx[buttonLayerIndex], src, buttonInst.off,
+                  null, null, null
+                )
+                if (forJoystick && bg === 0 && b === 0) {
+                  activeState.sticks.left[0] = false
+                }
+                activeState.buttons[buttonGroupName][buttonName] = false
+              } else {
+                this.followInstructions(
+                  ctx[buttonLayerIndex], src, buttonInst.on,
+                  value, null, null
+                )
+                if (forJoystick && bg === 0 && b === 0) {
+                  GamepadRenderer.updateLeftStickActiveStatesOnDpadInput(
+                    skinSlot, timestampAtStart
+                  )
+                }
+                activeState.buttons[buttonGroupName][buttonName] = true
+                lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
+                alpha.buttons[buttonGroupName][buttonName] = 1
               }
-              activeState.buttons[buttonGroupName][buttonName] = false
-            } else {
-              this.followInstructions(
-                ctx[buttonLayerIndex], src, buttonInst.on,
-                value, null, null
-              )
-              if (forJoystick && bg === 0 && b === 0) {
-                GamepadRenderer.updateLeftStickActiveStatesOnDpadInput(
-                  skinSlot, timestampAtStart
+            } else if (useFadeout) {
+              // for unchanged buttons in a changed group
+              // if it's actually active, update the lastActive time instead
+              if (activeState.buttons[buttonGroupName][buttonName]) {
+                if (forJoystick && bg === 0 && b === 0) {
+                  GamepadRenderer.updateLeftStickActiveStatesOnDpadInput(
+                    skinSlot, timestampAtStart
+                  )
+                }
+                lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
+              } else if (this.timingForFps(this.fadeoutFps)) {
+                // dpad for joystick render fade-out using left stick part
+                if (forJoystick && bg === 0 && b === 0) { continue }
+            
+                const timeInactive =
+                  timestampAtStart - lastActive.buttons[buttonGroupName][buttonName]
+                let [fadingOut, deltaOpacity] = this.getFadeoutState(timeInactive)
+            
+                // check if it needs to be fading-out
+                if (!fadingOut) { continue }
+            
+                alpha.buttons[buttonGroupName][buttonName] = this.getMultipliedAlpha(
+                  alpha.buttons[buttonGroupName][buttonName], deltaOpacity
+                )
+            
+                this.followInstructions(
+                  ctx[buttonLayerIndex], src, buttonInst.clear,
+                  null, null, null
+                )
+                this.followInstructions(
+                  ctx[buttonLayerIndex], src, buttonInst.off,
+                  null, alpha.buttons[buttonGroupName][buttonName], null
                 )
               }
-              activeState.buttons[buttonGroupName][buttonName] = true
-              lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
-              alpha.buttons[buttonGroupName][buttonName] = 1
             }
-          } else if (useFadeout) {
-            // for unchanged buttons in a changed group
+          }
+        } else if (useFadeout) {
+          // for unchanged button groups in a changed gamepad
+          for (let b = 0; b < this.order.button[bg].length; b++) {
+            // skip other dpad instructions on joystick
+            if (forJoystick && bg === 0 && b !== 0) { break }
+        
+            const buttonName = this.order.button[bg][b]
+            const buttonInst = inst.buttons[buttonGroupName][buttonName]
+            // skip if the referred instruction is not made
+            if (!buttonInst || buttonInst.constructor !== Object) { continue }
+        
             // if it's actually active, update the lastActive time instead
             if (activeState.buttons[buttonGroupName][buttonName]) {
-              if (forJoystick && bg === 0 && b === 0) {
-                GamepadRenderer.updateLeftStickActiveStatesOnDpadInput(
-                  skinSlot, timestampAtStart
-                )
-              }
               lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
             } else if (this.timingForFps(this.fadeoutFps)) {
               // dpad for joystick render fade-out using left stick part
               if (forJoystick && bg === 0 && b === 0) { continue }
-              
               const timeInactive =
                 timestampAtStart - lastActive.buttons[buttonGroupName][buttonName]
-              let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
-              
+              let [fadingOut, deltaOpacity] = this.getFadeoutState(timeInactive)
+          
               // check if it needs to be fading-out
               if (!fadingOut) { continue }
-  
+          
               alpha.buttons[buttonGroupName][buttonName] = this.getMultipliedAlpha(
                 alpha.buttons[buttonGroupName][buttonName], deltaOpacity
               )
-  
+          
               this.followInstructions(
                 ctx[buttonLayerIndex], src, buttonInst.clear,
                 null, null, null
@@ -1110,44 +1152,6 @@ class GamepadRenderer {
                 null, alpha.buttons[buttonGroupName][buttonName], null
               )
             }
-          }
-        }
-      } else if (useFadeout) {
-        // for unchanged button groups in a changed gamepad
-        for (let b = 0; b < this.order.button[bg].length; b++) {
-          // skip other dpad instructions on joystick
-          if (forJoystick && bg === 0 && b !== 0) { break }
-          
-          const buttonName = this.order.button[bg][b]
-          const buttonInst = inst.buttons[buttonGroupName][buttonName]
-          // skip if the referred instruction is not made
-          if (!buttonInst || buttonInst.constructor !== Object) { continue }
-  
-          // if it's actually active, update the lastActive time instead
-          if (activeState.buttons[buttonGroupName][buttonName]) {
-            lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
-          } else if (this.timingForFps(this.fadeoutFps)) {
-            // dpad for joystick render fade-out using left stick part
-            if (forJoystick && bg === 0 && b === 0) { continue }
-            const timeInactive =
-              timestampAtStart - lastActive.buttons[buttonGroupName][buttonName]
-            let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
-  
-            // check if it needs to be fading-out
-            if (!fadingOut) { continue }
-  
-            alpha.buttons[buttonGroupName][buttonName] = this.getMultipliedAlpha(
-              alpha.buttons[buttonGroupName][buttonName], deltaOpacity
-            )
-  
-            this.followInstructions(
-              ctx[buttonLayerIndex], src, buttonInst.clear,
-              null, null, null
-            )
-            this.followInstructions(
-              ctx[buttonLayerIndex], src, buttonInst.off,
-              null, alpha.buttons[buttonGroupName][buttonName], null
-            )
           }
         }
       }
@@ -1215,97 +1219,100 @@ class GamepadRenderer {
   
     const forJoystick = properties.indexOf('joystick') !== -1
     
-    // sticks
-    const stickLayerIndex = inst.sticks.layer
+    if (inst.sticks) {
+      // sticks
+      const stickLayerIndex = inst.sticks.layer
+  
+      for (let s = 0; s < this.order.stick.length; s++) {
+        const stickName = this.order.stick[s]
+        const stickInst = inst.sticks[stickName]
+        if (!stickInst || stickInst.constructor !== Object) { continue }
     
-    for (let s = 0; s < this.order.stick.length; s++) {
-      const stickName = this.order.stick[s]
-      const stickInst = inst.sticks[stickName]
-      if (!stickInst || stickInst.constructor !== Object) { continue }
-      
-      
-      // if it's actually active, update the lastActive time instead
-      if (
-        activeState.sticks[stickName][0] ||
-        activeState.sticks[stickName][1]
-      ) {
-        lastActive.sticks[stickName] = timestampAtStart
-        continue
-      }
-      
-      const timeInactive =
-        timestampAtStart - lastActive.sticks[stickName]
-      let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
-      
-      // check if it needs to be fading-out
-      if (!fadingOut) { continue }
-      
-      alpha.sticks[stickName] = this.getMultipliedAlpha(
-        alpha.sticks[stickName], deltaOpacity
-      )
-  
-      this.followInstructions(
-        ctx[stickLayerIndex], src, stickInst.clear,
-        null, alpha.sticks[stickName], null
-      )
-      this.followInstructions(
-        ctx[stickLayerIndex], src, stickInst.off,
-        [0, 0, null], alpha.sticks[stickName], [0, 0, null]
-      )
-    }
-  
-    // buttons
-    const buttonLayerIndexDefault = inst.buttons.layer
-    
-    for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
-      const buttonGroupName = this.order.buttonGroup[bg]
-      // skip the button group if the skin doesn't include it
-      if (!inst.buttons[buttonGroupName]) { continue }
-  
-      const buttonLayerIndex = typeof inst.buttons[buttonGroupName].layer === 'number' ?
-        inst.buttons[buttonGroupName].layer : buttonLayerIndexDefault
-      
-      for (let b = 0; b < this.order.button[bg].length; b++) {
-        // skip other dpad instructions on joystick
-        if (forJoystick && bg === 0 && b !== 0) { break }
-        
-        const buttonName = this.order.button[bg][b]
-        const buttonInst = inst.buttons[buttonGroupName][buttonName]
-        if (!buttonInst || buttonInst.constructor !== Object) { continue }
-  
         // if it's actually active, update the lastActive time instead
-        if (activeState.buttons[buttonGroupName][buttonName]) {
-          if (forJoystick && bg === 0 && b === 0) {
-            GamepadRenderer.updateLeftStickActiveStatesOnDpadInput(
-              skinSlot, timestampAtStart
-            )
-          }
-          lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
+        if (
+          activeState.sticks[stickName][0] ||
+          activeState.sticks[stickName][1]
+        ) {
+          lastActive.sticks[stickName] = timestampAtStart
           continue
         }
-        
-        // dpad for joystick render fade-out using left stick part
-        if (forJoystick && bg === 0 && b === 0) { continue }
-  
+    
         const timeInactive =
-          timestampAtStart - lastActive.buttons[buttonGroupName][buttonName]
-        let [ fadingOut, deltaOpacity ] = this.getFadeoutState(timeInactive)
-        
+          timestampAtStart - lastActive.sticks[stickName]
+        let [fadingOut, deltaOpacity] = this.getFadeoutState(timeInactive)
+    
         // check if it needs to be fading-out
         if (!fadingOut) { continue }
+    
+        alpha.sticks[stickName] = this.getMultipliedAlpha(
+          alpha.sticks[stickName], deltaOpacity
+        )
+    
+        this.followInstructions(
+          ctx[stickLayerIndex], src, stickInst.clear,
+          null, alpha.sticks[stickName], null
+        )
+        this.followInstructions(
+          ctx[stickLayerIndex], src, stickInst.off,
+          [0, 0, null], alpha.sticks[stickName], [0, 0, null]
+        )
+      }
+    }
   
-        alpha.buttons[buttonGroupName][buttonName] = this.getMultipliedAlpha(
-          alpha.buttons[buttonGroupName][buttonName], deltaOpacity
-        )
-        
-        this.followInstructions(
-          ctx[buttonLayerIndex], src, buttonInst.clear,
-          null, null, null
-        )
-        this.followInstructions(
-          ctx[buttonLayerIndex], src, buttonInst.off,
-          null, alpha.buttons[buttonGroupName][buttonName], null
-        )
+    if (inst.buttons) {
+      // buttons
+      const buttonLayerIndexDefault = inst.buttons.layer
+  
+      for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
+        const buttonGroupName = this.order.buttonGroup[bg]
+        // skip the button group if the skin doesn't include it
+        if (!inst.buttons[buttonGroupName]) { continue }
+    
+        const buttonLayerIndex = typeof inst.buttons[buttonGroupName].layer === 'number' ?
+          inst.buttons[buttonGroupName].layer : buttonLayerIndexDefault
+    
+        for (let b = 0; b < this.order.button[bg].length; b++) {
+          // skip other dpad instructions on joystick
+          if (forJoystick && bg === 0 && b !== 0) { break }
+      
+          const buttonName = this.order.button[bg][b]
+          const buttonInst = inst.buttons[buttonGroupName][buttonName]
+          if (!buttonInst || buttonInst.constructor !== Object) { continue }
+      
+          // if it's actually active, update the lastActive time instead
+          if (activeState.buttons[buttonGroupName][buttonName]) {
+            if (forJoystick && bg === 0 && b === 0) {
+              GamepadRenderer.updateLeftStickActiveStatesOnDpadInput(
+                skinSlot, timestampAtStart
+              )
+            }
+            lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
+            continue
+          }
+      
+          // dpad for joystick render fade-out using left stick part
+          if (forJoystick && bg === 0 && b === 0) { continue }
+      
+          const timeInactive =
+            timestampAtStart - lastActive.buttons[buttonGroupName][buttonName]
+          let [fadingOut, deltaOpacity] = this.getFadeoutState(timeInactive)
+      
+          // check if it needs to be fading-out
+          if (!fadingOut) { continue }
+      
+          alpha.buttons[buttonGroupName][buttonName] = this.getMultipliedAlpha(
+            alpha.buttons[buttonGroupName][buttonName], deltaOpacity
+          )
+      
+          this.followInstructions(
+            ctx[buttonLayerIndex], src, buttonInst.clear,
+            null, null, null
+          )
+          this.followInstructions(
+            ctx[buttonLayerIndex], src, buttonInst.off,
+            null, alpha.buttons[buttonGroupName][buttonName], null
+          )
+        }
       }
     }
     
@@ -1347,72 +1354,76 @@ class GamepadRenderer {
     const alpha = skinSlot.alpha
     const timestampAtStart = this._timestamp || performance.now()
     
-    activeState.sticks = activeState.sticks || {}
-    lastActive.sticks = lastActive.sticks || {}
-    alpha.sticks = alpha.sticks || {}
-  
-    const stickLayerIndex = inst.sticks.layer
+    if (inst.sticks) {
+      activeState.sticks = activeState.sticks || {}
+      lastActive.sticks = lastActive.sticks || {}
+      alpha.sticks = alpha.sticks || {}
     
-    for (let s = 0; s < this.order.stick.length; s++) {
-      const stickName = this.order.stick[s]
-      const stickInst = inst.sticks[stickName]
-      if (!stickInst || stickInst.constructor !== Object) { continue }
+      const stickLayerIndex = inst.sticks.layer
       
-      this.followInstructions(
-        ctx[stickLayerIndex], src, stickInst.clear,
-        null, null, null
-      )
-      this.followInstructions(
-        ctx[stickLayerIndex], src, stickInst.off,
-        [0, 0, null], null, [0, 0, null]
-      )
-      
-      // for stick movement and stick button
-      activeState.sticks[stickName] = [false, false]
-      lastActive.sticks[stickName] = timestampAtStart
-      alpha.sticks[stickName] = 1
+      for (let s = 0; s < this.order.stick.length; s++) {
+        const stickName = this.order.stick[s]
+        const stickInst = inst.sticks[stickName]
+        if (!stickInst || stickInst.constructor !== Object) { continue }
+        
+        this.followInstructions(
+          ctx[stickLayerIndex], src, stickInst.clear,
+          null, null, null
+        )
+        this.followInstructions(
+          ctx[stickLayerIndex], src, stickInst.off,
+          [0, 0, null], null, [0, 0, null]
+        )
+        
+        // for stick movement and stick button
+        activeState.sticks[stickName] = [false, false]
+        lastActive.sticks[stickName] = timestampAtStart
+        alpha.sticks[stickName] = 1
+      }
     }
     
-    activeState.buttons = activeState.buttons || {}
-    lastActive.buttons = lastActive.buttons || {}
-    alpha.buttons = alpha.buttons || {}
-  
-    const buttonLayerIndexDefault = inst.buttons.layer
+    if (inst.buttons) {
+      activeState.buttons = activeState.buttons || {}
+      lastActive.buttons = lastActive.buttons || {}
+      alpha.buttons = alpha.buttons || {}
     
-    for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
-      const buttonGroupName = this.order.buttonGroup[bg]
-      // skip the button group if the skin doesn't include it
-      if (!inst.buttons[buttonGroupName]) { continue }
+      const buttonLayerIndexDefault = inst.buttons.layer
       
-      const buttonLayerIndex = typeof inst.buttons[buttonGroupName].layer === 'number' ?
-        inst.buttons[buttonGroupName].layer : buttonLayerIndexDefault
-      
-      activeState.buttons[buttonGroupName] =
-        activeState.buttons[buttonGroupName] || {}
-      lastActive.buttons[buttonGroupName] =
-        lastActive.buttons[buttonGroupName] || {}
-      alpha.buttons[buttonGroupName] =
-        alpha.buttons[buttonGroupName] || {}
+      for (let bg = 0; bg < this.order.buttonGroup.length; bg++) {
+        const buttonGroupName = this.order.buttonGroup[bg]
+        // skip the button group if the skin doesn't include it
+        if (!inst.buttons[buttonGroupName]) { continue }
         
-      for (let b = 0; b < this.order.button[bg].length; b++) {
-        const buttonName = this.order.button[bg][b]
-        const buttonInst = inst.buttons[buttonGroupName][buttonName]
-        // if the instruction is not made and therefore not an Object,
-        // the loop will skip the button meant for the instruction
-        if (!buttonInst || buttonInst.constructor !== Object) { continue }
+        const buttonLayerIndex = typeof inst.buttons[buttonGroupName].layer === 'number' ?
+          inst.buttons[buttonGroupName].layer : buttonLayerIndexDefault
         
-        this.followInstructions(
-          ctx[buttonLayerIndex], src, buttonInst.clear,
-          null, null, null
-        )
-        this.followInstructions(
-          ctx[buttonLayerIndex], src, buttonInst.off,
-          null, null, null
-        )
-        
-        activeState.buttons[buttonGroupName][buttonName] = false
-        lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
-        alpha.buttons[buttonGroupName][buttonName] = 1
+        activeState.buttons[buttonGroupName] =
+          activeState.buttons[buttonGroupName] || {}
+        lastActive.buttons[buttonGroupName] =
+          lastActive.buttons[buttonGroupName] || {}
+        alpha.buttons[buttonGroupName] =
+          alpha.buttons[buttonGroupName] || {}
+          
+        for (let b = 0; b < this.order.button[bg].length; b++) {
+          const buttonName = this.order.button[bg][b]
+          const buttonInst = inst.buttons[buttonGroupName][buttonName]
+          // if the instruction is not made and therefore not an Object,
+          // the loop will skip the button meant for the instruction
+          if (!buttonInst || buttonInst.constructor !== Object) { continue }
+          
+          this.followInstructions(
+            ctx[buttonLayerIndex], src, buttonInst.clear,
+            null, null, null
+          )
+          this.followInstructions(
+            ctx[buttonLayerIndex], src, buttonInst.off,
+            null, null, null
+          )
+          
+          activeState.buttons[buttonGroupName][buttonName] = false
+          lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
+          alpha.buttons[buttonGroupName][buttonName] = 1
+        }
       }
     }
     

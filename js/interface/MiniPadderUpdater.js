@@ -80,6 +80,23 @@ class MiniPadderUpdater extends Updater {
           '0': function () {
             return true
           }
+        },
+        '2': {
+          '0': function () {
+            if (
+              typeof Renderer === 'undefined'
+            ) {
+              return false
+            }
+            const version = '3.2.0'
+            MiniPadderUpdater.announceMessage(
+              version + ': Adding a new skin for HBox gamepads.'
+            )
+  
+            Renderer.addSkinToSkinList('HBox')
+  
+            return true
+          }
         }
       }
     }

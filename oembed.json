@@ -1,0 +1,12 @@
+{
+  "type": "link",
+  "version": "1.0",
+  "title": "Mini Padder",
+  "author_name": "Dinir Nertan",
+  "author_url": "https://github.com/Dinir",
+  "provider_name": "GitHub",
+  "provider_url": "https://github.com/",
+  "thumbnail_url": "https://dinir.github.io/mini-padder/image/open-graph-image.png",
+  "thumbnail_width": "1280",
+  "thumbnail_height": "640"
+}

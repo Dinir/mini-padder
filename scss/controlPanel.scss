@@ -1,7 +1,6 @@
 @import 'common';
 
 #control-panel {
-  
   div.option {
     button {
       text-align: right;
@@ -22,10 +21,15 @@
     &.half-width {
       & > label {
         width: 100%;
-        display: flex;
-        justify-content: space-between;
+        // put this relative so input elements can be aligned to the right
+        position: relative;
+        span {
+          vertical-align: middle;
+        }
         input[type=text] {
           width: 60%;
+          position: absolute;
+          right: 0;
         }
       }
     }

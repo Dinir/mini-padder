@@ -14,10 +14,13 @@
 
 #control-panel div.option.half-width > label {
   width: 100%;
-  display: flex;
-  justify-content: space-between; }
+  position: relative; }
+  #control-panel div.option.half-width > label span {
+    vertical-align: middle; }
   #control-panel div.option.half-width > label input[type=text] {
-    width: 60%; }
+    width: 60%;
+    position: absolute;
+    right: 0; }
 
 #control-panel div.option[data-name="custom-skin"] .file-input-container {
   position: relative; }

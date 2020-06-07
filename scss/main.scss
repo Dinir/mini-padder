@@ -80,8 +80,7 @@ sub {
   overflow-y: scroll;
   background-color: gray;
   border-radius: 0 8px 8px;
-  // doing this will prevent accessing the control panel from OBS Interact window!!!
-  //z-index: -1;
+  // negative z-index can't be interacted in OBS interact window
   
   & > div {
     padding-bottom: 0.5em;

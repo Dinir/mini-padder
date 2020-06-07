@@ -14,7 +14,8 @@
   display: inline-block;
   position: relative;
   width: 256px;
-  height: 144px; }
+  height: 144px;
+  z-index: 1; }
   #canvas-container > div div, #canvas-container > div canvas {
     position: absolute; }
   #canvas-container > div div {

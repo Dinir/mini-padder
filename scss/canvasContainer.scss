@@ -18,6 +18,8 @@
     position: relative;
     width: $canvas-width;
     height: $canvas-height;
+    // even if canvas is somehow overlapping with control panel, it will be on top
+    z-index: 1;
     // layers in the slot
     div, canvas {
       position: absolute;

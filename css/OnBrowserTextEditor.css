@@ -11,7 +11,7 @@
     content: 'Current Item: '; }
   #text-editor-wrapper button.close {
     position: absolute;
-    top: 0.3em;
+    top: 0.4em;
     right: 0.6em; }
   #text-editor-wrapper textarea {
     width: 98.83%;

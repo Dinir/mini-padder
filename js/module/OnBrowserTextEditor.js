@@ -40,7 +40,7 @@ class OnBrowserTextEditor {
     title.setAttribute('class', 'title')
     const closeButton = document.createElement('button')
     closeButton.classList.add('close')
-    closeButton.textContent = '　　Ｘ　　'
+    closeButton.textContent = '　　X　　'
     const textarea = document.createElement('textarea')
     textarea.setAttribute('class', 'after-margin')
     const notifyArea = document.createElement('div')

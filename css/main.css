@@ -61,7 +61,8 @@ sub {
   padding: 8px;
   overflow-y: scroll;
   background-color: gray;
-  border-radius: 0 8px 8px; }
+  border-radius: 0 8px 8px;
+  z-index: -1; }
   .control-panel > div {
     padding-bottom: 0.5em;
     margin-bottom: 0.5em;

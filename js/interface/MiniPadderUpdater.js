@@ -110,10 +110,8 @@ class MiniPadderUpdater extends Updater {
   
             if (Mapper.mappings.hasOwnProperty('XInput')) {
               Mapper.mappings.XInput.sticks.deadzone = 0.1
-              Mapper.mappings.XInput.sticks.deadzone = 0.1
             }
             if (Mapper.mappings.hasOwnProperty('DInput')) {
-              Mapper.mappings.DInput.sticks.deadzone = 0.1
               Mapper.mappings.DInput.sticks.deadzone = 0.1
             }
             Mapper.store()

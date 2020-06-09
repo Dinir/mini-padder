@@ -96,7 +96,31 @@ class MiniPadderUpdater extends Updater {
             Renderer.addSkinToSkinList('HBox')
   
             return true
+          },
+          '1': function () {
+            if (
+              typeof Mapper === 'undefined'
+            ) {
+              return false
+            }
+            const version = '3.2.1'
+            MiniPadderUpdater.announceMessage(
+              version + ': Changing deadzone values for XInput and DInput to 0.1.'
+            )
+  
+            if (Mapper.mappings.hasOwnProperty('XInput')) {
+              Mapper.mappings.XInput.sticks.deadzone = 0.1
+              Mapper.mappings.XInput.sticks.deadzone = 0.1
+            }
+            if (Mapper.mappings.hasOwnProperty('DInput')) {
+              Mapper.mappings.DInput.sticks.deadzone = 0.1
+              Mapper.mappings.DInput.sticks.deadzone = 0.1
+            }
+            Mapper.store()
+  
+            return true
           }
+  
         }
       }
     }

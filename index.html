@@ -56,9 +56,9 @@
 </div>
 
 <div id="control-panel" class="control-panel" data-nosnippet>
-  <div class="option" data-name="assignment">
+  <div class="option half-width" data-name="assignment">
     <b>Input Assignment</b>
-    <div class="after-margin multiline-button-container">
+    <div id="inputAssignment" class="after-margin button-container">
       <button class="inactive">Gamepad Name</button>
       <button class="inactive">Gamepad Name</button>
       <button class="inactive">Gamepad Name</button>
@@ -69,7 +69,19 @@
       Click the button again anytime to abort assigning.
     </span>
   </div>
-  <div class="option" data-name="layout">
+  <div class="option half-width" data-name="deadzone">
+    <b>Update Deadzone</b>
+    <div id="deadzoneUpdate" class="after-margin button-container">
+      <button class="inactive">0.000</button>
+      <button class="inactive">0.000</button>
+      <button class="inactive">0.000</button>
+      <button class="inactive">0.000</button>
+    </div>
+    <span class="description">
+      New deadzone value at the moment will be assigned on click.
+    </span>
+  </div>
+  <div class="option top-divider" data-name="layout">
     <b>Gamepad Layout</b>
     <label class="full-width inactive">
       <span>Gamepad Name</span> is
@@ -226,6 +238,7 @@
 <script>
   const Cp = new ControlPanel({
     assignment: 'dynamicButtons',
+    deadzone: 'dynamicButtons',
     layout: 'selectFromList',
     displayWidth: 'slider',
     fadeout: 'textArray',
@@ -246,8 +259,40 @@
   }
   
   cpPanel.assignment.assign(
-    cpDom.querySelector('div[data-name="assignment"]'),
+    document.getElementById('inputAssignment'),
     Mapper.startAssignment
+  )
+  
+  cpPanel.deadzone.assign(
+    document.getElementById('deadzoneUpdate'),
+    function (gamepadIndex, name, gamepadId) {
+      if (!Watcher.gamepads[gamepadIndex]) { return false }
+  
+      const rawAxesData = Watcher.gamepads[gamepadIndex].axes
+      const mappedGamepadId = Mapper.getMappedGamepadId(gamepadId)
+      const stickMappings = Mapper.mappings[mappedGamepadId].sticks
+      const changeAxes = []
+      changeAxes[stickMappings.left.x] = { value: rawAxesData[stickMappings.left.x] }
+      changeAxes[stickMappings.left.y] = { value: rawAxesData[stickMappings.left.y] }
+      changeAxes[stickMappings.right.x] = { value: rawAxesData[stickMappings.right.x] }
+      changeAxes[stickMappings.right.y] = { value: rawAxesData[stickMappings.right.y] }
+  
+      const newDeadzoneValue = MappingManager.setDeadzone(stickMappings, changeAxes)
+      if (newDeadzoneValue !== null) { Mapper.store() }
+    }, {
+      makeLabel: function (idObj) {
+        const mappedGamepadId = Mapper.getMappedGamepadId(idObj.gamepadId)
+        const stickMappings = Mapper.mappings[mappedGamepadId].sticks
+        if (stickMappings) {
+          const deadzone = stickMappings.deadzone
+          return deadzone !== 0 && !isNaN(deadzone) ?
+            String(deadzone).padEnd(5, '0') : '0.000'
+        } else {
+          return '0.000'
+        }
+      },
+      updateLabel: true
+    }
   )
   
   cpPanel.layout.assign(
@@ -374,7 +419,7 @@
 
 <!-- updater -->
 <script>
-  const version = '3.2.1'
+  const version = '3.3.0'
   const MPUpdater = new MiniPadderUpdater(version)
   const versionDoms = document.getElementsByClassName('version')
   Array.from(versionDoms).forEach(v => v.innerHTML = version)

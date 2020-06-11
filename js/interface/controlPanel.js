@@ -196,10 +196,17 @@ class ControlPanel {
   getControlForDynamicButtons (name) {
     return {
       name: name,
-      assign: function (buttonContainer, customCallback) {
+      assign: function (
+        buttonContainer,
+        customCallback,
+        { makeLabel, updateLabel } = { makeLabel: null, updateLabel: false }
+      ) {
         this.container = buttonContainer
-        this.buttons = ControlPanel.getIndexedElements(buttonContainer, 'button')
+        this.buttons =
+          ControlPanel.getIndexedElements(buttonContainer, 'button')
         this.callback = customCallback
+        this.makeLabel = makeLabel || this.makeLabel
+        this.updateLabel = updateLabel
         this.container.addEventListener('click', e => {
           if (e.target.tagName !== 'BUTTON') return
           this.callback(
@@ -207,6 +214,16 @@ class ControlPanel {
             e.target.dataset.name,
             e.target.dataset.gamepadId
           )
+          if (this.updateLabel) {
+            const id = {
+              name: e.target.dataset.name,
+              gamepadId: e.target.dataset.gamepadId
+            }
+            const label = this.makeLabel(id)
+            this.changeLabel(
+              e.target.dataset.index, id, label
+            )
+          }
         })
       },
       globalEventCallback: function (e) {
@@ -222,7 +239,7 @@ class ControlPanel {
         switch (e.gamepad.connected) {
           case true:
             const id = ControlPanel.getGamepadId(e.gamepad.id)
-            const label = `${id.name}<br><span>${id.gamepadId}</span>`
+            const label = this.makeLabel(id)
             this.changeLabel(e.gamepad.index, id, label)
             this.buttons[e.gamepad.index].classList.remove('inactive')
             break
@@ -231,7 +248,9 @@ class ControlPanel {
             this.buttons[e.gamepad.index].classList.add('inactive')
             break
         }
-        
+      },
+      makeLabel: function (idObj) {
+        return `${idObj.name} <span>${idObj.gamepadId}</span>`
       },
       changeLabel: function (index, id, newText) {
         if (typeof newText !== 'string' || !newText.length) { return }

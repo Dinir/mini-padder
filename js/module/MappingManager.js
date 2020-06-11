@@ -6,7 +6,7 @@
  * @property {String} name human readable string to tell what this mapping is for
  * @property {String[]} properties gamepad-specific features. All strings in this array should be defined in a render logic.
  *
- * @property {Object.<string, (number|Object.<string, number>)>} sticks
+ * @property {?Object.<string, (number|Object.<string, number>)>} sticks
  *
  * @property {number} sticks.deadzone define the end of a range of value which shouldn't be treated as an actual movement. 0 is at the center, 1 is the end of the axis.
  * @property {{x: number, y: number, button: number}} sticks.left indexes of axes and a button for left thumb stick
@@ -256,6 +256,15 @@ class MappingManager {
       return issue
     }
   }
+  
+  /**
+   * set deadzone to the referenced mapping and return the value
+   *
+   * @param {?Object.<string, (number|Object.<string, number>)>} stickMappings
+   * @param {?axisChange[]} changeAxes
+   *
+   * @returns {?number} deadzone value, `null` if proper stick values were not found
+   */
   static setDeadzone (stickMappings, changeAxes) {
     if (!stickMappings) { return 0 }
     

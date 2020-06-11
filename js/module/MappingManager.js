@@ -257,6 +257,8 @@ class MappingManager {
     }
   }
   static setDeadzone (stickMappings, changeAxes) {
+    if (!stickMappings) { return 0 }
+    
     let maximumLSValueOnIdle = 0
     let maximumRSValueOnIdle = 0
     if (

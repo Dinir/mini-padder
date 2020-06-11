@@ -282,6 +282,16 @@ class MappingManager {
       maximumLSValueOnIdle, maximumRSValueOnIdle
     )
     
+    if (isNaN(maximumValueOnIdle)) {
+      MappingManager.announceMessage(
+        new Error(
+          'Couldn\'t find proper stick values. ' +
+          `LS: ${maximumLSValueOnIdle}, RS: ${maximumRSValueOnIdle}`
+        )
+      )
+      return null
+    }
+    
     // by dividing at 0.04 most idle values will be multiplied into range of 0.07 ~ 0.1
     // I think this is enough but who knows what wild gamepads exist in this world
     const multiplier = maximumValueOnIdle > 0.04 ? 1.5 : 2

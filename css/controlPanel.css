@@ -1,5 +1,6 @@
 #control-panel div.option button {
-  text-align: right; }
+  text-align: left;
+  word-break: break-word; }
   #control-panel div.option button span {
     font-size: 0.7em; }
 

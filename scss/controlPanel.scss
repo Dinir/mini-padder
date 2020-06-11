@@ -3,7 +3,8 @@
 #control-panel {
   div.option {
     button {
-      text-align: right;
+      text-align: left;
+      word-break: break-word;
       span {
         font-size: 0.7em;
       }

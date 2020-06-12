@@ -675,10 +675,9 @@ class MappingManager {
               } else {
                 // it's a weird axisdpad...
                 // work on this when such case is actually found. Below is a placeholder.
-                MappingManager.announceMessage(
-                  new Error('I finally found a user of a rare dpad kind! Please contact me.'),
-                  'error'
-                )
+                MappingManager.announceMessage(new Error(
+                  'I finally found a user of a rare dpad kind! Please contact me.'
+                ))
                 assignmentState.data.occupied.axes.push(foundIndexes[0])
                 assignmentState.index += 4
                 /*
@@ -797,12 +796,10 @@ class MappingManager {
         `Loaded the mapping for ${mappingObj.name}.`
       )
     } else {
-      MappingManager.announceMessage(
-        new Error(
-          'There\'s a problem in the new mapping.\n' +
-          JSON.stringify(mappingObj, null, 2)
-        ), 'error'
-      )
+      MappingManager.announceMessage(new Error(
+        'There\'s a problem in the new mapping.\n' +
+        JSON.stringify(mappingObj, null, 2)
+      ))
     }
   }
   remove (gamepadId) {

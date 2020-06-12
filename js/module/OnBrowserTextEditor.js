@@ -160,11 +160,11 @@ class OnBrowserTextEditor {
         OnBrowserTextEditor.announceMessage(`Saved ${this.dataTitle} from the editor.`)
       } else {
         this.notify('Data weren\'t accepted! Check the error log.')
-        OnBrowserTextEditor.announceMessage(new Error(JSON.stringify(result)), 'error')
+        OnBrowserTextEditor.announceMessage(new Error(JSON.stringify(result)))
       }
     } catch (e) {
       this.notify('Data can\'t be saved. Check the error log.', true)
-      OnBrowserTextEditor.announceMessage(e, 'error')
+      OnBrowserTextEditor.announceMessage(e)
     }
   }
   loadToEditor () {
@@ -178,7 +178,7 @@ class OnBrowserTextEditor {
       OnBrowserTextEditor.announceMessage(`Loaded ${this.dataTitle} to the editor.`)
     } catch (e) {
       this.notify('Data can\'t be read! Check the error log.', true)
-      OnBrowserTextEditor.announceMessage(e, 'error')
+      OnBrowserTextEditor.announceMessage(e)
     }
   }
   

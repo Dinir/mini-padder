@@ -116,7 +116,7 @@ class OnBrowserTextEditor {
       log: 'log',
       error: 'error'
     }
-    window.dispatchEvent(new CustomEvent('GPVMessage', {
+    window.dispatchEvent(new CustomEvent('MPMessage', {
       detail: {
         from: 'On-Browser Text Editor',
         type: message instanceof Error ?

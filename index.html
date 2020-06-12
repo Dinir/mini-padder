@@ -207,7 +207,7 @@
 <script>
   const Logger = new ErrorLogCollector()
   // get gamepad viewer messages on console
-  window.addEventListener('GPVMessage', e => {
+  window.addEventListener('MPMessage', e => {
     if (e.detail.type === 'error') {
       console.error(e.detail.from + ':', e.detail.message)
       if (

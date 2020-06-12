@@ -188,7 +188,7 @@ class MappingManager {
       log: 'log',
       error: 'error'
     }
-    window.dispatchEvent(new CustomEvent('GPVMessage', {
+    window.dispatchEvent(new CustomEvent('MPMessage', {
       detail: {
         from: 'Mapping Manager',
         type: message instanceof Error ?

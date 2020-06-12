@@ -19,7 +19,7 @@ class MiniPadderUpdater extends Updater {
   }
   
   static announceMessage (message) {
-    window.dispatchEvent(new CustomEvent('GPVMessage', {
+    window.dispatchEvent(new CustomEvent('MPMessage', {
       detail: {
         from: 'Updater',
         type: message instanceof Error ? 'error' : 'log',

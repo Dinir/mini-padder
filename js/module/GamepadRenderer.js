@@ -170,7 +170,7 @@ class GamepadRenderer {
       log: 'log',
       error: 'error'
     }
-    window.dispatchEvent(new CustomEvent('GPVMessage', {
+    window.dispatchEvent(new CustomEvent('MPMessage', {
       detail: {
         from: 'Gamepad Renderer',
         type: message instanceof Error ?

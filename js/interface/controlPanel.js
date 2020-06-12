@@ -38,7 +38,7 @@ class ControlPanel {
       log: 'log',
       error: 'error'
     }
-    window.dispatchEvent(new CustomEvent('GPVMessage', {
+    window.dispatchEvent(new CustomEvent('MPMessage', {
       detail: {
         from: 'Control Panel',
         type: message instanceof Error ?

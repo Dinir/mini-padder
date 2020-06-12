@@ -894,10 +894,10 @@ class GamepadRenderer {
     const inst = skinSlot.instruction
     const properties = skinSlot.properties
     if (!src || !ctx || !inst) {
-      GamepadRenderer.announceMessage({
+      GamepadRenderer.announceMessage(new Error(JSON.stringify({
         message: 'Renderer is ready to draw but tools are somehow missing.',
         skinSlot: skinSlot
-      }, 'error')
+      })))
       return false
     }
   
@@ -1191,10 +1191,10 @@ class GamepadRenderer {
     const inst = skinSlot.instruction
     const properties = skinSlot.properties
     if (!src || !ctx || !inst) {
-      GamepadRenderer.announceMessage({
+      GamepadRenderer.announceMessage(new Error(JSON.stringify({
         message: 'Renderer is ready to draw but tools are somehow missing.',
         skinSlot: skinSlot
-      }, 'error')
+      })))
       return false
     }
   
@@ -1328,10 +1328,10 @@ class GamepadRenderer {
     const ctx = skinSlot.ctx
     const inst = skinSlot.instruction
     if (!src || !ctx || !inst) {
-      GamepadRenderer.announceMessage({
+      GamepadRenderer.announceMessage(new Error(JSON.stringify({
         message: 'Renderer is ready to draw but tools are somehow missing.',
         skinSlot: skinSlot
-      }, 'error')
+      })))
       return false
     }
   

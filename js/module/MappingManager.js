@@ -818,13 +818,10 @@ class MappingManager {
   import (exportedMappings) {
     const mappingsAreValid = MappingManager.validateMappings(exportedMappings)
     if (mappingsAreValid !== true) {
-      MappingManager.announceMessage(
-        {
-          message: 'Some of the given mappings are not valid.',
-          detail: mappingsAreValid
-        },
-        'error'
-      )
+      MappingManager.announceMessage(new Error(JSON.stringify({
+        message: 'Some of the given mappings are not valid.',
+        detail: mappingsAreValid
+      })))
       return mappingsAreValid
     }
     this.removeAll()
@@ -850,13 +847,10 @@ class MappingManager {
       )
       return true
     } else {
-      MappingManager.announceMessage(
-        {
-          message: 'Some mappings loaded at the moment are not valid.',
-          detail: mappingsAreValid
-        },
-        'error'
-      )
+      MappingManager.announceMessage(new Error(JSON.stringify({
+        message: 'Some mappings loaded at the moment are not valid.',
+        detail: mappingsAreValid
+      })))
       return false
     }
   }

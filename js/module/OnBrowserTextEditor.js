@@ -111,21 +111,7 @@ class OnBrowserTextEditor {
     }
   }
   
-  static announceMessage (message, type) {
-    const messageType = {
-      log: 'log',
-      error: 'error'
-    }
-    window.dispatchEvent(new CustomEvent('MPMessage', {
-      detail: {
-        from: 'On-Browser Text Editor',
-        type: message instanceof Error ?
-          messageType.error : ( messageType[type] || messageType.log ),
-        message: type === 'error' ?
-          new Error(JSON.stringify(message)) : message
-      }
-    }))
-  }
+  static announceMessage = MPCommon.announceMessageFrom('On-Browser Text Editor')
   
   /**
    * Change the data the editor is 'focusing' on.

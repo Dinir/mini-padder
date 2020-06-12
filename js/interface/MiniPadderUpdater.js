@@ -18,15 +18,7 @@ class MiniPadderUpdater extends Updater {
     }
   }
   
-  static announceMessage (message) {
-    window.dispatchEvent(new CustomEvent('MPMessage', {
-      detail: {
-        from: 'Updater',
-        type: message instanceof Error ? 'error' : 'log',
-        message: message
-      }
-    }))
-  }
+  static announceMessage = MPCommon.announceMessageFrom('Updater')
   
   loadUpdateTasks () {
     // only add applications of changes that couldn't be done by updating files

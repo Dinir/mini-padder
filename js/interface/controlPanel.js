@@ -33,21 +33,7 @@ class ControlPanel {
     this.setPanelValuesInBulk = this.setPanelValuesInBulk.bind(this)
   }
   
-  static announceMessage (message, type) {
-    const messageType = {
-      log: 'log',
-      error: 'error'
-    }
-    window.dispatchEvent(new CustomEvent('MPMessage', {
-      detail: {
-        from: 'Control Panel',
-        type: message instanceof Error ?
-          messageType.error : ( messageType[type] || messageType.log ),
-        message: type === 'error' ?
-          new Error(JSON.stringify(message)) : message
-      }
-    }))
-  }
+  static announceMessage = MPCommon.announceMessageFrom('Control Panel')
   
   static get recognizedTypes () {
     return [
@@ -63,38 +49,6 @@ class ControlPanel {
     // can't believe `!!window.chrome` doesn't work on OBS browser
     if (/Chrome\/\d+/.test(navigator.userAgent)) { return 'Chrome' }
     if (typeof InstallTrigger !== 'undefined') { return 'Firefox' }
-  }
-  
-  /**
-   * Extract human readable description and gamepadId from `Gamepad.id`.
-   * @param {string} idString
-   * @returns {{name: string, gamepadId: gamepadId}}
-   */
-  static getGamepadId (idString) {
-    // only parse for either Chrome or Firefox environment at the moment
-    const matchResult =
-      idString.match(/ \(.*Vendor: ([0-9a-f]{4}) Product: ([0-9a-f]{4})\)/) ||
-      idString.match(/([0-9a-f]{1,4})-([0-9a-f]{1,4})/)
-    if (matchResult) {
-      return {
-        name:
-          idString.substring(0, matchResult.index) ||
-          idString.substring(10),
-        gamepadId: matchResult[1] + matchResult[2]
-      }
-      // vender and product aren't found. assume it's a standard gamepad.
-    } else if (/XInput/.test(idString)) {
-      const indexBeforeBracket = idString.search(/ \(/)
-      return {
-        name: idString.substring(0, indexBeforeBracket),
-        gamepadId: 'XInput'
-      }
-    } else {
-      return {
-        name: 'DInput Controller?',
-        gamepadId: 'DInput'
-      }
-    }
   }
   
   static getIndexedElements (elementContainer, elementType) {
@@ -238,7 +192,7 @@ class ControlPanel {
         }
         switch (e.gamepad.connected) {
           case true:
-            const id = ControlPanel.getGamepadId(e.gamepad.id)
+            const id = MPCommon.getGamepadId(e.gamepad.id)
             const label = this.makeLabel(id)
             this.changeLabel(e.gamepad.index, id, label)
             this.buttons[e.gamepad.index].classList.remove('inactive')
@@ -380,7 +334,7 @@ class ControlPanel {
         }
         switch (e.gamepad.connected) {
           case true:
-            const id = ControlPanel.getGamepadId(e.gamepad.id)
+            const id = MPCommon.getGamepadId(e.gamepad.id)
             const text = `${id.name} <sub>${id.gamepadId}</sub>`
             this.changeLabel(e.gamepad.index, id, text)
             const defaultValue = this.defaultSelectedList[id.gamepadId]

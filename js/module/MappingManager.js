@@ -183,21 +183,7 @@ class MappingManager {
     )
   }
   
-  static announceMessage (message, type) {
-    const messageType = {
-      log: 'log',
-      error: 'error'
-    }
-    window.dispatchEvent(new CustomEvent('MPMessage', {
-      detail: {
-        from: 'Mapping Manager',
-        type: message instanceof Error ?
-          messageType.error : ( messageType[type] || messageType.log ),
-        message: type === 'error' ?
-          new Error(JSON.stringify(message)) : message
-      }
-    }))
-  }
+  static announceMessage = MPCommon.announceMessageFrom('Mapping Manager')
   /**
    * Dispatch an event of 'processedGamepadChange' type
    * with data of mapped changes included in it.

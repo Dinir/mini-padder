@@ -58,12 +58,6 @@
  * @property {number} value Value of the button. It's 0 or 1 for digital buttons, and any value between and including them for analog buttons.
  * @property {number} delta Change of the value from the last time processedGamepadChange was made.
  */
-/**
- * @typedef {string} gamepadId
- * @description
- * Vendor ID and Product ID of a gamepad concatenated into a 8-letter string, or
- * if the gamepad is a standard one, the value will be 'XInput' or 'DInput'.
- */
 
 /**
  * @event GamepadWatcher#gamepadChange
@@ -151,38 +145,6 @@ class GamepadWatcher {
     if (typeof InstallTrigger !== 'undefined') { return 'Firefox' }
   }
   
-  /**
-   * Extract human readable description and gamepadId from `Gamepad.id`.
-   * @param {string} idString
-   * @returns {{name: string, gamepadId: gamepadId}}
-   */
-  static getGamepadId (idString) {
-    // only parse for either Chrome or Firefox environment at the moment
-    const matchResult =
-      idString.match(/ \(.*Vendor: ([0-9a-f]{4}) Product: ([0-9a-f]{4})\)/) ||
-      idString.match(/([0-9a-f]{1,4})-([0-9a-f]{1,4})/)
-    if (matchResult) {
-      return {
-        name:
-          idString.substring(0, matchResult.index) ||
-          idString.substring(10),
-        gamepadId: matchResult[1] + matchResult[2]
-      }
-      // vender and product aren't found. assume it's a standard gamepad.
-    } else if (/XInput/.test(idString)) {
-      const indexBeforeBracket = idString.search(/ \(/)
-      return {
-        name: idString.substring(0, indexBeforeBracket),
-        gamepadId: 'XInput'
-      }
-    } else {
-      return {
-        name: 'DInput Controller?',
-        gamepadId: 'DInput'
-      }
-    }
-  }
-  
   get connectionAmount () {
     return Object.keys(this.gamepads).length
   }
@@ -199,7 +161,7 @@ class GamepadWatcher {
     if (connection) {
       this.gamepads[gamepad.index] = gamepad
       this.gamepadId[gamepad.index] =
-        GamepadWatcher.getGamepadId(gamepad.id)
+        MPCommon.getGamepadId(gamepad.id)
     } else {
       delete this.gamepads[gamepad.index]
       delete this.gamepadId[gamepad.index]
@@ -229,7 +191,7 @@ class GamepadWatcher {
       if (gamepads[i]) {
         this.gamepads[gamepads[i].index] = gamepads[i]
         this.gamepadId[gamepads[i].index] =
-          GamepadWatcher.getGamepadId(gamepads[i].id)
+          MPCommon.getGamepadId(gamepads[i].id)
       }
       else {
         delete this.gamepads[gamepads[i].index]

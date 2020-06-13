@@ -224,6 +224,7 @@ class ControlPanel {
       ) {
         this.container = selectContainer
         this.texts = labelTextElements
+        /** @type {string[]} */
         this.list = listReference
         this.defaultSelectedList = defaultSelectedList
         this.selects = ControlPanel.getIndexedElements(selectContainer, 'select')
@@ -290,9 +291,9 @@ class ControlPanel {
       },
       updateItems: function (valueArray) {
         const existingValues = this.getExistingValues()
-        // remove ones that doesn't exist in valueArray
         // i === 0 is the placeholder
         for (let i = 1; i < existingValues.length; i++) {
+          // remove ones that doesn't exist in valueArray, skip otherwise
           if (valueArray.indexOf(existingValues[i]) !== -1) { continue }
           // update all selects that were pointing at this index
           /*
@@ -367,8 +368,11 @@ class ControlPanel {
       ) {
         this.container = selectContainer
         this.texts = labelTextElements
+        /** @type {Map.<string, string>} */
         this.list = listReference
+        /** @type {Object.<string, string>} */
         this.defaultSelectedList = defaultSelectedList
+        /** @type {HTMLSelectElement[]} */
         this.selects = ControlPanel.getIndexedElements(selectContainer, 'select')
         this.addPlaceholder()
         this.addItems(this.list)
@@ -387,10 +391,16 @@ class ControlPanel {
           )
         })
       },
+      /**
+       * Get a Map from options in the first select in the instance.
+       * @returns {Map.<string, string>}
+       */
       getExistingValues: function () {
-        return Array.from(this.selects[0].options).map(v => v.value)
+        const optionsArray = Array.from(this.selects[0].options)
+        return new Map(optionsArray.map(v => [v.value, v.innerHTML]))
       },
       addPlaceholder: function () {
+        /** @type {HTMLOptionElement} */
         const item = document.createElement('option')
         item.value = '...'
         item.innerHTML = '...'
@@ -400,30 +410,54 @@ class ControlPanel {
           this.selects[s].options.add(item.cloneNode(true))
         }
       },
-      addItem: function (value) {
-        if (typeof value === 'undefined' || value === null || !value.length) { return false }
+      /**
+       * Make an option with it's value and innerHTML
+       * set as the key and the value.
+       * Then add the option to all selects.
+       *
+       * @param {string} value Key of a pair, used to check things internally
+       * @param {string} displayText Value of a pair, the text actually shown on the page
+       * @returns {boolean}
+       */
+      addItem: function (value, displayText) {
+        if (typeof value === 'undefined' || value === null || !value.length) {
+          return false
+        }
+        displayText = displayText || value
+        /** @type {HTMLOptionElement} */
         const item = document.createElement('option')
         item.value = value
         item.setAttribute('name', value)
-        item.innerHTML = value
+        item.innerHTML = displayText
         for(let s = 0; s < this.selects.length; s++) {
           this.selects[s].options.add(item.cloneNode(true))
         }
       },
-      addItems: function (valueArray) {
+      /**
+       * Add all items from a new Map, except ones already existing.
+       * @param {Map.<string, string>} newMap
+       */
+      addItems: function (newMap) {
+        /** @type {Map.<string, string>} */
         const existingValues = this.getExistingValues()
-        for (let i = 0; i < valueArray.length; i++) {
-          if (existingValues.indexOf(valueArray[i]) === -1) {
-            this.addItem(valueArray[i])
-          }
+        for (let [k, v] of newMap) {
+          if (existingValues.has(k)) { continue }
+          this.addItem(k, v)
         }
       },
+      /**
+       * @param {string} value internal value representing the item
+       * @returns {boolean}
+       */
       removeItem: function (value) {
         if (typeof value === 'undefined' || !value.length) { return false }
         for (let s = 0; s < this.selects.length; s++) {
           this.selects[s].options.namedItem(value).remove()
         }
       },
+      /**
+       * Empty all selects in the instance.
+       */
       removeAllItems: function () {
         for (let s = 0; s < this.selects.length; s++) {
           while (this.selects[s].options.length > 0) {
@@ -431,23 +465,33 @@ class ControlPanel {
           }
         }
       },
-      updateItems: function (valueArray) {
+      /**
+       * Update the list with newMap,
+       * @param {Map.<string, string>} newMap
+       */
+      updateItems: function (newMap) {
+        /** @type {Map.<string, string>} */
         const existingValues = this.getExistingValues()
-        // remove ones that doesn't exist in valueArray
-        // i === 0 is the placeholder
-        for (let i = 1; i < existingValues.length; i++) {
-          if (valueArray.indexOf(existingValues[i]) !== -1) { continue }
+        const newMapValues = [...newMap.values()]
+        const existingKeys = [...existingValues.keys()]
+        for (let [k, v] of existingValues) {
+          // item with key and value as `...` is a placeholder
+          if (k === '...') { continue }
+          // remove ones that doesn't exist in newMap, skip otherwise
+          if (newMapValues.indexOf(v) !== -1) { continue }
           // update all selects that were pointing at this index
+          const indexOfKey = existingKeys.indexOf(k)
           /*
            * this will only work if the lists are stored as references to
            * actual lists properly being updated before this method is called.
            */
           for (let s = 0; s < this.selects.length; s++) {
             const select = this.selects[s]
-            if (select.selectedIndex !== i) { continue }
+            if (select.selectedIndex !== indexOfKey) { continue }
             const gamepadId = this.texts[s].dataset.gamepadId
+            /** @type {string} key of `this.list` */
             const mappedItem = this.defaultSelectedList[gamepadId]
-            const indexOfMappedItem = this.list.indexOf(mappedItem)
+            const indexOfMappedItem = [...this.list.keys()].indexOf(mappedItem)
             // selectIndex === listIndex + 1 (there's a placeholder at index 0)
             select.selectedIndex = indexOfMappedItem !== -1 ? indexOfMappedItem + 1 : 0
             /*
@@ -459,11 +503,11 @@ class ControlPanel {
              * which is applied to skinMapping before this method is called.
              */
           }
-          // remove the index
-          this.removeItem(existingValues[i])
+          // remove the item that doesn't exist in newMap from existingValues
+          this.removeItem(k)
         }
         // call addItems which will skip items already existing in valueArray
-        this.addItems(valueArray)
+        this.addItems(newMap)
       },
       globalEventCallback: function (e) {
         if (

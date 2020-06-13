@@ -51,6 +51,20 @@
  * It's a reference to `config.sticks` and `config.buttons`.
  */
 /**
+ * @typedef {Object} fadeoutOption
+ * @memberOf GamepadRenderer
+ * @description
+ * Configuration values for fade-out effect.
+ *
+ * @property {Number[]} time Milliseconds for each fade-out level.
+ * It's in milliseconds to compare with DOMHighResTimestamp values.
+ *
+ * @property {Number[]} opacity Transparency values for each level.
+ *
+ * @property {Number} duration Transition time of fade-out effect in milliseconds.
+ * It's in milliseconds to compare with DOMHighResTimestamp values.
+ */
+/**
  * @typedef {Object} SkinData
  * @memberOf GamepadRenderer#
  * @description contains skin data obtained from `config.json` for the skin.
@@ -95,19 +109,7 @@ class GamepadRenderer {
   
     this.canvas = canvasArray
     // I give it default values I used when it was 'XBoxPadViewer'.
-    /**
-     * @typedef {Object} fadeoutOption
-     * @description
-     * Configuration values for fade-out effect.
-     * @property {Number[]} time Milliseconds for each fade-out level.
-     * It's in milliseconds to compare with DOMHighResTimestamp values.
-     * @property {Number[]} opacity Transparency values for each level.
-     * @property {Number} duration Transition time of fade-out effect in milliseconds.
-     * It's in milliseconds to compare with DOMHighResTimestamp values.
-     * @property {Number[]} deltaOpacity Amount of alpha value to apply
-     * for each frame, to eventually get to the intended opacity of next level.
-     * It should be calculated when setting new values.
-     */
+    /** @type fadeoutOption */
     this.fadeout = {
       time: [8,16,32],
       opacity: [0.5,0.1,0],
@@ -477,6 +479,9 @@ class GamepadRenderer {
     const listJSON = JSON.stringify(this.skinList)
     window.localStorage.setItem('skinList', listJSON)
   }
+  /**
+   * Empty SkinList, keeping the reference.
+   */
   resetSkinList () {
     this.skinList.splice(0, this.skinList.length)
   }
@@ -587,6 +592,7 @@ class GamepadRenderer {
     
     if (isCustomSkin) {
       // load from local storage
+      /** @type SkinConfig */
       const customSkinConfig =
         JSON.parse(window.localStorage.getItem(this.customSkinLocalStorageKey))
       try {
@@ -677,14 +683,17 @@ class GamepadRenderer {
   
     const altMessage = `a layer of canvas to display inputs of gamepad ${slot}`
     for (let l = 0; l < config.layer.length; l++) {
+      /** @type SkinLayer */
       const layerData = config.layer[l]
       
       const isStatic = 
         layerData.hasOwnProperty('background') &&
         typeof layerData.background === 'number'
       
+      /** @type {HTMLCanvasElement|HTMLDivElement} */
       let layer
       if (isStatic) {
+        /** @type {HTMLDivElement} */
         layer = document.createElement('div')
         layer.style.backgroundImage = 'url(' + skinSlot.src[layerData.background].src + ')'
         layer.style.width = layerData.width + 'px'
@@ -693,6 +702,7 @@ class GamepadRenderer {
         layer.style.top = layerData.y + 'px'
         skinSlot.ctx.push(null)
       } else {
+        /** @type {HTMLCanvasElement} */
         layer = GamepadRenderer.newCanvasLayer(
           layerData.width,
           layerData.height,
@@ -735,6 +745,11 @@ class GamepadRenderer {
     
     return true
   }
+  /**
+   * Remove a {@link SkinSlot} through every property of it.
+   * Then remove every canvas it was using.
+   * @param {number} slot index of the slot the SkinSlot was occupying.
+   */
   removeSkinFromSlot (slot) {
     delete this.skinSlot[slot].gamepadId
     delete this.skinSlot[slot].properties

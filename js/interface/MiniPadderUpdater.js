@@ -110,9 +110,8 @@ class MiniPadderUpdater extends Updater {
   
             return true
           }
-  
-        }
-      }
-    }
+        } // 3.2
+      } // 3
+    } // end of update tasks
   }
 }

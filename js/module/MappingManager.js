@@ -59,6 +59,11 @@
  *
  * @property {gamepadId} mappingId gamepadId of a mapping used for producing this ProcessedGamepadChange.
  *
+ * @property {string[]} properties
+ * List of known keywords representing a state this change should be treated as.
+ * @property {string[]} message
+ * Messages with each line in each index, for GamepadRenderer to display.
+ *
  * @property {Object.<string, ?stickChange>} sticks
  *
  * @property {?stickChange} sticks.left

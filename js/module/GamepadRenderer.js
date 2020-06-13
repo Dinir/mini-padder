@@ -1,7 +1,59 @@
 /**
+ * @typedef {Object} SkinData
+ * @memberOf GamepadRenderer#
+ * @description contains skin data obtained from `config.json` for the skin.
+ *
+ * @property {boolean} loaded
+ * `true` when loading is complete
+ * @property {?string} path
+ * path to the skin directory, relative to the root of the page. `null` if it's loaded from an external source.
+ * @property {HTMLImageElement[]} src
+ * contains image required for the skin
+ * @property {SkinConfig} config
+ */
+/**
+ * @typedef {Object} SkinConfig
+ * @description data from a configuration json in the skin directory
+ * @memberOf SkinData
+ *
+ * @property {skinDisplayName} name Display name of the skin
+ * @property {string[]} properties
+ * List of known keywords telling GamepadRenderer to render the skin in a different way
+ * @property {string[]} src
+ * Filenames of spritesheets or static images for your skin.
+ * Each can be replaced with a link or a Data URI.
+ * @property {SkinLayer[]} layer
+ * @property {Object} sticks Instructions to render stick inputs.
+ * @property {Object} buttons Instructions to render button inputs.
+ */
+/**
+ * @typedef {Object} SkinLayer
+ * @description the position and size of each canvas for the skin
+ * @memberOf SkinConfig
+ *
+ * @property {string} name
+ * @property {number} [background]
+ * If this layer is for displaying a static image,
+ * this property exists and tells which image in {@link SkinConfig.src} will be used.
+ * @property {number} x Margin from the top for the layer.
+ * @property {number} y Margin from the left for the layer.
+ * @property {number} width Horizontal size of the layer.
+ * @property {number} height Vertical size of the layer.
+ */
+/**
+ * @typedef {Map<skinInternalName, skinDisplayName>} SkinList
+ * @memberOf GamepadRenderer#
+ * @description Internal names and display names of all skins currently known.
+ */
+/** @typedef {string} skinInternalName `foldername-skinfilename` */
+/** @typedef {string} skinDisplayName `config.name` of a skin */
+/**
  * @typedef {Object} SkinSlot
  * @memberOf GamepadRenderer#
- * @description data required to draw gamepad changes to canvases in the corresponding gamepad slot
+ * @description data required to draw gamepad changes to canvas
+ * in the corresponding gamepad slot
+ *
+ * @property {skinInternalName} internalName
  *
  * @property {gamepadId} gamepadId
  * gamepadId of the gamepad included in processedGamepadChange
@@ -65,19 +117,6 @@
  * It's in milliseconds to compare with DOMHighResTimestamp values.
  */
 /**
- * @typedef {Object} SkinData
- * @memberOf GamepadRenderer#
- * @description contains skin data obtained from `config.json` for the skin.
- *
- * @property {boolean} loaded `true` when loading is complete
- * @property {?string} path
- * path to the skin directory, relative to the root of the page. `null` if it's loaded from an external source.
- * @property {HTMLImageElement[]} src
- * contains image required for the skin
- * @property {Object} config
- * data from `config.json` in the skin directory
- */
-/**
  *
  * @class
  * @listens MappingManager#processedGamepadChange
@@ -139,7 +178,7 @@ class GamepadRenderer {
     this.loadSkinList()
     /**
      * Store relations of gamepadId and a skin directory name, as key-value pair.
-     * @type {Object.<string, string>}
+     * @type {Object.<gamepadId, skinInternalName>}
      */
     this.skinMapping = {}
     this.loadSkinMapping()
@@ -234,7 +273,7 @@ class GamepadRenderer {
    * Used by `GamepadRenderer.loadSkin`.
    *
    * @param {SkinData} skinData reference to SkinData the result will be stored
-   * @param {Object} configObj `config.json` parsed into an object
+   * @param {SkinConfig} configObj skin json file parsed into an object
    * @param {?string} [path=null]
    * @private
    */
@@ -500,6 +539,12 @@ class GamepadRenderer {
     this.saveSkinMapping()
     return true
   }
+  
+  /**
+   *
+   * @param {Object.<gamepadId, skinInternalName>} idDirnamePairs
+   * @returns {boolean}
+   */
   setSkinMappingInBulk (idDirnamePairs) {
     if (
       typeof idDirnamePairs !== 'object' ||
@@ -573,8 +618,9 @@ class GamepadRenderer {
     return true
   }
   /**
-   * loads a skin and store the config under `this.skins[dirname]`.
-   * @param {string} dirname directory name for the skin
+   * Loads a skin and store the config under `this.skins[internalName]`.
+   * This also applies actual display name of a skin to the SkinList.
+   * @param {skinInternalName} internalName
    */
   loadSkin (dirname) {
     if (!GamepadRenderer.isDirnameOkay(dirname)) { return false }
@@ -644,8 +690,8 @@ class GamepadRenderer {
   }
   /**
    * setup a loaded skin for one of four canvas
-   * @param {string} dirname directory name for the skin
-   * @param {number} slot index for one of four canvas
+   * @param {skinInternalName} internalName
+   * @param {number} slot index for one of four canvas slot
    * @param {gamepadId} gamepadId gamepad the skin is set to be used for
    */
   applySkinToSlot (dirname, slot, gamepadId) {

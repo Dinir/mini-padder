@@ -110,7 +110,27 @@ class MiniPadderUpdater extends Updater {
   
             return true
           }
-        } // 3.2
+        },
+        '4': {
+          '0': function () {
+            if (
+              typeof Renderer === 'undefined'
+            ) {
+              return false
+            }
+            const version = '3.4.0'
+            MiniPadderUpdater.announceMessage(
+              version + ': Adding variations for 6-button gamepads.'
+            )
+            
+            Renderer.addSkinsToSkinList(new Map([
+              ['megapad-x', 'Mega Pad X Button'],
+              ['megapad-d', 'Mega Pad D Button']
+            ]))
+            
+            return true
+          }
+        } // 3.4
       } // 3
     } // end of update tasks
   }

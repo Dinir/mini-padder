@@ -331,7 +331,7 @@
     )
   }
 
-  const customSkinLocalStorageKey = 'customSkin'
+  const customSkinLocalStorageKey = 'customskin'
   cpPanel.customSkin.assign(
     customSkinLocalStorageKey, {
       input: cpDomSkinUploader.input,
@@ -360,8 +360,8 @@
             const skinSlot = Renderer.skinSlot[i]
             if (
               !skinSlot ||
-              !skinSlot.hasOwnProperty('dirname') ||
-              skinSlot.dirname !== customSkinLocalStorageKey
+              !skinSlot.hasOwnProperty('internalName') ||
+              skinSlot.internalName !== customSkinLocalStorageKey
             ) { continue }
             Renderer.changeSkinOfSlot(i, skinSlot.gamepadId)
           }

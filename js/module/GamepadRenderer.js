@@ -161,18 +161,20 @@ class GamepadRenderer {
      * @type {Object.<string, SkinData>}
      */
     this.skins = {}
-  
-    /**
-     * Directory names of all skins currently known.
-     * @type {string[]}
-     */
-    this.skinList = []
-    this.defaultSkins = ['XInput', 'DInput', 'Joystick']
+    
+    /** @type {SkinList} */
+    this.skinList = new Map()
+    this.defaultSkins = new Map([
+      ['gamepad-xinput', 'XInput'],
+      ['gamepad-dinput', 'DInput'],
+      ['joystick-v', 'Joystick V Layout'],
+      ['joystick-a', 'Joystick A Layout']
+    ])
     // local storage key to find custom skin config
-    this.customSkinLocalStorageKey = 'customSkin'
+    this.customSkinLocalStorageKey = 'customskin'
     // push names of default skins
-    for (let i = 0; i < this.defaultSkins.length; i++) {
-      this.skinList.push(this.defaultSkins[i])
+    for (let [internalName, displayName] of this.defaultSkins) {
+      this.skinList.set(internalName, displayName)
     }
     // then load and add any existing additional skins to the list
     this.loadSkinList()
@@ -202,8 +204,10 @@ class GamepadRenderer {
       this._processedGamepadChange = e.detail
     })
     
-    this.setSkinMappingInBulk = this.setSkinMappingInBulk.bind(this)
-    this.setFadeoutOptionFromTextArray = this.setFadeoutOptionFromTextArray.bind(this)
+    this.setSkinMappingInBulk =
+      this.setSkinMappingInBulk.bind(this)
+    this.setFadeoutOptionFromTextArray =
+      this.setFadeoutOptionFromTextArray.bind(this)
   }
   
   static announceMessage = MPCommon.announceMessageFrom('Gamepad Renderer')
@@ -226,30 +230,40 @@ class GamepadRenderer {
         false : (itemSeen[item] = true)
     })
   }
-  static isDirnameOkay (dirname) {
-    if (!dirname) {
+  
+  /**
+   * Checks the validity of the given skinInternalName.
+   * Sends an error then return false if the given value is found invalid.
+   *
+   * Folder name should be made of alphanumerics and underscore.
+   * Entire skinInternalName can have one optional hyphen.
+   *
+   * @param {skinInternalName} internalName
+   * @returns {boolean}
+   */
+  static isDirnameOkay (internalName) {
+    if (!internalName) {
       GamepadRenderer.announceMessage(new Error(
-        `Directory name for the skin is faulty: ${dirname}`
+        `Directory name for the skin is faulty: ${internalName}`
       ))
       return false
     }
+    const numberOfHyphens = [...internalName.matchAll(/-/g)].length
+    if (numberOfHyphens > 1) {
+      GamepadRenderer.announceMessage(new Error('Too much hyphens.'))
+      return false
+    }
+    const dirname = internalName.split('-')[0]
     const isOkay = !/[^0-9a-zA-Z_\-]/.test(dirname)
     if (!isOkay) {
       GamepadRenderer.announceMessage(new Error(
         'Directory name for the skin is invalid. ' +
-        'Allowed characters are alphanumericals, hyphen and underscore.'
+        'Allowed characters are alphanumerics, ' +
+        'underscore and one optional hyphen to separate ' +
+        'folder name and config file name.'
       ))
     }
     return isOkay
-  }
-  static findDefaultSkin (gamepadId, mappingProperties) {
-    const defaultSkin = ['DInput', 'XInput', 'Joystick']
-    if (mappingProperties) {
-      if (mappingProperties.indexOf('joystick') !== -1) { return defaultSkin[2] }
-    }
-    // when it's a standard XInput gamepad, the gamepadId is just 'xinput'.
-    if (/XInput/i.test(gamepadId)) { return defaultSkin[1] }
-    return defaultSkin[0]
   }
   static newCanvasLayer (width, height, x, y) {
     const layer = document.createElement('canvas')
@@ -490,52 +504,139 @@ class GamepadRenderer {
     ) / 10 ** this.fadeoutOpacityPrecision
   }
   
-  addSkinToSkinList (skinDirname) {
-    if (this.skinList.indexOf(skinDirname) !== -1) { return false }
-    if (!GamepadRenderer.isDirnameOkay(skinDirname)) { return false }
-    this.skinList.push(skinDirname)
-    this.saveSkinList()
-  }
-  addSkinsToSkinList (skinDirnameArray) {
-    if (typeof skinDirnameArray === 'string') {
-      this.addSkinToSkinList(skinDirnameArray)
+  /**
+   * Find default internal skin name with given gamepadId and optionally its mapping.
+   * @param {gamepadId} gamepadId
+   * @param {string[]} [mappingProperties] {@link gamepadMapping.properties}
+   * @param {SkinList} [defaultSkinList]
+   *
+   * @returns {skinInternalName}
+   */
+  findDefaultSkin (gamepadId, mappingProperties, defaultSkinList = this.defaultSkins) {
+    /** @type {skinInternalName[]} */
+    const defaultInternalNames = [...defaultSkinList.keys()]
+    if (mappingProperties) {
+      if (mappingProperties.indexOf('joystick') !== -1) { return defaultInternalNames[2] }
     }
-    skinDirnameArray.forEach(skinDirName => {
-      if (this.skinList.indexOf(skinDirName) !== -1) {
-        return false
+    // when it's a standard XInput gamepad, the gamepadId is just 'xinput'.
+    if (/XInput/i.test(gamepadId)) { return defaultInternalNames[0] }
+    return defaultInternalNames[1]
+  }
+  
+  /**
+   * Add a SkinList item.
+   * @param {skinInternalName} internalName
+   * @param {skinDisplayName} [displayName]
+   * @param {boolean} [saveToLocalStorage=true]
+   * if false it won't save the list to local storage
+   * @returns {boolean}
+   */
+  addSkinToSkinList (internalName, displayName, saveToLocalStorage = true) {
+    internalName = internalName.toLowerCase()
+    if (this.skinList.has(internalName)) { return false }
+    if (!GamepadRenderer.isDirnameOkay(internalName)) { return false }
+    this.skinList.set(internalName, displayName || internalName)
+    
+    if (saveToLocalStorage) {
+      this.saveSkinList()
+    }
+    return true
+  }
+  /**
+   * Update display name of a skin in the SkinList, only if it's found first
+   * @param {skinInternalName} internalName
+   * @param {skinDisplayName} displayName
+   * @returns {boolean}
+   */
+  updateDisplayNameInSkinList (internalName, displayName) {
+    if (
+      !displayName || !this.skinList.has(internalName)
+    ) { return false }
+    this.skinList.set(internalName, displayName)
+    this.saveSkinList()
+    
+    return true
+  }
+  
+  /**
+   * Add multiple SkinList items at once.
+   * @param {SkinList|skinInternalName[]|skinInternalName} items
+   */
+  addSkinsToSkinList (items) {
+    if (typeof items === 'string') {
+      this.addSkinToSkinList(items)
+      return
+    }
+    if (items instanceof Map) {
+      for (let [internalName, displayName] of items) {
+        this.addSkinToSkinList(internalName, displayName, false)
       }
-      this.skinList.push(skinDirName)
-    })
+    } else if (items instanceof Array) {
+      items.forEach(internalName => {
+        this.addSkinToSkinList(internalName, null, false)
+      })
+    }
     this.saveSkinList()
   }
-  removeSkinFromSkinList (skinDirname) {
-    const indexOnSkinList = this.skinList.indexOf(skinDirname)
-    if (indexOnSkinList !== -1) {
-      this.skinList.splice(indexOnSkinList, 1)
-    }
+  removeSkinFromSkinList (internalName) {
+    this.skinList.delete(internalName)
   }
+  /**
+   * Save SkinList to local storage.
+   */
   saveSkinList () {
-    const listJSON = JSON.stringify(this.skinList)
+    const listJSON = JSON.stringify([...this.skinList])
     window.localStorage.setItem('skinList', listJSON)
   }
   /**
    * Empty SkinList, keeping the reference.
    */
   resetSkinList () {
-    this.skinList.splice(0, this.skinList.length)
+    for (let [internalName] of this.skinList) {
+      this.skinList.delete(internalName)
+    }
   }
+  /**
+   * Load SkinList from local storage.
+   *
+   * @param {boolean} [reloadFromScratch=false]
+   * If true the loaded list will replace the existing one.
+   */
   loadSkinList (reloadFromScratch = false) {
-    const skinList = JSON.parse(window.localStorage.getItem('skinList')) || []
-    if (skinList.length) {
+    /** @type {SkinList} */
+    let storedSkinList
+    try {
+      storedSkinList = new Map(JSON.parse(window.localStorage.getItem('skinList')))
+    } catch (e) {
+      if (e instanceof TypeError) {
+        /*
+         * This error happens because the stored one is 'array'.
+         * Convert the array to a map and add that to the skinList.
+         */
+        const skinListArray = JSON.parse(window.localStorage.getItem('skinList'))
+        storedSkinList = new Map(skinListArray.map(v => [v, v]))
+      } else {
+        GamepadRenderer.announceMessage(e)
+        return
+      }
+    }
+    
+    if (storedSkinList.size) {
       if (reloadFromScratch) { this.resetSkinList() }
-      this.addSkinsToSkinList(skinList)
+      this.addSkinsToSkinList(storedSkinList)
     }
   }
   
-  setSkinMapping (gamepadId, skinDirname) {
-    if (!GamepadRenderer.isDirnameOkay(skinDirname)) { return false }
-    if (this.skinMapping[gamepadId] === skinDirname) { return true }
-    this.skinMapping[gamepadId] = skinDirname
+  /**
+   * Make a new skin mapping for a gamepad under given gamepadId.
+   * @param {gamepadId} gamepadId
+   * @param {skinInternalName} internalName
+   * @returns {boolean}
+   */
+  setSkinMapping (gamepadId, internalName) {
+    if (!GamepadRenderer.isDirnameOkay(internalName)) { return false }
+    if (this.skinMapping[gamepadId] === internalName) { return true }
+    this.skinMapping[gamepadId] = internalName
     this.saveSkinMapping()
     return true
   }
@@ -555,6 +656,7 @@ class GamepadRenderer {
     
     this.resetSkinMapping()
     for (const gamepadId in idDirnamePairs) {
+      if (!idDirnamePairs.hasOwnProperty(gamepadId)) { continue }
       this.setSkinMapping(gamepadId, idDirnamePairs[gamepadId])
     }
     this.saveSkinMapping()
@@ -583,8 +685,8 @@ class GamepadRenderer {
     this.renderPending = false
   }
   loadAllListedSkins () {
-    for (let d = 0; d < this.skinList.length; d++) {
-      this.loadSkin(this.skinList[d])
+    for (let [internalName] of this.skinList) {
+      this.loadSkin(internalName)
     }
   }
   
@@ -622,19 +724,18 @@ class GamepadRenderer {
    * This also applies actual display name of a skin to the SkinList.
    * @param {skinInternalName} internalName
    */
-  loadSkin (dirname) {
-    if (!GamepadRenderer.isDirnameOkay(dirname)) { return false }
+  loadSkin (internalName) {
+    if (!GamepadRenderer.isDirnameOkay(internalName)) { return false }
     if (
-      this.skins[dirname] &&
-      typeof this.skins[dirname].loaded === 'boolean'
+      this.skins[internalName] &&
+      typeof this.skins[internalName].loaded === 'boolean'
     ) { return true }
-    this.skins[dirname] = {
+    this.skins[internalName] = {
       loaded: false
     }
-    this.addSkinToSkinList(dirname)
-    const skin = this.skins[dirname]
-    
-    const isCustomSkin = dirname === this.customSkinLocalStorageKey
+    this.addSkinToSkinList(internalName)
+    const skin = this.skins[internalName]
+    const isCustomSkin = internalName === this.customSkinLocalStorageKey
     
     if (isCustomSkin) {
       // load from local storage
@@ -643,50 +744,73 @@ class GamepadRenderer {
         JSON.parse(window.localStorage.getItem(this.customSkinLocalStorageKey))
       try {
         GamepadRenderer._buildSkinFromConfig(skin, customSkinConfig)
+        this.updateDisplayNameInSkinList(internalName, customSkinConfig.name)
       } catch (e) {
         GamepadRenderer.announceMessage(
           'Custom skin is not found or invalid, unloading the entry.'
         )
-        this.unloadSkin(dirname)
+        this.unloadSkin(internalName)
       }
     } else {
       // load from the hosted space
-      const path = `./skin/${dirname}`
-      fetch(`${path}/config.json`).then(response =>
+      
+      // check if file name is separately included
+      const hasSeparateFilename = internalName.search(/-/) !== -1
+      
+      const pathParts = internalName.split('-')
+      const path = `./skin/${pathParts[0]}`
+      const configPath = path + `/${pathParts[1] || pathParts[0]}.mpskin.json`
+      // const path = hasSeparateFilename ?
+      //   `./skin/${internalName.replace('-','/')}.mpskin.json` :
+      //   `./skin/${internalName}/${internalName}.mpskin.json`
+      fetch(configPath).then(response =>
         response.json()
       ).then(data => {
         GamepadRenderer._buildSkinFromConfig(skin, data, path)
+        this.updateDisplayNameInSkinList(internalName, data.name)
       }).catch(e => {
-        this.unloadSkin(dirname)
+        this.unloadSkin(internalName)
         GamepadRenderer.announceMessage(new Error(e))
       })
     }
   }
-  unloadSkin (dirname, updateSkinMapping = true) {
-    const skinName = this.skins[dirname] && this.skins[dirname].config ?
-      this.skins[dirname].config.name : dirname
-    delete this.skins[dirname]
-    this.removeSkinFromSkinList(dirname)
+  
+  /**
+   * Remove the skin from the page.
+   * @param {skinInternalName} internalName
+   * @param {boolean} [updateSkinMapping=true]
+   * Used when reloading a skin under a same internal name, specifically for the custom skin.
+   */
+  unloadSkin (internalName, updateSkinMapping = true) {
+    const skinNameForMessage = this.skinList.get(internalName)
+    
+    delete this.skins[internalName]
+    this.removeSkinFromSkinList(internalName)
   
     if (!updateSkinMapping) {
       return
     } else {
-      GamepadRenderer.announceMessage(`Unloaded skin ${skinName}.`)
+      GamepadRenderer.announceMessage(`Unloaded skin ${skinNameForMessage}.`)
     }
     
     // change skinMapping for gamepads using the now removed skin
     for (const gamepadId in this.skinMapping) {
       if (
         !this.skinMapping.hasOwnProperty(gamepadId) ||
-        this.skinMapping[gamepadId] !== dirname
+        this.skinMapping[gamepadId] !== internalName
       ) { continue }
-      this.setSkinMapping(gamepadId, GamepadRenderer.findDefaultSkin(gamepadId))
+      this.setSkinMapping(gamepadId, this.findDefaultSkin(gamepadId))
     }
   }
-  reloadSkin (dirname) {
-    GamepadRenderer.announceMessage(`Replacing skin for ${dirname}...`)
-    this.unloadSkin(dirname, false)
-    this.loadSkin(dirname)
+  
+  /**
+   * Refresh the loaded skin under the same internal name.
+   * @param {skinInternalName} internalName
+   */
+  reloadSkin (internalName) {
+    GamepadRenderer.announceMessage(`Replacing skin for ${internalName}...`)
+    this.unloadSkin(internalName, false)
+    this.loadSkin(internalName)
   }
   /**
    * setup a loaded skin for one of four canvas
@@ -694,15 +818,17 @@ class GamepadRenderer {
    * @param {number} slot index for one of four canvas slot
    * @param {gamepadId} gamepadId gamepad the skin is set to be used for
    */
-  applySkinToSlot (dirname, slot, gamepadId) {
-    if (!GamepadRenderer.isDirnameOkay(dirname)) { return false }
-    if (!this.skins[dirname] || typeof slot === 'undefined') {
-      this.loadSkin(dirname)
+  applySkinToSlot (internalName, slot, gamepadId) {
+    if (!GamepadRenderer.isDirnameOkay(internalName)) { return false }
+    if (!this.skins[internalName] || typeof slot === 'undefined') {
+      this.loadSkin(internalName)
       return false
     }
-    if (!this.skins[dirname].loaded) { return false }
+    if (!this.skins[internalName].loaded) { return false }
     
-    const skin = this.skins[dirname]
+    /** @type {SkinData} */
+    const skin = this.skins[internalName]
+    /** @type {SkinConfig} */
     const config = skin.config
   
     const canvas = this.canvas[slot]
@@ -710,7 +836,7 @@ class GamepadRenderer {
     /** @type {SkinSlot} */
     const skinSlot = this.skinSlot[slot]
     
-    skinSlot.dirname = dirname
+    skinSlot.internalName = internalName
     skinSlot.gamepadId = gamepadId
     skinSlot.src = skin.src
     skinSlot.layer = []
@@ -797,29 +923,31 @@ class GamepadRenderer {
    * @param {number} slot index of the slot the SkinSlot was occupying.
    */
   removeSkinFromSlot (slot) {
-    delete this.skinSlot[slot].gamepadId
-    delete this.skinSlot[slot].properties
-    delete this.skinSlot[slot].activeStateReady
-    delete this.skinSlot[slot].activeState
-    delete this.skinSlot[slot].lastActive
-    delete this.skinSlot[slot].alpha
-    delete this.skinSlot[slot].src
-    delete this.skinSlot[slot].layer
-    delete this.skinSlot[slot].ctx
-    delete this.skinSlot[slot].instruction
-    delete this.skinSlot[slot]
+    const skinPropertyList = Object.keys(this.skinSlot[slot])
+    for (let p = 0; p < skinPropertyList.length; p++) {
+      delete this.skinSlot[slot][skinPropertyList[p]]
+    }
     while (this.canvas[slot].firstChild) {
       this.canvas[slot].removeChild(this.canvas[slot].lastChild)
     }
   }
-  changeSkinOfSlot (slot, gamepadId, skinDirname = null) {
-    const ExistingSkinDir =
-      skinDirname ||
+  /**
+   * Remove a {@link SkinSlot} and reload one with the given skin, or
+   * with the mapped skin for the gamepadId.
+   * @param {number} slot index for one of four canvas slot
+   * @param {gamepadId} gamepadId
+   * @param {?skinInternalName} [skinInternalName=null]
+   * @returns {boolean}
+   */
+  changeSkinOfSlot (slot, gamepadId, skinInternalName = null) {
+    /** @type {skinInternalName} */
+    const existingInternalName =
+      skinInternalName ||
       this.skinMapping[gamepadId] ||
-      GamepadRenderer.findDefaultSkin(gamepadId)
+      this.findDefaultSkin(gamepadId)
     
-    if (ExistingSkinDir) {
-      const skinMappingUpdated = this.setSkinMapping(gamepadId, ExistingSkinDir)
+    if (existingInternalName) {
+      const skinMappingUpdated = this.setSkinMapping(gamepadId, existingInternalName)
       if (!skinMappingUpdated) {
         GamepadRenderer.announceMessage(new Error(
           `Skin for the slot ${slot} couldn't be changed.`
@@ -830,7 +958,7 @@ class GamepadRenderer {
     this.removeSkinFromSlot(slot)
   
     return this.applySkinToSlot(
-      ExistingSkinDir,
+      existingInternalName,
       slot,
       gamepadId
     )
@@ -874,7 +1002,7 @@ class GamepadRenderer {
           skinSlot.assigning = gamepadChange.properties.indexOf('assigning') !== -1
           // skinSlot already exists
           if (
-            skinSlot.dirname === this.skinMapping[gamepadChange.id.gamepadId]
+            skinSlot.internalName === this.skinMapping[gamepadChange.id.gamepadId]
           ) {
             // it's the same slot used before
             if (skinSlot.assigning) { this.renderFrame(gamepadIndex) }

@@ -124,18 +124,19 @@ class OnBrowserTextEditor {
    * If it failed to follow it, the 'load button' of the editor will load the data
    * before it is changed by the callback, until the editor get to 'change the focus' again
    * and to update the reference stored in it.
-   * @param {boolean} raw Display data without converting it to JSON if set to true.
-   * @param {boolean} nospace Display data with spaces and newlines omitted.
+   * @param {boolean} [raw=false] Display data without converting it to JSON if set to true.
+   * @param {boolean} [nospace=false] Display data with spaces and newlines omitted.
+   * @param {string} [type='object'] tells the type of the data
    */
   changeFocus (
-    title, dataRef, callback, {raw, nospace} = {
-      raw: false, nospace: false
+    title, dataRef, callback, {raw, nospace, type} = {
+      raw: false, nospace: false, type: 'object'
     }) {
     this.dataTitle = title
     this.dom.title.innerText = title
     this.reference.data = dataRef
     this.reference.callback = callback
-    this.reference.format = { raw, nospace }
+    this.reference.format = { raw, nospace, type }
     if (!callback) {
       setTimeout(() => {
         this.dom.saveButton.setAttribute('disabled', '')
@@ -152,9 +153,20 @@ class OnBrowserTextEditor {
     }
     OnBrowserTextEditor.announceMessage(`Saving ${this.dataTitle} from the editor...`)
     try {
-      const parsedInput = JSON.parse(this.dom.textarea.value || null)
+      const format = this.reference.format
+      let dataToStore
+      // define the data to show in regard to given type
+      switch (format.type) {
+        case 'map':
+          dataToStore = new Map(JSON.parse(this.dom.textarea.value || null))
+          break
+        case 'object':
+        default:
+          dataToStore = JSON.parse(this.dom.textarea.value || null)
+          break
+      }
       // first need to bind the callback to the instance they're from
-      const result = this.reference.callback(parsedInput)
+      const result = this.reference.callback(dataToStore)
       if (result === true) {
         this.notify('Data are saved.')
         OnBrowserTextEditor.announceMessage(`Saved ${this.dataTitle} from the editor.`)
@@ -170,10 +182,24 @@ class OnBrowserTextEditor {
   loadToEditor () {
     OnBrowserTextEditor.announceMessage(`Loading ${this.dataTitle} to the editor...`)
     try {
+      const format = this.reference.format
+      let dataToConvert
+      // define the data to show in regard to given type
+      switch (format.type) {
+        case 'map':
+          dataToConvert = [...this.reference.data]
+          break
+        case 'object':
+        default:
+          dataToConvert = this.reference.data
+          break
+      }
+      // put the data to the textarea
       this.dom.textarea.value =
-        this.reference.format.raw ? this.reference.data :
-        this.reference.format.nospace ? JSON.stringify(this.reference.data) :
-        JSON.stringify(this.reference.data, null, 2)
+        format.raw ? dataToConvert :
+          format.nospace ? JSON.stringify(dataToConvert) :
+            JSON.stringify(dataToConvert, null, 2)
+      
       this.notify('Data are loaded.')
       OnBrowserTextEditor.announceMessage(`Loaded ${this.dataTitle} to the editor.`)
     } catch (e) {

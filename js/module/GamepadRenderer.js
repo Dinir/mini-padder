@@ -692,27 +692,29 @@ class GamepadRenderer {
   
   /**
    * Try to load all skins from an array of skin directory names.
-   * @param {string[]} newSkinList
+   * @param {SkinList} newSkinList
    */
   reloadSkins (newSkinList) {
-    if (!(newSkinList instanceof Array)) {
+    if (!(newSkinList instanceof Map)) {
       this.loadAllListedSkins()
-      return true
+      return 'Received skin list is in a different type. ' +
+             'Skins on the list are refreshed instead.'
     }
     // delete every skin that exists on skinlist but not on the given list
     const skinList = this.skinList
-    for (let i = 0; i < skinList.length; i++) {
-      if (this.defaultSkins.indexOf(skinList[i]) !== -1) {
+    for (let [internalName] of skinList) {
+      if (this.defaultSkins.has(internalName)) {
         // don't unload default skins
         continue
       }
-      if (newSkinList.indexOf(skinList[i]) === -1) {
-        this.unloadSkin(skinList[i])
+      if (!newSkinList.has(internalName)) {
+        // unload skins that aren't in newSkinList
+        this.unloadSkin(internalName)
       }
     }
     // then load all skins on the given list
-    for (let i = 0; i < newSkinList.length; i++) {
-      this.loadSkin(newSkinList[i])
+    for (let [internalName] of newSkinList) {
+      this.loadSkin(internalName)
     }
     // save the changes
     this.saveSkinList()

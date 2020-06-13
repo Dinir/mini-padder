@@ -506,7 +506,7 @@ class ControlPanel {
           // remove the item that doesn't exist in newMap from existingValues
           this.removeItem(k)
         }
-        // call addItems which will skip items already existing in valueArray
+        // call addItems which will skip items already existing in newMap
         this.addItems(newMap)
       },
       globalEventCallback: function (e) {

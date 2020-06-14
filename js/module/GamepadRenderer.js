@@ -1598,6 +1598,25 @@ class GamepadRenderer {
     if (!skinSlot.activeStateReady) {
       skinSlot.activeStateReady = true
     }
+    
+    // check the existence of author property
+    const authorName =
+      this.skins[skinSlot.internalName].config.author
+    if (authorName) {
+      // show author text if not assigning
+      if (!skinSlot.assigning) {
+        const textLineWidth = 36
+        const displayName = this.skinList.get(skinSlot.internalName)
+        const skinInfoText = [
+          displayName.padStart(textLineWidth, ' '),
+          ('by ' + authorName).padStart(textLineWidth, ' ')
+        ]
+        this.resetInfoLayerTimer(skinSlot)
+        this.writeOnInfoLayer(
+          ctx[inst.info.layer], inst.info.message, skinInfoText
+        )
+      }
+    }
   }
   
   /**

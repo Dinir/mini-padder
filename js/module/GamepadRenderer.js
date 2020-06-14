@@ -1328,27 +1328,23 @@ class GamepadRenderer {
       }
     }
   
-    const infoLayerIndex = inst.info.layer
+    const infoCtx = ctx[inst.info.layer]
     const infoInst = inst.info.message
-    // message disappear timer
-    if (skinSlot.messageDisplayTimeLeft !== -1 && !skinSlot.assigning) {
-      if (skinSlot.messageDisplayTimeLeft === 0) {
-        this.followInstructions(
-          ctx[infoLayerIndex], null, infoInst.clear, null
-        )
+    // condition for deducting the message display timer
+    if (!skinSlot.assigning) {
+      // end state of the timer is `-1`
+      if (skinSlot.messageDisplayTimeLeft !== -1) {
+        if (skinSlot.messageDisplayTimeLeft === 0) {
+          // clear the message
+          this.clearInfoLayer(infoCtx, infoInst.clear)
+        }
+        // deduct the timer
+        skinSlot.messageDisplayTimeLeft--
       }
-      skinSlot.messageDisplayTimeLeft--
     }
     if (gamepadChange.message) {
-      if (skinSlot.messageDisplayTimeLeft === -1) {
-        skinSlot.messageDisplayTimeLeft = this.messageDisplayTimeInSeconds * 60
-      }
-      this.followInstructions(
-        ctx[infoLayerIndex], null, infoInst.clear, null
-      )
-      this.followInstructions(
-        ctx[infoLayerIndex], null, infoInst.show, gamepadChange.message
-      )
+      this.resetInfoLayerTimer(skinSlot)
+      this.writeOnInfoLayer(infoCtx, infoInst, gamepadChange.message)
     }
     
     return true
@@ -1602,6 +1598,31 @@ class GamepadRenderer {
     if (!skinSlot.activeStateReady) {
       skinSlot.activeStateReady = true
     }
+  }
+  
+  resetInfoLayerTimer (skinSlot) {
+    if (skinSlot.messageDisplayTimeLeft === -1) {
+      skinSlot.messageDisplayTimeLeft =
+        this.messageDisplayTimeInSeconds * this.fadeoutFps
+    }
+  }
+  /**
+   * Write message on the info layer.
+   * @param {CanvasRenderingContext2D} infoCtx canvas context for the info layer
+   * @param {Object} infoInst instructions for the info layer
+   * @param {string[]} message
+   */
+  writeOnInfoLayer (infoCtx, infoInst, message) {
+    this.clearInfoLayer(infoCtx, infoInst.clear)
+    this.followInstructions(infoCtx, null, infoInst.show, message)
+  }
+  /**
+   * Clear the info layer.
+   * @param {CanvasRenderingContext2D} infoCtx canvas context for the info layer
+   * @param {Object} clearInst instructions for clearing the info layer
+   */
+  clearInfoLayer (infoCtx, clearInst) {
+    this.followInstructions(infoCtx, null, clearInst, null)
   }
   
   followInstructions (ctx, src, inst, value, alpha, additionalValue) {

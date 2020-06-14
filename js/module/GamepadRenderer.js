@@ -1600,6 +1600,10 @@ class GamepadRenderer {
     }
   }
   
+  /**
+   * Reset the message display timer.
+   * @param {SkinSlot} skinSlot slot to reset the timer of
+   */
   resetInfoLayerTimer (skinSlot) {
     if (skinSlot.messageDisplayTimeLeft === -1) {
       skinSlot.messageDisplayTimeLeft =
@@ -1611,10 +1615,16 @@ class GamepadRenderer {
    * @param {CanvasRenderingContext2D} infoCtx canvas context for the info layer
    * @param {Object} infoInst instructions for the info layer
    * @param {string[]} message
+   * @param {?number} [timeLeft] display time left for the layer, in frames.
+   * For last `fadeOutFrames` frames the message will gradually be transparent,
+   * if this method is called for every frame and given the time value.
    */
-  writeOnInfoLayer (infoCtx, infoInst, message) {
+  writeOnInfoLayer (infoCtx, infoInst, message, timeLeft) {
+    const fadeOutFrames = 20
+    const alpha = (!timeLeft || timeLeft >= fadeOutFrames) ?
+      null : timeLeft / fadeOutFrames
     this.clearInfoLayer(infoCtx, infoInst.clear)
-    this.followInstructions(infoCtx, null, infoInst.show, message)
+    this.followInstructions(infoCtx, null, infoInst.show, message, alpha)
   }
   /**
    * Clear the info layer.

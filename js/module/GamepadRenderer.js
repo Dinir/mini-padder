@@ -254,7 +254,7 @@ class GamepadRenderer {
       return false
     }
     const dirname = internalName.split('-')[0]
-    const isOkay = !/[^0-9a-zA-Z_\-]/.test(dirname)
+    const isOkay = !/[^\w]/.test(dirname)
     if (!isOkay) {
       GamepadRenderer.announceMessage(new Error(
         'Directory name for the skin is invalid. ' +
@@ -755,16 +755,9 @@ class GamepadRenderer {
       }
     } else {
       // load from the hosted space
-      
-      // check if file name is separately included
-      const hasSeparateFilename = internalName.search(/-/) !== -1
-      
       const pathParts = internalName.split('-')
       const path = `./skin/${pathParts[0]}`
       const configPath = path + `/${pathParts[1] || pathParts[0]}.mpskin.json`
-      // const path = hasSeparateFilename ?
-      //   `./skin/${internalName.replace('-','/')}.mpskin.json` :
-      //   `./skin/${internalName}/${internalName}.mpskin.json`
       fetch(configPath).then(response =>
         response.json()
       ).then(data => {
@@ -1071,6 +1064,7 @@ class GamepadRenderer {
    * @returns {boolean}
    */
   render (gamepadIndex, gamepadChange, useFadeout = true) {
+    /** @type {SkinSlot} */
     const skinSlot = this.skinSlot[gamepadIndex]
     if (!skinSlot.activeStateReady) {
       GamepadRenderer.announceMessage(
@@ -1514,6 +1508,7 @@ class GamepadRenderer {
    * @see GamepadRenderer#render
    */
   renderFrame (gamepadIndex) {
+    /** @type {SkinSlot} */
     const skinSlot = this.skinSlot[gamepadIndex]
     const src = skinSlot.src
     const ctx = skinSlot.ctx

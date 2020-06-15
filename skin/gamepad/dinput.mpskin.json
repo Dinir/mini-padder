@@ -1,5 +1,6 @@
 {
 	"name": "DInput",
+  "author": null,
 	"properties": [],
 	"src": [
 		"frame.png", "active.png"

@@ -1,5 +1,6 @@
 {
   "name": "HBox",
+  "author": null,
   "properties": [],
   "src": [
     "inactive.png", "active.png"

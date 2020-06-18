@@ -76,8 +76,12 @@ class OnBrowserTextEditor {
     }
   }
   
-  appendToParent (parentDom) {
-    parentDom.appendChild(this.dom.wrapper)
+  appendToParent (parentDom, insertAfterThisDom) {
+    if (insertAfterThisDom) {
+      parentDom.insertBefore(this.dom.wrapper, insertAfterThisDom.nextSibling)
+    } else {
+      parentDom.appendChild(this.dom.wrapper)
+    }
   }
   
   set visibility (state) {

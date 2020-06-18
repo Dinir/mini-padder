@@ -82,10 +82,16 @@ class OnBrowserTextEditor {
   
   set visibility (state) {
     if (typeof state === 'boolean') {
-      if (state) this.dom.wrapper.classList.add('active')
-      else this.dom.wrapper.classList.remove('active')
+      if (state) {
+        this.dom.wrapper.classList.add('active')
+        this.dom.wrapper.classList.remove('inactive')
+      } else {
+        this.dom.wrapper.classList.add('inactive')
+        this.dom.wrapper.classList.remove('active')
+      }
     } else {
       this.dom.wrapper.classList.toggle('active')
+      this.dom.wrapper.classList.toggle('inactive')
     }
     /*
      this prevents accidental double clicks

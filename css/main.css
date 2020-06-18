@@ -61,7 +61,14 @@ sub {
   padding: 8px;
   overflow-y: scroll;
   background-color: gray;
-  border-radius: 0 8px 8px; }
+  border-radius: 0 8px 8px;
+  transition: opacity 0.2s; }
+  .control-panel.inactive {
+    opacity: 0;
+    z-index: -1; }
+  .control-panel.active {
+    opacity: 1;
+    z-index: auto; }
   .control-panel > div {
     padding-bottom: 0.5em;
     margin-bottom: 0.5em;

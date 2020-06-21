@@ -7,7 +7,7 @@
 
 ![Default Skins]
 
-Simple gamepad input overlay for streaming, with default skins that keep a good readability even in tough encoding situations.
+Simple gamepad input overlay for streaming, with default skins that keep good readability even in tough encoding situations.
 
 - Supports 4 gamepads simultaneously.
 - Default skins for XInput, DInput, 8-button arcade joysticks and 6-button gamepads.
@@ -16,33 +16,33 @@ Simple gamepad input overlay for streaming, with default skins that keep a good 
 
 # Requirements
 
-- A **Chromium** browser environment and access to local storage. Because that's the environment of OBS browser source Mini Padder is originally made for.
-- Features confirmed to be working on **OBS 24.0.3** and onward. On OBS 21.1.0 and below, gamepad inputs might not be received.
+- A **Chromium** browser environment and access to local storage. This is the environment of OBS browser source.
+- Features confirmed to be working on **OBS 24.0.3** and onward. On OBS 21.1.0 and below, gamepad inputs might not be detected.
 
 # How to Use
 
 - From OBS browser source, put the address of [the hosted webpage] as URL. Recommended Width and Height is 1048 × 600.
-- Right click the source, select *Transform -> Edit Transform...* to **crop off outside of the intended display area**.  
-  The intended display area vary with the way multiple gamepads are displayed. Single gamepad area is 256 × 144, and the overall area size will be displayed on the control panel. Each gamepad areas are spaced by 8 pixels.
-- To make a change using the control panel, right click the source and select *Interact*.
-- The page will start showing gamepads when any input is made on them.
+- Right-click the source, select *Transform -> Edit Transform...* to **crop off outside of the intended display area**.  
+  The intended display area varies with the way multiple gamepads are displayed. Single gamepad area is 256 × 144, and the overall area size will be displayed on the control panel. The margin between each gamepad areas is 8 pixels.
+- To make a change using the control panel, right-click the source and select *Interact*.
+- Mini Padder will start showing gamepads on their first input.
 
-See [the wiki page](https://github.com/Dinir/mini-padder/wiki/How-to-Use) for a little more detailed guide on how to use.
+See [the wiki page][wiki: how to use] for a little more detailed guide on how to use.
 
 # Exporting & Importing Settings
 
-A local web page is not allowed to read files from the computer, so these progresses couldn't be made simple.
+A web page can't read files from the client computer before the user allows it, so this progress couldn't be made simple.
 
-- If you made a custom skin, load the files on the control panel. Loaded skin then can be copied as a single large JSON on the control panel. To learn how to make a custom skin, refer to [the wiki page](https://github.com/Dinir/mini-padder/wiki/Making-a-Skin).
+- If you made a custom skin, load the files on the control panel. Loaded skin then can be copied as a single large JSON on the control panel. To learn how to make a custom skin, refer to [the wiki page][wiki: making a skin].
 - If you want to keep settings for the application outside of it, you can copy them as a form of JSON text from the page. Paste such text to import settings.
 
 ---
 
-I tried to make this application to prove to myself that I can make and *complete* making a thing. Also that I can use it for my own streams.
+I tried to make this application to prove to myself that I can make and *complete* making a thing. Also that I can use it for my streams.
 
-If you find it useful and somehow making some parts of your life better, please consider making a [donation][Donation Link]. 
+If you find Mini Padder useful, please consider a [donation][Donation Link]. 
 
-Thank you for reading all the way to the end! 😁
+Thank you for reading to the end! 😁
 
 
 
@@ -58,5 +58,7 @@ Thank you for reading all the way to the end! 😁
 [stargazers]: https://github.com/Dinir/mini-padder/stargazers
 
 [the hosted webpage]: https://dinir.github.io/mini-padder/
+[wiki: how to use]: https://github.com/Dinir/mini-padder/wiki/How-to-Use
+[wiki: making a skin]: https://github.com/Dinir/mini-padder/wiki/Making-a-Skin
 
 [Donation Link]: https://ko-fi.com/dinir

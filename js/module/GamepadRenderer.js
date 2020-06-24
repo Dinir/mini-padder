@@ -1021,7 +1021,7 @@ class GamepadRenderer {
           // find skin for the gamepad
           let newSkinDirname = this.skinMapping[gamepadChange.id.gamepadId]
           if (!newSkinDirname) {
-            newSkinDirname = GamepadRenderer.findDefaultSkin(
+            newSkinDirname = this.findDefaultSkin(
               gamepadChange.id.gamepadId, gamepadChange.properties
             )
             this.setSkinMapping(gamepadChange.id.gamepadId, newSkinDirname)

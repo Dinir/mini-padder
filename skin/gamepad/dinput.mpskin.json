@@ -25,7 +25,7 @@
 				},
 				{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [0, 81], "size": [96, 96], "canvasPos": [0, 0]
+					"src": 0, "srcPos": [502, 0], "size": [96, 96], "canvasPos": [0, 0]
 				}
 			],
 			"off": [{
@@ -47,7 +47,7 @@
 				},
 				{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [96, 81], "size": [96, 96], "canvasPos": [160, 0]
+					"src": 0, "srcPos": [598, 0], "size": [96, 96], "canvasPos": [160, 0]
 				}
 			],
 			"off": [{

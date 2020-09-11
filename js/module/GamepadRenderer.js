@@ -1224,9 +1224,10 @@ class GamepadRenderer {
                 null, null, null
               )
           
-              // joystick skin uses dpad.value which is [x-axis, y-axis]
-              const valueIsOff = forJoystick && bg === 0 && b === 0 ?
-                value[0] === 0 && value[1] === 0 : value === 0
+              // dpad.value is [x-axis, y-axis],
+              // other button values are number
+              const valueIsOff =
+                value[0] === 0 && value[1] === 0 || value === 0
               if (valueIsOff) {
                 this.followInstructions(
                   ctx[buttonLayerIndex], src, buttonInst.off,

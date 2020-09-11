@@ -592,9 +592,7 @@ class GamepadRenderer {
    * Empty SkinList, keeping the reference.
    */
   resetSkinList () {
-    for (let [internalName] of this.skinList) {
-      this.skinList.delete(internalName)
-    }
+    this.skinList.clear()
   }
   /**
    * Load SkinList from local storage.

@@ -472,13 +472,13 @@ class ControlPanel {
       updateItems: function (newMap) {
         /** @type {Map.<string, string>} */
         const existingValues = this.getExistingValues()
-        const newMapValues = [...newMap.values()]
+        const newMapKeys = [...newMap.keys()]
         const existingKeys = [...existingValues.keys()]
-        for (let [k, v] of existingValues) {
+        for (let [k] of existingValues) {
           // item with key and value as `...` is a placeholder
           if (k === '...') { continue }
           // remove ones that doesn't exist in newMap, skip otherwise
-          if (newMapValues.indexOf(v) !== -1) { continue }
+          if (newMapKeys.indexOf(k) !== -1) { continue }
           // update all selects that were pointing at this index
           const indexOfKey = existingKeys.indexOf(k)
           /*

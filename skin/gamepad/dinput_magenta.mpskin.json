@@ -76,7 +76,7 @@
 				}],
 				"on": [{
 					"instruction": "drawImage",
-					"src": 1, "srcPos": [431, 0], "size": [24, 32], "canvasPos": [36, 44]
+					"src": 1, "srcPos": [401, 161], "size": [24, 32], "canvasPos": [36, 44]
 				}]
 			},
 			"down": {
@@ -90,7 +90,7 @@
 				}],
 				"on": [{
 					"instruction": "drawImage",
-					"src": 1, "srcPos": [455, 0], "size": [24, 32], "canvasPos": [36, 84]
+					"src": 1, "srcPos": [425, 161], "size": [24, 32], "canvasPos": [36, 84]
 				}]
 			},
 			"left": {
@@ -104,7 +104,7 @@
 				}],
 				"on": [{
 					"instruction": "drawImage",
-					"src": 1, "srcPos": [479, 0], "size": [32, 24], "canvasPos": [12, 68]
+					"src": 1, "srcPos": [449, 161], "size": [32, 24], "canvasPos": [12, 68]
 				}]
 			},
 			"right": {
@@ -118,7 +118,7 @@
 				}],
 				"on": [{
 					"instruction": "drawImage",
-					"src": 1, "srcPos": [511, 0], "size": [32, 24], "canvasPos": [52, 68]
+					"src": 1, "srcPos": [481, 161], "size": [32, 24], "canvasPos": [52, 68]
 				}]
 			}
 		},

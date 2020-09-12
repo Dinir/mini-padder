@@ -335,7 +335,7 @@ class GamepadRenderer {
    *
    * All the other variations of this method should eventually call this method.
    *
-   * @param {?Object} optionObj
+   * @param {?Object} [optionObj]
    * @param {number[]} optionObj.time Seconds for each fade-out level.
    * @param {number[]} optionObj.opacity Opacity values for each level.
    * 1 is maximum opacity, 0 is maximum transparency.
@@ -526,7 +526,7 @@ class GamepadRenderer {
   /**
    * Add a SkinList item.
    * @param {skinInternalName} internalName
-   * @param {skinDisplayName} [displayName]
+   * @param {?skinDisplayName} [displayName]
    * @param {boolean} [saveToLocalStorage=true]
    * if false it won't save the list to local storage
    * @returns {boolean}

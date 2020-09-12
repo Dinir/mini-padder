@@ -578,6 +578,12 @@ class GamepadRenderer {
     }
     this.saveSkinList()
   }
+  /**
+   * Remove the skin from SkinList.
+   * It's better to use `unloadSkin` that will properly try to remove it from
+   * the page. This method will be called inside the method.
+   * @param {skinInternalName} internalName
+   */
   removeSkinFromSkinList (internalName) {
     this.skinList.delete(internalName)
   }
@@ -690,30 +696,30 @@ class GamepadRenderer {
   
   /**
    * Try to load all skins from an array of skin directory names.
-   * @param {SkinList} newSkinList
+   * @param {SkinList} receivedList
    */
-  reloadSkins (newSkinList) {
-    if (!(newSkinList instanceof Map)) {
+  reloadSkins (receivedList) {
+    if (!(receivedList instanceof Map)) {
       this.loadAllListedSkins()
       return 'Received skin list is in a different type. ' +
              'Skins on the list are refreshed instead.'
     }
-    // delete every skin that exists on skinlist but not on the given list
+  
+    // if input textarea for new list is blank, a zero-size map is given.
+    // use the default skinlist to load on that occasion.
+    const newSkinList = receivedList.size !== 0 ?
+      receivedList : this.defaultSkins
     const skinList = this.skinList
+    
+    // unload every skin on skinlist
     for (let [internalName] of skinList) {
-      if (this.defaultSkins.has(internalName)) {
-        // don't unload default skins
-        continue
-      }
-      if (!newSkinList.has(internalName)) {
-        // unload skins that aren't in newSkinList
-        this.unloadSkin(internalName)
-      }
+      this.unloadSkin(internalName)
     }
-    // then load all skins on the given list
+    // load skins from the given list
     for (let [internalName] of newSkinList) {
       this.loadSkin(internalName)
     }
+    
     // save the changes
     this.saveSkinList()
     

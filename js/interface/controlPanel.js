@@ -10,6 +10,7 @@ class ControlPanel {
    */
   constructor (typeListingObject, globalEventsToListen) {
     this.panel = {}
+    this.globalEvents = globalEventsToListen
     this.globalEventCallbacks = []
     this.panelValues = {}
     this.loadPanelValues()
@@ -22,8 +23,8 @@ class ControlPanel {
         typeListingObject[item], item
       )
     }
-    
-    this.globalEvents = globalEventsToListen
+    // `globalEventCallbacks` are populated by `getControlForType`
+    // the array contains all event callbacks any controls have
     this.globalEvents.forEach(eventType => {
       window.addEventListener(eventType, e => {
         this.globalEventCallbacks.forEach(f => f(e))
@@ -115,6 +116,9 @@ class ControlPanel {
       const control = this[`getControlFor${TypeName}`](name)
       
       if (control.hasOwnProperty('globalEventCallback')) {
+        // shallow copying the list of global events to listen,
+        // as the list is populated after this method is finished
+        control.globalEvents = this.globalEvents
         this.globalEventCallbacks.push(
           control.globalEventCallback.bind(control)
         )
@@ -181,10 +185,7 @@ class ControlPanel {
         })
       },
       globalEventCallback: function (e) {
-        if (
-          e.type !== 'gamepadconnected' &&
-          e.type !== 'gamepaddisconnected'
-        ) {
+        if (this.globalEvents.indexOf(e.type) === -1) {
           return false
         }
         if (!this.buttons || !this.changeLabel) {
@@ -324,10 +325,7 @@ class ControlPanel {
         this.addItems(valueArray)
       },
       globalEventCallback: function (e) {
-        if (
-          e.type !== 'gamepadconnected' &&
-          e.type !== 'gamepaddisconnected'
-        ) {
+        if (this.globalEvents.indexOf(e.type) === -1) {
           return false
         }
         if (!this.selects) {
@@ -510,10 +508,7 @@ class ControlPanel {
         this.addItems(newMap)
       },
       globalEventCallback: function (e) {
-        if (
-          e.type !== 'gamepadconnected' &&
-          e.type !== 'gamepaddisconnected'
-        ) {
+        if (this.globalEvents.indexOf(e.type) === -1) {
           return false
         }
         if (!this.selects) {

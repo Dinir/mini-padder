@@ -8,19 +8,15 @@ assignees: Dinir
 ---
 
 **Describe the bug**
-
 A clear and concise description of what the bug is.
 
 **Expected behavior**
-
 A clear and concise description of what you expected to happen.
 
 **Browser** 
-
 e.g. OBS 24.0.3, chrome 22
 
 **To Reproduce**
-
 Steps to reproduce the behavior:
 1. Go to '...'
 2. Click on '....'
@@ -28,7 +24,6 @@ Steps to reproduce the behavior:
 4. See error
 
 **Screenshots**
-
 If applicable, add screenshots to help explain your problem.
 
 - - -

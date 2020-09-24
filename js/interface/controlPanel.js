@@ -360,15 +360,21 @@ class ControlPanel {
   getControlForSelectFromMap (name) {
     return {
       name: name,
+      /**
+       *
+       * @param {HTMLDivElement} selectContainer
+       * @param {HTMLSpanElement[]} labelTextElements
+       * @param {Map.<skinInternalName, skinDisplayName>} listReference
+       * @param customCallback
+       * @param {Object.<gamepadId, skinInternalName>} defaultSelectedList
+       */
       assign: function (
         selectContainer, labelTextElements, listReference, customCallback,
         defaultSelectedList
       ) {
         this.container = selectContainer
         this.texts = labelTextElements
-        /** @type {Map.<string, string>} */
         this.list = listReference
-        /** @type {Object.<string, string>} */
         this.defaultSelectedList = defaultSelectedList
         /** @type {HTMLSelectElement[]} */
         this.selects = ControlPanel.getIndexedElements(selectContainer, 'select')
@@ -437,9 +443,9 @@ class ControlPanel {
        */
       addItems: function (newMap) {
         /** @type {Map.<string, string>} */
-        const existingValues = this.getExistingValues()
+        const existingMap = this.getExistingValues()
         for (let [k, v] of newMap) {
-          if (existingValues.has(k)) { continue }
+          if (existingMap.has(k)) { continue }
           this.addItem(k, v)
         }
       },

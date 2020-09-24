@@ -167,6 +167,7 @@ class GamepadRenderer {
     
     /** @type {SkinList} */
     this.skinList = new Map()
+    /** @type {SkinList} */
     this.defaultSkins = defaultSkins || new Map([
       ['gamepad-xinput', 'XInput'],
       ['gamepad-dinput', 'DInput'],
@@ -176,6 +177,12 @@ class GamepadRenderer {
       ['megapad', 'Mega Pad'],
       ['hbox', 'HBox']
     ])
+    /** @type {skinInternalName[]} */
+    this.fallbackSkins = [
+      'gamepad-xinput',
+      'gamepad-dinput',
+      'joystick-v'
+    ]
     // local storage key to find custom skin config
     this.customSkinLocalStorageKey = 'customskin'
     // push names of default skins
@@ -511,22 +518,20 @@ class GamepadRenderer {
   }
   
   /**
-   * Find default internal skin name with given gamepadId and optionally its mapping.
+   * Find default internal skin name with given gamepadId and the mapping.
+   *
    * @param {gamepadId} gamepadId
    * @param {string[]} [mappingProperties] {@link gamepadMapping.properties}
-   * @param {SkinList} [defaultSkinList]
    *
    * @returns {skinInternalName}
    */
-  findDefaultSkin (gamepadId, mappingProperties, defaultSkinList = this.defaultSkins) {
-    /** @type {skinInternalName[]} */
-    const defaultInternalNames = [...defaultSkinList.keys()]
-    if (mappingProperties) {
-      if (mappingProperties.indexOf('joystick') !== -1) { return defaultInternalNames[2] }
+  findDefaultSkin (gamepadId, mappingProperties) {
+    if (mappingProperties && mappingProperties.indexOf('joystick') !== -1) {
+      return this.fallbackSkins[2]
     }
     // when it's a standard XInput gamepad, the gamepadId is just 'xinput'.
-    if (/XInput/i.test(gamepadId)) { return defaultInternalNames[0] }
-    return defaultInternalNames[1]
+    if (/XInput/i.test(gamepadId)) { return this.fallbackSkins[0] }
+    return this.fallbackSkins[1]
   }
   
   /**

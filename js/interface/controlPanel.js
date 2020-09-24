@@ -474,44 +474,55 @@ class ControlPanel {
        * @param {Map.<string, string>} newMap
        */
       updateItems: function (newMap) {
+        /** @type {string[]} */
+        const selectedKeys = []
+        // store all the keys of selects before changing them
+        for (let s = 0; s < this.selects.length; s++) {
+          const select = this.selects[s]
+          selectedKeys.push(select.value) // value of select, key of list
+        }
+        /*
+         * nuke the whole existing selects
+         * then rebuild them solely using the new given list
+         */
+        this.removeAllItems()
+        this.addPlaceholder()
+        this.addItems(newMap)
+        /*
+         * update selected indexes of each selects
+         */
         /** @type {Map.<string, string>} */
-        const existingValues = this.getExistingValues()
-        const newMapKeys = [...newMap.keys()]
-        const existingKeys = [...existingValues.keys()]
-        for (let [k] of existingValues) {
-          // item with key and value as `...` is a placeholder
-          if (k === '...') { continue }
-          // remove ones that doesn't exist in newMap, skip otherwise
-          if (newMapKeys.indexOf(k) !== -1) { continue }
-          // update all selects that were pointing at this index
-          const indexOfKey = existingKeys.indexOf(k)
-          /*
-           * this will only work if the lists are stored as references to
-           * actual lists properly being updated before this method is called.
-           */
-          for (let s = 0; s < this.selects.length; s++) {
-            const select = this.selects[s]
-            if (select.selectedIndex !== indexOfKey) { continue }
+        const existingMap = this.getExistingValues()
+        const existingKeys = [...existingMap.keys()]
+        for (let s = 0; s < this.selects.length; s++) {
+          const keyToFind = selectedKeys[s]
+          let newIndexForKey = existingKeys.indexOf(keyToFind)
+          if (newIndexForKey === -1) {
+            // old skin is removed, replace with a corresponding default skin
             const gamepadId = this.texts[s].dataset.gamepadId
-            /** @type {string} key of `this.list` */
-            const mappedItem = this.defaultSelectedList[gamepadId]
-            const indexOfMappedItem = [...this.list.keys()].indexOf(mappedItem)
-            // selectIndex === listIndex + 1 (there's a placeholder at index 0)
-            select.selectedIndex = indexOfMappedItem !== -1 ? indexOfMappedItem + 1 : 0
             /*
-             * for the skin list usage, these are the references:
+             * this will only work if the lists are stored as references to
+             * actual lists properly being updated before this method is called.
+             *
              * - list === Renderer.skinList
              * - defaultSelectedList === Renderer.skinMapping
+             *
              * The final chosen index will be one decided by
              * `GamepadRenderer.findDefaultSkin`,
              * which is applied to skinMapping before this method is called.
              */
+            const mappedItem = this.defaultSelectedList[gamepadId]
+            const indexForGamepad = [...this.list.keys()].indexOf(mappedItem)
+            /*
+             * replace with the new index for any gamepad of the same id.
+             * Add 1 to reflect the first item in the select - a placeholder.
+             * If -1 is received, this will make it 0,
+             * to fallback into the placeholder.
+             */
+            newIndexForKey = indexForGamepad + 1
           }
-          // remove the item that doesn't exist in newMap from existingValues
-          this.removeItem(k)
+          this.selects[s].selectedIndex = newIndexForKey
         }
-        // call addItems which will skip items already existing in newMap
-        this.addItems(newMap)
       },
       globalEventCallback: function (e) {
         if (this.globalEvents.indexOf(e.type) === -1) {

@@ -150,6 +150,18 @@ class GamepadWatcher {
   }
   
   /**
+   * Get indexes of all gamepads with the same gamepadId.
+   * @param {gamepadId} gamepadId
+   * @return {number[]}
+   */
+  allIndexesForId (gamepadId) {
+    return this.gamepadId.reduce((a, v, i) => {
+      if (v.gamepadId === gamepadId) { a.push(i) }
+      return a
+    }, [])
+  }
+  
+  /**
    * @param {GamepadEvent} event
    * @param {boolean} connection
    * @listens event:gamepadconnected

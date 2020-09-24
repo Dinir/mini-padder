@@ -201,6 +201,25 @@ class MappingManager {
     }))
   }
   
+  /**
+   * Dispatch an event of 'mappingUpdated' type
+   * with the id object of the updated mapping included in it.
+   *
+   * The format of `detail` follows that of {@see Gamepad},
+   * but it won't include everything from it.
+   *
+   * @param {number} gamepadIndex Index of the gamepad registered on the API.
+   * @param {Object} idObj `Gamepad.id` formatted into the name and the gamepadId.
+   * @param {string} idObj.name
+   * @param {gamepadId} idObj.gamepadId
+   * @fires MappingManager#mappingUpdated
+   */
+  static announceMappingUpdate(gamepadIndex, idObj) {
+    window.dispatchEvent(new CustomEvent('mappingUpdated', {
+      detail: { index: gamepadIndex, id: idObj }
+    }))
+  }
+  
   static validateMappings (mappings) {
     if (
       !mappings ||
@@ -571,6 +590,7 @@ class MappingManager {
       // store the new mapping
       this.addOrUpdate(assignmentState.data.gamepadId, assignmentState.data.mapping)
       this.store()
+      MappingManager.announceMappingUpdate(gamepadIndex, gamepadChange.id)
       
       return
     }

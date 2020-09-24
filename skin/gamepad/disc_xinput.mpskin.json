@@ -1,5 +1,5 @@
 {
-	"name": "Gamepad (Disc D-pad)",
+	"name": "Disc D-pad (XInput)",
   "author": null,
 	"properties": [],
 	"src": [
@@ -110,11 +110,11 @@
 				}],
 				"off": [{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [0, 45], "size": [28, 28], "canvasPos": [194, 92]
+					"src": 0, "srcPos": [336, 103], "size": [28, 28], "canvasPos": [194, 92]
 				}],
 				"on": [{
 					"instruction": "drawImage",
-					"src": 1, "srcPos": [0, 41], "size": [28, 28], "canvasPos": [194, 92]
+					"src": 1, "srcPos": [336, 154], "size": [28, 28], "canvasPos": [194, 92]
 				}]
 			},
 			"right": {
@@ -124,11 +124,11 @@
 				}],
 				"off": [{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [28, 45], "size": [28, 28], "canvasPos": [220, 66]
+					"src": 0, "srcPos": [364, 103], "size": [28, 28], "canvasPos": [220, 66]
 				}],
 				"on": [{
 					"instruction": "drawImage",
-					"src": 1, "srcPos": [28, 41], "size": [28, 28], "canvasPos": [220, 66]
+					"src": 1, "srcPos": [364, 154], "size": [28, 28], "canvasPos": [220, 66]
 				}]
 			},
 			"left": {
@@ -138,11 +138,11 @@
 				}],
 				"off": [{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [56, 45], "size": [28, 28], "canvasPos": [168, 66]
+					"src": 0, "srcPos": [392, 103], "size": [28, 28], "canvasPos": [168, 66]
 				}],
 				"on": [{
 					"instruction": "drawImage",
-					"src": 1, "srcPos": [56, 41], "size": [28, 28], "canvasPos": [168, 66]
+					"src": 1, "srcPos": [392, 154], "size": [28, 28], "canvasPos": [168, 66]
 				}]
 			},
 			"up": {
@@ -152,11 +152,11 @@
 				}],
 				"off": [{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [84, 45], "size": [28, 28], "canvasPos": [194, 40]
+					"src": 0, "srcPos": [420, 103], "size": [28, 28], "canvasPos": [194, 40]
 				}],
 				"on": [{
 					"instruction": "drawImage",
-					"src": 1, "srcPos": [84, 41], "size": [28, 28], "canvasPos": [194, 40]
+					"src": 1, "srcPos": [420, 154], "size": [28, 28], "canvasPos": [194, 40]
 				}]
 			},
 			"select": {
@@ -166,7 +166,7 @@
 				}],
 				"off": [{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [300, 77], "size": [19, 19], "canvasPos": [103, 70]
+					"src": 0, "srcPos": [300, 45], "size": [19, 19], "canvasPos": [103, 70]
 				}],
 				"on": [{
 					"instruction": "drawImage",
@@ -180,7 +180,7 @@
 				}],
 				"off": [{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [319, 77], "size": [19, 19], "canvasPos": [134, 70]
+					"src": 0, "srcPos": [319, 45], "size": [19, 19], "canvasPos": [134, 70]
 				}],
 				"on": [{
 					"instruction": "drawImage",
@@ -210,7 +210,7 @@
 				}],
 				"off": [{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [112, 45], "size": [47, 24], "canvasPos": [45, 0]
+					"src": 0, "srcPos": [564, 138], "size": [47, 24], "canvasPos": [45, 0]
 				}],
 				"on": [{
 					"instruction": "drawImage",
@@ -224,7 +224,7 @@
 				}],
 				"off": [{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [159, 45], "size": [47, 24], "canvasPos": [164, 0]
+					"src": 0, "srcPos": [564, 162], "size": [47, 24], "canvasPos": [164, 0]
 				}],
 				"on": [{
 					"instruction": "drawImage",
@@ -238,12 +238,12 @@
 				}],
 				"off": [{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [206, 45], "size": [47, 24], "canvasPos": [4, 0]
+					"src": 0, "srcPos": [564, 186], "size": [47, 24], "canvasPos": [4, 0]
 				}],
 				"on": [
 					{
 						"instruction": "drawImage",
-						"src": 0, "srcPos": [206, 45], "size": [47, 24], "canvasPos": [4, 0]
+						"src": 0, "srcPos": [564, 186], "size": [47, 24], "canvasPos": [4, 0]
 					},
 					{
 						"instruction": "drawImageInPolygonByValue",
@@ -261,12 +261,12 @@
 				}],
 				"off": [{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [253, 45], "size": [47, 24], "canvasPos": [205, 0]
+					"src": 0, "srcPos": [564, 210], "size": [47, 24], "canvasPos": [205, 0]
 				}],
 				"on": [
 					{
 						"instruction": "drawImage",
-						"src": 0, "srcPos": [253, 45], "size": [47, 24], "canvasPos": [205, 0]
+						"src": 0, "srcPos": [564, 210], "size": [47, 24], "canvasPos": [205, 0]
 					},
 					{
 						"instruction": "drawImageInPolygonByValue",

@@ -198,7 +198,7 @@
   const cpDom = document.getElementById('control-panel')
   const cpDomSizeDescriptor = document.getElementById('displaySizeDescriptor')
   const cpDomSkinUploader = {
-    droparea: cpDom.querySelector('#customSkinLoadArea'),
+    dropArea: cpDom.querySelector('#customSkinLoadArea'),
     input: cpDom.querySelector('#customSkinLoadArea input'),
     button: cpDom.querySelector('#customSkinLoadArea button[data-name="fileSelect"]'),
     indicator: document.getElementById('currentlyLoadedCustomSkin'),
@@ -379,7 +379,7 @@
   cpPanel.customSkin.assign(
     customSkinLocalStorageKey, {
       input: cpDomSkinUploader.input,
-      droparea: cpDomSkinUploader.droparea,
+      dropArea: cpDomSkinUploader.dropArea,
       visibleButton: cpDomSkinUploader.button,
       removeButton: cpDomSkinUploader.removeButton
     }, {

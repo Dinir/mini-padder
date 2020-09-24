@@ -55,7 +55,7 @@ class ControlPanel {
   static getIndexedElements (elementContainer, elementType) {
     const elements = Array.from(elementContainer.querySelectorAll(elementType))
     for (let i = 0; i < elements.length; i++) {
-      elements[i].dataset.index = i
+      elements[i].dataset.index = i.toString()
     }
     return elements
   }
@@ -560,10 +560,10 @@ class ControlPanel {
   getControlForButtons (name) {
     return {
       name: name,
-      assign: function (buttonContainer, custonCallback) {
+      assign: function (buttonContainer, customCallback) {
         this.container = buttonContainer
         this.buttons = ControlPanel.getIndexedElements(buttonContainer, 'button')
-        this.callback = custonCallback
+        this.callback = customCallback
         this.container.addEventListener('click', e => {
           if (e.target.tagName !== 'BUTTON') return
           this.callback(e)
@@ -575,7 +575,7 @@ class ControlPanel {
   getControlForSlider (name) {
     return {
       name: name,
-      /** @type {number} */
+      /** @type {?number} */
       panelValue: null,
       applyPanelValue: function () {
         if (this.slider && this.callback) {
@@ -638,14 +638,14 @@ class ControlPanel {
       name: name,
       assign: function (
         localStorageKey, {
-          input, droparea, visibleButton, indicator, removeButton
+          input, dropArea, visibleButton, indicator, removeButton
         }, {
           typeCheckFunction, indicatorUpdateCallback, customCallback
         }) {
         this.maxFileAmount = 5
         
         this.input = input
-        this.droparea = droparea
+        this.dropArea = dropArea
         this.replaceInput = Boolean(visibleButton)
         this.button = visibleButton || null
         this.typeCheck = typeCheckFunction
@@ -658,9 +658,9 @@ class ControlPanel {
         this.loadData(undefined, false)
         
         // receive dropped files just in case
-        this.droparea.addEventListener('dragenter', this._preventDefault, false)
-        this.droparea.addEventListener('dragover', this._preventDefault, false)
-        this.droparea.addEventListener('drop', e => {
+        this.dropArea.addEventListener('dragenter', this._preventDefault, false)
+        this.dropArea.addEventListener('dragover', this._preventDefault, false)
+        this.dropArea.addEventListener('drop', e => {
           this._preventDefault(e)
           this._handleFiles(e.dataTransfer.files)
         }, false)

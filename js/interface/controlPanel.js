@@ -156,15 +156,23 @@ class ControlPanel {
       name: name,
       assign: function (
         buttonContainer,
-        customCallback,
-        { makeLabel, updateLabel } = { makeLabel: null, updateLabel: false }
+        customCallback, {
+          makeLabel,
+          updateLabelOnClick,
+          listenToAllEvents
+        } = {
+          makeLabel: null,
+          updateLabelOnClick: false,
+          listenToAllEvents: false
+        }
       ) {
         this.container = buttonContainer
         this.buttons =
           ControlPanel.getIndexedElements(buttonContainer, 'button')
         this.callback = customCallback
         this.makeLabel = makeLabel || this.makeLabel
-        this.updateLabel = updateLabel
+        this.updateLabelOnClick = updateLabelOnClick
+        this.listenToAllEvents = listenToAllEvents
         this.container.addEventListener('click', e => {
           if (e.target.tagName !== 'BUTTON') return
           this.callback(
@@ -172,7 +180,7 @@ class ControlPanel {
             e.target.dataset.name,
             e.target.dataset.gamepadId
           )
-          if (this.updateLabel) {
+          if (this.updateLabelOnClick) {
             const id = {
               name: e.target.dataset.name,
               gamepadId: e.target.dataset.gamepadId
@@ -191,17 +199,23 @@ class ControlPanel {
         if (!this.buttons || !this.changeLabel) {
           return false
         }
-        switch (e.gamepad.connected) {
-          case true:
-            const id = MPCommon.getGamepadId(e.gamepad.id)
-            const label = this.makeLabel(id)
-            this.changeLabel(e.gamepad.index, id, label)
-            this.buttons[e.gamepad.index].classList.remove('inactive')
-            break
-          case false:
-            this.changeLabel(e.gamepad.index, null, '-')
-            this.buttons[e.gamepad.index].classList.add('inactive')
-            break
+        if (e.gamepad) {
+          switch (e.gamepad.connected) {
+            case true:
+              const id = MPCommon.getGamepadId(e.gamepad.id)
+              const label = this.makeLabel(id)
+              this.changeLabel(e.gamepad.index, id, label)
+              this.buttons[e.gamepad.index].classList.remove('inactive')
+              break
+            case false:
+              this.changeLabel(e.gamepad.index, null, '-')
+              this.buttons[e.gamepad.index].classList.add('inactive')
+              break
+          }
+        } else if (this.listenToAllEvents) {
+          const id = e.detail.id
+          const label = this.makeLabel(id)
+          this.changeLabel(e.detail.index, id, label)
         }
       },
       makeLabel: function (idObj) {
@@ -331,21 +345,23 @@ class ControlPanel {
         if (!this.selects) {
           return false
         }
-        switch (e.gamepad.connected) {
-          case true:
-            const id = MPCommon.getGamepadId(e.gamepad.id)
-            const text = `${id.name} <sub>${id.gamepadId}</sub>`
-            this.changeLabel(e.gamepad.index, id, text)
-            const defaultValue = this.defaultSelectedList[id.gamepadId]
-            if (defaultValue) {
-              this.selects[e.gamepad.index].value = defaultValue
-            }
-            this.texts[e.gamepad.index].parentElement.classList.remove('inactive')
-            break
-          case false:
-            this.changeLabel(e.gamepad.index, null, '-')
-            this.texts[e.gamepad.index].parentElement.classList.add('inactive')
-            break
+        if (e.gamepad) {
+          switch (e.gamepad.connected) {
+            case true:
+              const id = MPCommon.getGamepadId(e.gamepad.id)
+              const text = `${id.name} <sub>${id.gamepadId}</sub>`
+              this.changeLabel(e.gamepad.index, id, text)
+              const defaultValue = this.defaultSelectedList[id.gamepadId]
+              if (defaultValue) {
+                this.selects[e.gamepad.index].value = defaultValue
+              }
+              this.texts[e.gamepad.index].parentElement.classList.remove('inactive')
+              break
+            case false:
+              this.changeLabel(e.gamepad.index, null, '-')
+              this.texts[e.gamepad.index].parentElement.classList.add('inactive')
+              break
+          }
         }
       },
       changeLabel: function (index, id, newText) {
@@ -514,21 +530,23 @@ class ControlPanel {
         if (!this.selects) {
           return false
         }
-        switch (e.gamepad.connected) {
-          case true:
-            const id = MPCommon.getGamepadId(e.gamepad.id)
-            const text = `${id.name} <sub>${id.gamepadId}</sub>`
-            this.changeLabel(e.gamepad.index, id, text)
-            const defaultValue = this.defaultSelectedList[id.gamepadId]
-            if (defaultValue) {
-              this.selects[e.gamepad.index].value = defaultValue
-            }
-            this.texts[e.gamepad.index].parentElement.classList.remove('inactive')
-            break
-          case false:
-            this.changeLabel(e.gamepad.index, null, '-')
-            this.texts[e.gamepad.index].parentElement.classList.add('inactive')
-            break
+        if (e.gamepad) {
+          switch (e.gamepad.connected) {
+            case true:
+              const id = MPCommon.getGamepadId(e.gamepad.id)
+              const text = `${id.name} <sub>${id.gamepadId}</sub>`
+              this.changeLabel(e.gamepad.index, id, text)
+              const defaultValue = this.defaultSelectedList[id.gamepadId]
+              if (defaultValue) {
+                this.selects[e.gamepad.index].value = defaultValue
+              }
+              this.texts[e.gamepad.index].parentElement.classList.remove('inactive')
+              break
+            case false:
+              this.changeLabel(e.gamepad.index, null, '-')
+              this.texts[e.gamepad.index].parentElement.classList.add('inactive')
+              break
+          }
         }
       },
       changeLabel: function (index, id, newText) {

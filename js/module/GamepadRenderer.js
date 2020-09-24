@@ -248,7 +248,7 @@ class GamepadRenderer {
    * @returns {boolean}
    */
   static isDirnameOkay (internalName) {
-    if (!internalName) {
+    if (!internalName || typeof internalName !== 'string') {
       GamepadRenderer.announceMessage(new Error(
         `Directory name for the skin is faulty: ${internalName}`
       ))

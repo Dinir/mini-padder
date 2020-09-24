@@ -124,9 +124,12 @@
 class GamepadRenderer {
   /**
    *
-   * @param {HTMLDivElement[]} canvasArray contains divs for each set of canvas
+   * @param {HTMLDivElement[]} canvasArray
+   * contains divs for each set of canvas
+   * @param {Map.<string, string>} [defaultSkins]
+   * contains list of default skins available on the directory
    */
-  constructor (canvasArray) {
+  constructor (canvasArray, defaultSkins) {
     // true when it's not ready to render
     this.renderPending = true
     
@@ -164,39 +167,13 @@ class GamepadRenderer {
     
     /** @type {SkinList} */
     this.skinList = new Map()
-    this.defaultSkins = new Map([
+    this.defaultSkins = defaultSkins || new Map([
       ['gamepad-xinput', 'XInput'],
-      ['gamepad-xinput_red', 'XInput (Red)'],
-      ['gamepad-xinput_orange', 'XInput (Orange)'],
-      ['gamepad-xinput_yellow', 'XInput (Yellow)'],
-      ['gamepad-xinput_lime', 'XInput (Lime)'],
-      ['gamepad-xinput_green', 'XInput (Green)'],
-      ['gamepad-xinput_mint', 'XInput (Mint)'],
-      ['gamepad-xinput_cyan', 'XInput (Cyan)'],
-      ['gamepad-xinput_azure', 'XInput (Azure)'],
-      ['gamepad-xinput_blue', 'XInput (Blue)'],
-      ['gamepad-xinput_violet', 'XInput (Violet)'],
-      ['gamepad-xinput_magenta', 'XInput (Magenta)'],
-      ['gamepad-xinput_rose', 'XInput (Rose)'],
       ['gamepad-dinput', 'DInput'],
-      ['gamepad-dinput_red', 'DInput (Red)'],
-      ['gamepad-dinput_orange', 'DInput (Orange)'],
-      ['gamepad-dinput_yellow', 'DInput (Yellow)'],
-      ['gamepad-dinput_lime', 'DInput (Lime)'],
-      ['gamepad-dinput_green', 'DInput (Green)'],
-      ['gamepad-dinput_mint', 'DInput (Mint)'],
-      ['gamepad-dinput_cyan', 'DInput (Cyan)'],
-      ['gamepad-dinput_azure', 'DInput (Azure)'],
-      ['gamepad-dinput_blue', 'DInput (Blue)'],
-      ['gamepad-dinput_violet', 'DInput (Violet)'],
-      ['gamepad-dinput_magenta', 'DInput (Magenta)'],
-      ['gamepad-dinput_rose', 'DInput (Rose)'],
       ['gamepad-disc', 'Gamepad (Disc D-pad)'],
       ['joystick-v', 'Joystick (V Layout)'],
       ['joystick-a', 'Joystick (A Layout)'],
       ['megapad', 'Mega Pad'],
-      ['megapad-x', 'Mega Pad (X Button)'],
-      ['megapad-d', 'Mega Pad (D Button)'],
       ['hbox', 'HBox']
     ])
     // local storage key to find custom skin config

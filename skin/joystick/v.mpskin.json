@@ -17,16 +17,16 @@
 			"clear": [
 				{
 					"instruction": "clearRect",
-					"x": 0, "y": 24, "width": 88, "height": 88
+					"x": 7, "y": 31, "width": 74, "height": 74
 				},
 				{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [0, 42], "size": [88, 88], "canvasPos": [0, 24]
+					"src": 0, "srcPos": [0, 42], "size": [74, 74], "canvasPos": [7, 31]
 				}
 			],
 			"off": [{
 				"instruction": "drawImageInNinePos",
-				"src": 1, "length": 28, "lengthDiagonal": 20,
+				"src": 1, "length": 21, "lengthDiagonal": 15,
 				"srcPos": [0, 42], "size": [32, 32], "canvasPos": [28, 52]
 			}]
 		}
@@ -38,11 +38,11 @@
 				"clear": [
 					{
 						"instruction": "clearRect",
-						"x": 0, "y": 24, "width": 88, "height": 88
+						"x": 7, "y": 31, "width": 74, "height": 74
 					},
 					{
 						"instruction": "drawImage",
-						"src": 0, "srcPos": [0, 42], "size": [88, 88], "canvasPos": [0, 24]
+						"src": 0, "srcPos": [0, 42], "size": [74, 74], "canvasPos": [7, 31]
 					}
 				],
 				"off": [{
@@ -51,7 +51,7 @@
 				}],
 				"on": [{
 					"instruction": "drawImageInNinePos",
-					"src": 1, "length": 28, "lengthDiagonal": 20,
+					"src": 1, "length": 21, "lengthDiagonal": 15,
 					"srcPos": [0, 42], "size": [32, 32], "canvasPos": [28, 52]
 				}]
 			}

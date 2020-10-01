@@ -846,6 +846,12 @@ class GamepadRenderer {
     /** @type {SkinSlot} */
     const skinSlot = this.skinSlot[slot]
     
+    /*
+     * the `id` is for gamepadId,
+     * shorten to hopefully make it easier for users to type
+     * the custom CSS for matching canvases.
+     */
+    canvas.dataset.id = gamepadId
     skinSlot.internalName = internalName
     skinSlot.gamepadId = gamepadId
     skinSlot.src = skin.src

@@ -207,7 +207,7 @@ class GamepadRenderer {
      * Save references of skins for each gamepad slot. Index is that of the gamepad.
      * @type {SkinSlot[]}
      */
-    this.skinSlot = []
+    this.skinSlot = Array(4)
   
     this.requestRender = this.requestRender.bind(this)
     this.renderAll = this.renderAll.bind(this)

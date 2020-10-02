@@ -1089,7 +1089,7 @@ class GamepadRenderer {
     const skinSlot = this.skinSlot[gamepadIndex]
     if (!skinSlot.activeStateReady) {
       GamepadRenderer.announceMessage(
-        `Active state of the skin for slot ${gamepadIndex} isn't populated.` +
+        `Active state of the skin for slot ${gamepadIndex} isn't populated. ` +
         'Rendering the frame first and populating the state.'
       )
       this.renderFrame(gamepadIndex)
@@ -1383,7 +1383,7 @@ class GamepadRenderer {
     const skinSlot = this.skinSlot[gamepadIndex]
     if (!skinSlot.activeStateReady) {
       GamepadRenderer.announceMessage(
-        `Active state of the skin for slot ${gamepadIndex} isn't populated.` +
+        `Active state of the skin for slot ${gamepadIndex} isn't populated. ` +
         'Rendering the frame first and populating the state.'
       )
       this.renderFrame(gamepadIndex)

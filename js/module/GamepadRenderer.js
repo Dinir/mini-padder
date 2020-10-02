@@ -979,7 +979,47 @@ class GamepadRenderer {
       gamepadId
     )
   }
-  
+
+  /**
+   * Returns the skinSlot of the slot number, after checking if it's ready.
+   *
+   * @param {number} slot
+   * @returns {SkinSlot|boolean} returns `false` if there's a problem.
+   */
+  getSkinSlot (slot) {
+    const skinSlot = this.skinSlot[slot]
+    // check if it exists (does not when the gamepad is disconnected)
+    if (skinSlot === undefined) {
+      GamepadRenderer.announceMessage(new Error(
+        `Skin slot #${slot} does not exist.`
+      ))
+      return false
+    }
+    // check if it has the active state prepared, make one if it doesn't
+    if (skinSlot.activeStateReady === false) {
+      GamepadRenderer.announceMessage(
+        `Active state of the skin for slot ${slot} isn't populated. ` +
+        'Rendering the frame first and populating the state.'
+      )
+      this.renderFrame(slot)
+      return false
+    }
+    // check if its tools are ready
+    if (
+      !skinSlot.hasOwnProperty('src') ||
+      !skinSlot.hasOwnProperty('ctx') ||
+      !skinSlot.hasOwnProperty('instruction')
+    ) {
+      GamepadRenderer.announceMessage(new Error(
+        `Tools for skin slot #${slot} are missing.`
+      ))
+      return false
+    }
+    
+    // skin slot is found and ready
+    return skinSlot
+  }
+
   /**
    *
    * @returns {boolean} `true` if the render could be started,
@@ -1022,7 +1062,7 @@ class GamepadRenderer {
           ) {
             // it's the same slot used before
             if (skinSlot.assigning) { this.renderFrame(gamepadIndex) }
-            if (!skinSlot.activeStateReady) {
+            if (skinSlot.activeStateReady === false) {
               this.renderFrame(gamepadIndex)
             } else {
               this.render(gamepadIndex, gamepadChange)
@@ -1059,7 +1099,7 @@ class GamepadRenderer {
         }
       } else if (skinSlot) {
         // no changes are received, but skin slot for the index exists
-        if (!skinSlot.activeStateReady) {
+        if (skinSlot.activeStateReady === false) {
           // skinSlot might has been recreated - active state should be made
           this.renderFrame(gamepadIndex)
         } else if (this.timingForFps(this.fadeoutFps)) {
@@ -1085,33 +1125,24 @@ class GamepadRenderer {
    * @returns {boolean}
    */
   render (gamepadIndex, gamepadChange, useFadeout = true) {
-    /** @type {SkinSlot} */
-    const skinSlot = this.skinSlot[gamepadIndex]
-    if (!skinSlot.activeStateReady) {
-      GamepadRenderer.announceMessage(
-        `Active state of the skin for slot ${gamepadIndex} isn't populated. ` +
-        'Rendering the frame first and populating the state.'
-      )
-      this.renderFrame(gamepadIndex)
-      return false
-    }
-    const src = skinSlot.src
-    const ctx = skinSlot.ctx
-    const inst = skinSlot.instruction
-    const properties = skinSlot.properties
-    if (!src || !ctx || !inst) {
-      GamepadRenderer.announceMessage(new Error(JSON.stringify({
-        message: 'Renderer is ready to draw but tools are somehow missing.',
-        skinSlot: skinSlot
-      })))
-      return false
-    }
-  
-    const activeState = skinSlot.activeState
-    const lastActive = skinSlot.lastActive
-    const alpha = skinSlot.alpha
     const timestampAtStart = this._timestamp || performance.now()
     
+    // noinspection JSValidateTypes
+    /** @type {SkinSlot} */
+    const skinSlot = this.getSkinSlot(gamepadIndex)
+    // this being `false` means the slot is not ready
+    if (!skinSlot) { return false }
+    
+    const {
+      src,
+      ctx,
+      instruction: inst,
+      properties,
+      activeState,
+      lastActive,
+      alpha
+    } = skinSlot
+
     const forJoystick = properties.indexOf('joystick') !== -1
     const dpadInUse = activeState.buttons.dpad && activeState.buttons.dpad.value
     
@@ -1380,32 +1411,24 @@ class GamepadRenderer {
    * @returns {boolean}
    */
   renderFadeout (gamepadIndex) {
-    const skinSlot = this.skinSlot[gamepadIndex]
-    if (!skinSlot.activeStateReady) {
-      GamepadRenderer.announceMessage(
-        `Active state of the skin for slot ${gamepadIndex} isn't populated. ` +
-        'Rendering the frame first and populating the state.'
-      )
-      this.renderFrame(gamepadIndex)
-      return false
-    }
-    const src = skinSlot.src
-    const ctx = skinSlot.ctx
-    const inst = skinSlot.instruction
-    const properties = skinSlot.properties
-    if (!src || !ctx || !inst) {
-      GamepadRenderer.announceMessage(new Error(JSON.stringify({
-        message: 'Renderer is ready to draw but tools are somehow missing.',
-        skinSlot: skinSlot
-      })))
-      return false
-    }
-  
-    const activeState = skinSlot.activeState
-    const lastActive = skinSlot.lastActive
-    const alpha = skinSlot.alpha
     const timestampAtStart = this._timestamp || performance.now()
   
+    // noinspection JSValidateTypes
+    /** @type {SkinSlot} */
+    const skinSlot = this.getSkinSlot(gamepadIndex)
+    // this being `false` means the slot is not ready
+    if (!skinSlot) { return false }
+  
+    const {
+      src,
+      ctx,
+      instruction: inst,
+      properties,
+      activeState,
+      lastActive,
+      alpha
+    } = skinSlot
+
     const forJoystick = properties.indexOf('joystick') !== -1
     
     if (inst.sticks) {
@@ -1526,23 +1549,33 @@ class GamepadRenderer {
    * @see GamepadRenderer#render
    */
   renderFrame (gamepadIndex) {
+    const timestampAtStart = this._timestamp || performance.now()
+
+    /*
+     * don't use `getSkinSlot` here, as this method prepares
+     * the skin slot. The checks in `getSkinSlot` will likely fail and cause
+     * an infinity loop.
+     */
     /** @type {SkinSlot} */
     const skinSlot = this.skinSlot[gamepadIndex]
-    const src = skinSlot.src
-    const ctx = skinSlot.ctx
-    const inst = skinSlot.instruction
-    if (!src || !ctx || !inst) {
-      GamepadRenderer.announceMessage(new Error(JSON.stringify({
-        message: 'Renderer is ready to draw but tools are somehow missing.',
-        skinSlot: skinSlot
-      })))
+    // this being `false` means the slot is not ready
+    if (!skinSlot) { return false }
+    
+    const {
+      src,
+      ctx,
+      instruction: inst,
+      activeState,
+      lastActive,
+      alpha
+    } = skinSlot
+    
+    if (!src || !ctx || !inst || !activeState || !lastActive || !alpha) {
+      GamepadRenderer.announceMessage(new Error(
+        `Tools for skin slot #${gamepadIndex} are missing.`
+      ))
       return false
     }
-  
-    const activeState = skinSlot.activeState
-    const lastActive = skinSlot.lastActive
-    const alpha = skinSlot.alpha
-    const timestampAtStart = this._timestamp || performance.now()
     
     if (inst.sticks) {
       activeState.sticks = activeState.sticks || {}
@@ -1617,7 +1650,7 @@ class GamepadRenderer {
       }
     }
     
-    if (!skinSlot.activeStateReady) {
+    if (skinSlot.activeStateReady !== true) {
       skinSlot.activeStateReady = true
     }
     

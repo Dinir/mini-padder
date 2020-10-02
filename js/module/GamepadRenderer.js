@@ -216,6 +216,11 @@ class GamepadRenderer {
     window.addEventListener('processedGamepadChange', e => {
       this._processedGamepadChange = e.detail
     })
+    window.addEventListener('gamepaddisconnected', e => {
+      if (!e.gamepad.connected) {
+        this.removeSkinSlot(e.gamepad.index)
+      }
+    })
     
     this.setSkinMappingInBulk =
       this.setSkinMappingInBulk.bind(this)
@@ -935,17 +940,21 @@ class GamepadRenderer {
   }
   /**
    * Remove a {@link SkinSlot} through every property of it.
-   * Then remove every canvas it was using.
+   * Then remove the SkinSlot and every canvas it was using.
    * @param {number} slot index of the slot the SkinSlot was occupying.
    */
-  removeSkinFromSlot (slot) {
+  removeSkinSlot (slot) {
     const skinPropertyList = Object.keys(this.skinSlot[slot])
     for (let p = 0; p < skinPropertyList.length; p++) {
       delete this.skinSlot[slot][skinPropertyList[p]]
     }
-    while (this.canvas[slot].firstChild) {
-      this.canvas[slot].removeChild(this.canvas[slot].lastChild)
+    // keep the slot order, don't splice it away!
+    delete this.skinSlot[slot]
+    const canvas = this.canvas[slot]
+    while (canvas.firstChild) {
+      canvas.removeChild(canvas.lastChild)
     }
+    delete canvas.dataset.id
   }
   /**
    * Remove a {@link SkinSlot} and reload one with the given skin, or
@@ -971,7 +980,7 @@ class GamepadRenderer {
         return false
       }
     }
-    this.removeSkinFromSlot(slot)
+    this.removeSkinSlot(slot)
   
     return this.applySkinToSlot(
       existingInternalName,

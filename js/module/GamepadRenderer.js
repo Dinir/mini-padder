@@ -752,6 +752,7 @@ class GamepadRenderer {
       this.skins[internalName] &&
       typeof this.skins[internalName].loaded === 'boolean'
     ) { return true }
+    // noinspection JSValidateTypes
     this.skins[internalName] = {
       loaded: false
     }
@@ -789,7 +790,6 @@ class GamepadRenderer {
       })
     }
   }
-  
   /**
    * Remove the skin from the page.
    * @param {skinInternalName} internalName
@@ -817,7 +817,6 @@ class GamepadRenderer {
       this.setSkinMapping(gamepadId, this.findDefaultSkin(gamepadId))
     }
   }
-  
   /**
    * Refresh the loaded skin under the same internal name.
    * @param {skinInternalName} internalName
@@ -827,6 +826,7 @@ class GamepadRenderer {
     this.unloadSkin(internalName, false)
     this.loadSkin(internalName)
   }
+
   /**
    * setup a loaded skin for one of four canvas
    * @param {skinInternalName} internalName
@@ -972,6 +972,7 @@ class GamepadRenderer {
       this.findDefaultSkin(gamepadId)
     
     if (existingInternalName) {
+      // noinspection JSCheckFunctionSignatures
       const skinMappingUpdated = this.setSkinMapping(gamepadId, existingInternalName)
       if (!skinMappingUpdated) {
         GamepadRenderer.announceMessage(new Error(
@@ -1365,6 +1366,7 @@ class GamepadRenderer {
             } else if (this.timingForFps(this.fadeoutFps)) {
               // dpad for joystick render fade-out using left stick part
               if (forJoystick && bg === 0 && b === 0) { continue }
+          
               const timeInactive =
                 timestampAtStart - lastActive.buttons[buttonGroupName][buttonName]
               let [fadingOut, deltaOpacity] = this.getFadeoutState(timeInactive)

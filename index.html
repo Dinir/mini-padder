@@ -261,7 +261,11 @@
     ['gamepad-disc_dinput', 'Disc D-pad (D Button)'],
     ['gamepad-disc_super', 'Disc D-pad (Super)'],
     ['joystick-v', 'Joystick (V Layout)'],
+    ['joystick-v_x', 'Joystick (V Layout) (X Button)'],
+    ['joystick-v_d', 'Joystick (V Layout) (D Button)'],
     ['joystick-a', 'Joystick (A Layout)'],
+    ['joystick-a_x', 'Joystick (A Layout) (X Button)'],
+    ['joystick-a_d', 'Joystick (A Layout) (D Button)'],
     ['megapad', 'Mega Pad'],
     ['megapad-x', 'Mega Pad (X Button)'],
     ['megapad-d', 'Mega Pad (D Button)'],
@@ -465,7 +469,7 @@
 
 <!-- updater -->
 <script>
-  const version = '3.8.0'
+  const version = '3.9.0'
   const MPUpdater = new MiniPadderUpdater(version)
   const versionDoms = document.getElementsByClassName('version')
   Array.from(versionDoms).forEach(v => v.innerHTML = version)

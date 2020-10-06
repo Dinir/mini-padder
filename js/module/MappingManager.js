@@ -1160,19 +1160,19 @@ class MappingManager {
     const directions = ['up', 'down', 'left', 'right']
     const values = Array(4).fill(null)
   
-    for (let d = 0; d < directions.length; d++) {
-      values[d] =
-        changeButtons[mappingDpad[directions[d]]] || null
-      if (values[d]) {
-        /*
-         * d         |  0  1  2  3 | d
-         * direction | up dn le ri | directions[d]
-         * axis      |  0  0  1  1 | d > 1 ? 0 : 1
-         *           |  x  x  y  y |
-         * max value | -1  1 -1  1 | d % 2 ? 1 : -1
-         */
-        dpadState[ d > 1 ? 0 : 1 ] =
-          ( d % 2 ? 1 : -1 ) * values[d].value
+    for (let p = 0; p < 2; p++) {
+      /*
+       * axisPair === 0 => directionNegative === 0, directionPositive === 1
+       * axisPair === 1 => directionNegative === 2, directionPositive === 3
+       */
+      const dn = p * 2, dp = 1 + p * 2
+      values[dn] = changeButtons[mappingDpad[directions[dn]]] || null
+      values[dp] = changeButtons[mappingDpad[directions[dp]]] || null
+      if (values[dn] !== null || values[dp] !== null) {
+        /* axisPair 0 => axis 1 (vertical), axisPair 1 => axis 0 (horizontal) */
+        dpadState[1 - p] =
+          -1 * (values[dn] && values[dn].value || 0) +
+          (values[dp] && values[dp].value || 0)
       }
     }
     

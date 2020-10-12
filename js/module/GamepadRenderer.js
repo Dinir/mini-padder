@@ -12,41 +12,10 @@
  * @property {SkinConfig} config
  */
 /**
- * @typedef {Object} SkinConfig
- * @description data from a configuration json in the skin directory
- * @memberOf SkinData
- *
- * @property {skinDisplayName} name Display name of the skin
- * @property {string[]} properties
- * List of known keywords telling GamepadRenderer to render the skin in a different way
- * @property {string[]} src
- * Filenames of spritesheets or static images for your skin.
- * Each can be replaced with a link or a Data URI.
- * @property {SkinLayer[]} layer
- * @property {Object} sticks Instructions to render stick inputs.
- * @property {Object} buttons Instructions to render button inputs.
- */
-/**
- * @typedef {Object} SkinLayer
- * @description the position and size of each canvas for the skin
- * @memberOf SkinConfig
- *
- * @property {string} name
- * @property {number} [background]
- * If this layer is for displaying a static image,
- * this property exists and tells which image in {@link SkinConfig.src} will be used.
- * @property {number} x Margin from the top for the layer.
- * @property {number} y Margin from the left for the layer.
- * @property {number} width Horizontal size of the layer.
- * @property {number} height Vertical size of the layer.
- */
-/**
  * @typedef {Map<skinInternalName, skinDisplayName>} SkinList
  * @memberOf GamepadRenderer#
  * @description Internal names and display names of all skins currently known.
  */
-/** @typedef {string} skinInternalName `foldername-skinfilename` */
-/** @typedef {string} skinDisplayName `config.name` of a skin */
 /**
  * @typedef {Object} SkinSlot
  * @memberOf GamepadRenderer#
@@ -92,19 +61,20 @@
  * ordered by config.json.
  *
  * @property {HTMLCanvasElement[]} layer
- * canvas element for each layers, ordered by config.json.
+ * canvas element for each layers, in order of {@link SkinConfig.layer}.
  *
  * @property {CanvasRenderingContext2D[]} ctx
- * canvas context for each layers, ordered by config.json.
+ * canvas context for each layers, in order of {@link SkinConfig.layer}.
  *
- * @property {Object} instruction
- * specific data to draw each sprites,
- * mapped in a form of processedGamepadChange.
- * It's a reference to `config.sticks` and `config.buttons`.
+ * @property {{
+ *   sticks: renderInstructionSetsForInputKind,
+ *   buttons: renderInstructionSetsForInputKind
+ * }} instruction
+ * contains render instruction sets, loaded from {@link SkinConfig}.
  */
 /**
  * @typedef {Object} fadeoutOption
- * @memberOf GamepadRenderer
+ * @memberOf GamepadRenderer#
  * @description
  * Configuration values for fade-out effect.
  *
@@ -116,6 +86,80 @@
  * @property {Number} duration Transition time of fade-out effect in milliseconds.
  * It's in milliseconds to compare with DOMHighResTimestamp values.
  */
+
+/**
+ * @typedef {Object} SkinConfig
+ * @description data from a configuration json in the skin directory
+ * @memberOf SkinData
+ *
+ * @property {skinDisplayName} name Display name of the skin
+ * @property {?string} author Author of the skin. Max length is 33.
+ * @property {string[]} properties
+ * List of known keywords telling GamepadRenderer to render the skin in a different way
+ * @property {string[]} src
+ * Filenames of spritesheets or static images for your skin.
+ * Each can be replaced with a link or a Data URI.
+ * @property {SkinLayer[]} layer
+ * @property {renderInstructionSetsForInputKind} sticks
+ * Instructions to render stick inputs.
+ * @property {renderInstructionSetsForInputKind} buttons
+ * Instructions to render button inputs.
+ */
+/**
+ * @typedef {Object} SkinLayer
+ * @description the position and size of each canvas for the skin
+ * @memberOf SkinConfig
+ *
+ * @property {string} name
+ * @property {number} [background]
+ * If this layer is for displaying a static image,
+ * this property exists and tells which image in {@link SkinConfig.src} will be used.
+ * @property {number} x Margin from the top for the layer.
+ * @property {number} y Margin from the left for the layer.
+ * @property {number} width Horizontal size of the layer.
+ * @property {number} height Vertical size of the layer.
+ */
+
+/** @typedef {string} skinInternalName `foldername-skinfilename` */
+/** @typedef {string} skinDisplayName `config.name` of a skin */
+/**
+ * @typedef renderInstructionSetsForInputKind
+ * @type {Object.<string,
+ *   number|renderInstructionSet|Object.<
+ *     string,number|renderInstructionSet
+ *   >
+ * >}
+ * @description Contains instruction sets for each inputs
+ * in the top category inputs: sticks or buttons.
+ * The property can be an index of the layer, {@link renderInstructionSet}, or
+ * an object for sub-level category inputs with these two properties in it.
+ */
+/**
+ * @typedef renderInstructionSet
+ * @type {Object.<string, renderInstruction[]>}
+ * @description a set of instructions to go through for a part of inputs
+ *
+ * @property {renderInstruction[]} clear
+ * clear the canvas and sometimes draw a frame
+ * @property {renderInstruction[]} off
+ * draw inactive state,
+ * like idle buttons, and analog stick with the button inactive
+ * @property {renderInstruction[]} on
+ * draw active state,
+ * like pressed buttons, and analog stick with the button active
+ */
+/**
+ * @typedef renderInstruction
+ * @type {Object.<string,
+ *   string |
+ *   number |
+ *   Array.<number | Array.<number|boolean>> |
+ *   Object.<string, ?number[][]>
+ * >}
+ * @description
+ * an instruction for a specific state of a part of inputs for a canvas to draw
+ */
+
 /**
  *
  * @class
@@ -151,7 +195,7 @@ class GamepadRenderer {
   
     this.canvas = canvasArray
     // I give it default values I used when it was 'XBoxPadViewer'.
-    /** @type fadeoutOption */
+    /** @type {fadeoutOption} */
     this.fadeout = {
       time: [8,16,32],
       opacity: [0.5,0.1,0],
@@ -876,7 +920,7 @@ class GamepadRenderer {
   
     const altMessage = `a layer of canvas to display inputs of gamepad ${slot}`
     for (let l = 0; l < config.layer.length; l++) {
-      /** @type SkinLayer */
+      /** @type {SkinLayer} */
       const layerData = config.layer[l]
       
       const isStatic = 
@@ -1164,6 +1208,7 @@ class GamepadRenderer {
       // give instructions for sticks
       for (let s = 0; s < this.order.stick.length; s++) {
         const stickName = this.order.stick[s]
+        /** @type {renderInstructionSet} */
         const stickInst = inst.sticks[stickName]
         // skip if the referred instruction is not made
         if (!stickInst || stickInst.constructor !== Object) { continue }
@@ -1273,6 +1318,7 @@ class GamepadRenderer {
             if (forJoystick && bg === 0 && b !== 0) { break }
         
             const buttonName = this.order.button[bg][b]
+            /** @type {renderInstructionSet} */
             const buttonInst = inst.buttons[buttonGroupName][buttonName]
             // skip if the referred instruction is not made
             if (!buttonInst || buttonInst.constructor !== Object) { continue }
@@ -1356,6 +1402,7 @@ class GamepadRenderer {
             if (forJoystick && bg === 0 && b !== 0) { break }
         
             const buttonName = this.order.button[bg][b]
+            /** @type {renderInstructionSet} */
             const buttonInst = inst.buttons[buttonGroupName][buttonName]
             // skip if the referred instruction is not made
             if (!buttonInst || buttonInst.constructor !== Object) { continue }
@@ -1448,6 +1495,7 @@ class GamepadRenderer {
   
       for (let s = 0; s < this.order.stick.length; s++) {
         const stickName = this.order.stick[s]
+        /** @type {renderInstructionSet} */
         const stickInst = inst.sticks[stickName]
         if (!stickInst || stickInst.constructor !== Object) { continue }
     
@@ -1499,6 +1547,7 @@ class GamepadRenderer {
           if (forJoystick && bg === 0 && b !== 0) { break }
       
           const buttonName = this.order.button[bg][b]
+          /** @type {renderInstructionSet} */
           const buttonInst = inst.buttons[buttonGroupName][buttonName]
           if (!buttonInst || buttonInst.constructor !== Object) { continue }
       
@@ -1597,6 +1646,7 @@ class GamepadRenderer {
       
       for (let s = 0; s < this.order.stick.length; s++) {
         const stickName = this.order.stick[s]
+        /** @type {renderInstructionSet} */
         const stickInst = inst.sticks[stickName]
         if (!stickInst || stickInst.constructor !== Object) { continue }
         
@@ -1640,6 +1690,7 @@ class GamepadRenderer {
           
         for (let b = 0; b < this.order.button[bg].length; b++) {
           const buttonName = this.order.button[bg][b]
+          /** @type {renderInstructionSet} */
           const buttonInst = inst.buttons[buttonGroupName][buttonName]
           // if the instruction is not made and therefore not an Object,
           // the loop will skip the button meant for the instruction

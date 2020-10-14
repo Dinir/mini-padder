@@ -191,7 +191,7 @@ class GamepadRenderer {
     // class-wise definition of maximum canvas size
     this.maxCanvasSize = [256, 144]
     
-    this.fadeoutFps = 60
+    this.fadeoutFps = MPCommon.fps || 60
     this.fadeoutOpacityPrecision = 4
     
     this.messageDisplayTimeInSeconds = 2

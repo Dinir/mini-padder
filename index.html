@@ -226,7 +226,8 @@
     }
     if (e.detail.type !== 'log') {
       window.dispatchEvent(new CustomEvent('customErrorMessage', {
-        detail: e.detail.message
+        detail: e.detail.message instanceof Error ?
+          e.detail.message : consoleString
       }))
     }
   })

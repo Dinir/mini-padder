@@ -22,7 +22,7 @@ class ErrorLogCollector {
    * Return time string.
    * @returns {string}
    */
-   static get #time () {
+  static get time () {
      return new Date().toLocaleTimeString()
    }
   
@@ -36,7 +36,7 @@ class ErrorLogCollector {
    * @returns {boolean}
    */
   write (message, url, lineNo, columnNo, error) {
-    this.errorLog[0] += `[${ErrorLogCollector.#time}] `
+    this.errorLog[0] += `[${ErrorLogCollector.time}] `
     this.errorLog[0] += error instanceof Error ? error.stack : message
     this.errorLog[0] += '\n'
     return false

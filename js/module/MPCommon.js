@@ -13,7 +13,7 @@ class MPCommon {
    * the max difference in length allowed for one frame in milliseconds squared
    * @type {number}
    */
-  static maxSquareDiffAllowedInFrame = 16 ** 2
+  static maxSquareDiffAllowedInFrame = ( 5 * MPCommon.frameLength ) ** 2
   
   /**
    * the last confirmed maximum number of gamepads available

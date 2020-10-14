@@ -239,8 +239,11 @@ class GamepadWatcher {
     const framesLost =
       MPCommon.isIntervalBigEnough(timestamp, this._lastTimestamp)
     if (framesLost) {
+      const approxFrames = Math.round(
+        (timestamp - this._lastTimestamp) / MPCommon.frameLength
+      )
       GamepadWatcher.announceMessage(
-        `Frame Loss: ${timestamp - this._lastTimestamp}`,
+        `Frame Loss: ${approxFrames}`,
         'warn'
       )
     }

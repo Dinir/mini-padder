@@ -1,11 +1,9 @@
 class MPCommon {
   /**
-   * Return the last confirmed maximum number of gamepads available.
-   * @returns {number}
+   * the last confirmed maximum number of gamepads available
+   * @type {number}
    */
-  static get maxGamepads () {
-    return 4
-  }
+  static maxGamepads = 4
   
   /**
    * Take an Error instance or string and dispatch a custom event with it.

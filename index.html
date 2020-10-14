@@ -211,18 +211,23 @@
   const Logger = new ErrorLogCollector()
   // get gamepad viewer messages on console
   window.addEventListener('MPMessage', e => {
-    if (e.detail.type === 'error') {
-      console.error(e.detail.from + ':', e.detail.message)
-      if (
-        e.detail.message &&
-        e.detail.message instanceof Error
-      ) {
-        window.dispatchEvent(new CustomEvent('customErrorMessage', {
-          detail: e.detail.message
-        }))
-      }
-    } else {
-      console.log(e.detail.from + ':', e.detail.message)
+    const consoleString = e.detail.from + ': ' + e.detail.message
+    switch (e.detail.type) {
+      case 'error':
+        console.error(consoleString)
+        break
+      case 'warning':
+      case 'warn':
+        console.warn(consoleString)
+        break
+      default:
+        console.log(consoleString)
+        break
+    }
+    if (e.detail.type !== 'log') {
+      window.dispatchEvent(new CustomEvent('customErrorMessage', {
+        detail: e.detail.message
+      }))
     }
   })
 </script>

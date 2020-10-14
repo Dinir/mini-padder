@@ -11,11 +11,16 @@ class MPCommon {
    * @returns {function(Error|string)} method for the class to use to announce messages
    */
   static announceMessageFrom (className) {
-    return message => {
+    /**
+     * @param {Error|string} message
+     * @param {string} [typeOverride]
+     */
+    return (message, typeOverride) => {
       window.dispatchEvent(new CustomEvent('MPMessage', {
         detail: {
           from: className,
-          type: message instanceof Error ? 'error' : 'log',
+          type: message instanceof Error ? 'error' :
+            typeOverride ? typeOverride : 'log',
           message: message
         }
       }))

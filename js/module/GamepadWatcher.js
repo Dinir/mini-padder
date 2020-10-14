@@ -105,6 +105,8 @@ class GamepadWatcher {
     this.gamepadId = []
     this.onLoop = false
     this.pollID = 0
+    /** @type {?DOMHighResTimeStamp} */
+    this._lastTimestamp = null
     
     this.browser = GamepadWatcher.detectBrowser()
     
@@ -139,6 +141,8 @@ class GamepadWatcher {
       detail: gamepadChanges
     }))
   }
+  
+  static announceMessage = MPCommon.announceMessageFrom('Gamepad Watcher')
   
   /**
    * detects if it's Firefox or Chrome.
@@ -223,7 +227,25 @@ class GamepadWatcher {
     }
   }
   
-  loop () {
+  /**
+   *
+   * @param {?DOMHighResTimeStamp} timestamp
+   */
+  loop (timestamp) {
+    /**
+     * true if the interval from the last frame was longer than 2 frame length
+     * @type {boolean}
+     */
+    const framesLost =
+      MPCommon.isIntervalBigEnough(timestamp, this._lastTimestamp)
+    if (framesLost) {
+      GamepadWatcher.announceMessage(
+        `Frame Loss: ${timestamp - this._lastTimestamp}`,
+        'warn'
+      )
+    }
+    
+    this._lastTimestamp = timestamp || null
     if (!this.onLoop) { return }
     
     // make copy of current states at the time the loop starts

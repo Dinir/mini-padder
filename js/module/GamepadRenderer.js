@@ -1093,6 +1093,19 @@ class GamepadRenderer {
     requestAnimationFrame(this.renderAll)
   }
   renderAll (timestamp) {
+    /**
+     * true if the interval from the last frame was longer than 2 frame length
+     * @type {boolean}
+     */
+    const framesLost =
+      MPCommon.isIntervalBigEnough(timestamp, this._timestamp)
+    if (framesLost) {
+      GamepadRenderer.announceMessage(
+        `Frame Loss: ${timestamp - this._timestamp}`,
+        'warn'
+      )
+    }
+    
     this.renderPending = false
     
     /**

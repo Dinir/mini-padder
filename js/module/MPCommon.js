@@ -24,7 +24,7 @@ class MPCommon {
   /**
    * Take an Error instance or string and dispatch a custom event with it.
    * @param {string} className the class this method will be used in
-   * @returns {function(Error|string)} method for the class to use to announce messages
+   * @returns {function(Error|string, string)} method for the class to use to announce messages
    */
   static announceMessageFrom (className) {
     /**

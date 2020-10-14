@@ -1,5 +1,13 @@
 class MPCommon {
   /**
+   * Return the last confirmed maximum number of gamepads available.
+   * @returns {number}
+   */
+  static get maxGamepads () {
+    return 4
+  }
+  
+  /**
    * Take an Error instance or string and dispatch a custom event with it.
    * @param {string} className the class this method will be used in
    * @returns {function(Error|string)} method for the class to use to announce messages

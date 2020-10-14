@@ -174,6 +174,12 @@ class GamepadRenderer {
    * contains list of default skins available on the directory
    */
   constructor (canvasArray, defaultSkins) {
+    /**
+     * the last confirmed maximum number of gamepads available
+     * @type {number}
+     */
+    this.maxGamepads = MPCommon.maxGamepads || 4
+    
     // true when it's not ready to render
     this.renderPending = true
     
@@ -251,7 +257,7 @@ class GamepadRenderer {
      * Save references of skins for each gamepad slot. Index is that of the gamepad.
      * @type {SkinSlot[]}
      */
-    this.skinSlot = Array(4)
+    this.skinSlot = Array(this.maxGamepads)
   
     this.requestRender = this.requestRender.bind(this)
     this.renderAll = this.renderAll.bind(this)
@@ -1097,7 +1103,7 @@ class GamepadRenderer {
     
     for (
       let gamepadIndex = 0;
-      gamepadIndex < 4;
+      gamepadIndex < this.maxGamepads;
       gamepadIndex++
     ) {
       const skinSlot = this.skinSlot[gamepadIndex]

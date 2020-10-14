@@ -148,6 +148,11 @@ class MappingManager {
    * Key should be the gamepadId value.
    */
   constructor (newMappings) {
+    /**
+     * the last confirmed maximum number of gamepads available
+     * @type {number}
+     */
+    this.maxGamepads = MPCommon.maxGamepads || 4
     this.mappings = {}
     /**
      * @typedef {Object} assignmentState
@@ -157,7 +162,7 @@ class MappingManager {
      * @property {Object} data
      * */
     /** @type {assignmentState[]} */
-    this.assignmentState = Array(4)
+    this.assignmentState = Array(this.maxGamepads)
     for (let i = 0; i < this.assignmentState.length; i++) {
       this.assignmentState[i] = { ongoing: false, index: -1, result: null }
     }
@@ -168,7 +173,7 @@ class MappingManager {
      * one axis input.
      * @type {number[][]}
      */
-    this.dpadState = Array(4)
+    this.dpadState = Array(this.maxGamepads)
     for (let i = 0; i < this.dpadState.length; i++) {
       this.dpadState[i] = [0, 0]
     }

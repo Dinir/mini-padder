@@ -87,6 +87,11 @@
 class GamepadWatcher {
   constructor() {
     /**
+     * the last confirmed maximum number of gamepads available
+     * @type {number}
+     */
+    this.maxGamepads = MPCommon.maxGamepads || 4
+    /**
      * Contains Gamepads passed by value from gamepad connection events.
      * Gamepads are only passed when they actually represents one.
      * @type {Object}
@@ -235,7 +240,7 @@ class GamepadWatcher {
      * @property {number} length defined so it can be iterated with for loop
      */
     const lastChanges = {}
-    lastChanges.length = 4
+    lastChanges.length = this.maxGamepads
 
     // check each gamepad for changes
     for (let i = 0; i < newStates.length; i++) {

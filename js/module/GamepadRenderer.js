@@ -1170,7 +1170,7 @@ class GamepadRenderer {
     } // for loop of gamepadIndex
     
     this._processedGamepadChange = null
-    this._timestamp = null
+    // this._timestamp = null
     
     this.requestRender()
   }

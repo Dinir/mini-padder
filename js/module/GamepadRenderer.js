@@ -1104,7 +1104,7 @@ class GamepadRenderer {
         (timestamp - this._timestamp) / MPCommon.frameLength
       )
       GamepadRenderer.announceMessage(
-        `Frame Loss: ${approxFrames}`,
+        `Frames delayed: ${approxFrames}`,
         'warn'
       )
     }

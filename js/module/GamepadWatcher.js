@@ -243,7 +243,7 @@ class GamepadWatcher {
         (timestamp - this._lastTimestamp) / MPCommon.frameLength
       )
       GamepadWatcher.announceMessage(
-        `Frame Loss: ${approxFrames}`,
+        `Frames delayed: ${approxFrames}`,
         'warn'
       )
     }

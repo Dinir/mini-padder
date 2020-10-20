@@ -1,6 +1,6 @@
 {
 	"name": "Disc D-pad (Super)",
-  "author": null,
+	"author": null,
 	"properties": ["joystick"],
 	"src": [
 		"frame-disc.png", "active-disc.png"

@@ -1,6 +1,6 @@
 {
 	"name": "XInput (Yellow)",
-  "author": null,
+	"author": null,
 	"properties": [],
 	"src": [
 		"frame-multi.png", "active-multi.png"

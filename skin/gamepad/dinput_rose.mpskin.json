@@ -1,6 +1,6 @@
 {
 	"name": "DInput (Rose)",
-  "author": null,
+	"author": null,
 	"properties": [],
 	"src": [
 		"frame-multi.png", "active-multi.png"

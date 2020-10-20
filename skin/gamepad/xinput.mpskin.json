@@ -1,6 +1,6 @@
 {
 	"name": "XInput",
-  "author": null,
+	"author": null,
 	"properties": [],
 	"src": [
 		"frame.png", "active.png"

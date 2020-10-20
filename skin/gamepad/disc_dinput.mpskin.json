@@ -1,6 +1,6 @@
 {
 	"name": "Disc D-pad (D Button)",
-  "author": null,
+	"author": null,
 	"properties": [],
 	"src": [
 		"frame-disc.png", "active-disc.png"

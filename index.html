@@ -272,6 +272,8 @@
     ['joystick-a', 'Joystick (A Layout)'],
     ['joystick-a_x', 'Joystick (A Layout) (X Button)'],
     ['joystick-a_d', 'Joystick (A Layout) (D Button)'],
+    ['joystick-m', 'Joystick (M Layout)'],
+    ['joystick-m_coloured', 'Joystick (M Layout) (Coloured)'],
     ['megapad', 'Mega Pad'],
     ['megapad-x', 'Mega Pad (X Button)'],
     ['megapad-d', 'Mega Pad (D Button)'],
@@ -475,7 +477,7 @@
 
 <!-- updater -->
 <script>
-  const version = '3.9.4'
+  const version = '3.10.0'
   const MPUpdater = new MiniPadderUpdater(version)
   const versionDoms = document.getElementsByClassName('version')
   Array.from(versionDoms).forEach(v => v.innerHTML = version)

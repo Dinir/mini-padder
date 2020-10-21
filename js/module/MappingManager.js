@@ -868,11 +868,11 @@ class MappingManager {
     )
     const mappingsAreValid = MappingManager.validateMappings(mappingsFromStorage)
     if (mappingsAreValid !== true) {
-      MappingManager.announceMessage(JSON.stringify(
-        'Some mappings stored in the local storage are invalid!\n' +
+      MappingManager.announceMessage(
+        'Some mappings stored in the local storage are invalid! ' +
         'Default mappings for standards will be loaded and stored.\n' +
         JSON.stringify(mappingsAreValid)
-      ))
+      )
       return this.initiate()
     }
     

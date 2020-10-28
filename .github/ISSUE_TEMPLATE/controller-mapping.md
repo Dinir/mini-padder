@@ -1,5 +1,5 @@
 ---
-name: Controller Mapping
+name: Controller mapping
 about: Submit the mapping of your controller
 title: ''
 labels: mapping

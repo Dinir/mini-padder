@@ -200,12 +200,12 @@ class GamepadRenderer {
     this.loadInstructions()
   
     this.canvas = canvasArray
-    // I give it default values I used when it was 'XBoxPadViewer'.
+    
     /** @type {fadeoutOption} */
     this.fadeout = {
-      time: [8,16,32],
+      time: [0,8,12],
       opacity: [0.5,0.1,0],
-      duration: 4
+      duration: 1
     }
   
     this.loadFadeoutOption()

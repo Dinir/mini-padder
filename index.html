@@ -121,7 +121,7 @@
     <b>Fade-out</b>
     <label>
       <span>Time: </span>
-      <input type="text" placeholder="e.g. 8,16,32">
+      <input type="text" placeholder="e.g. 0,8,12">
     </label>
     <span class="description">seconds for each fade-out level</span><br>
     <label>
@@ -131,7 +131,7 @@
     <span class="description">transparency values for each level</span><br>
     <label>
       <span>Duration: </span>
-      <input type="text" placeholder="e.g. 4">
+      <input type="text" placeholder="e.g. 1">
     </label>
     <span class="description">transition time of fade-out effect</span>
   </div>
@@ -477,7 +477,7 @@
 
 <!-- updater -->
 <script>
-  const version = '3.10.2'
+  const version = '3.10.3'
   const MPUpdater = new MiniPadderUpdater(version)
   const versionDoms = document.getElementsByClassName('version')
   Array.from(versionDoms).forEach(v => v.innerHTML = version)

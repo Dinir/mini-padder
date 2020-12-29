@@ -182,30 +182,30 @@
 		"shoulder": {
 			"l1": {
 				"clear": [{
-					"instruction": "clearPolygon",
-					"path": [62, 0, 92, 0, 92, 24, 38, 24]
+					"instruction": "clearRect",
+					"x": 25, "y": 12, "width": 47, "height": 12
 				}],
 				"off": [{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [611, 138], "size": [47, 24], "canvasPos": [45, 0]
+					"src": 0, "srcPos": [611, 138], "size": [47, 12], "canvasPos": [25, 12]
 				}],
 				"on": [{
 					"instruction": "drawImage",
-					"src": 1, "srcPos": [112, 41], "size": [47, 24], "canvasPos": [45, 0]
+					"src": 1, "srcPos": [112, 72], "size": [47, 12], "canvasPos": [25, 12]
 				}]
 			},
 			"r1": {
 				"clear": [{
-					"instruction": "clearPolygon",
-					"path": [164, 0, 194, 0, 218, 24, 164, 24]
+					"instruction": "clearRect",
+					"x": 184, "y": 12, "width": 47, "height": 12
 				}],
 				"off": [{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [611, 162], "size": [47, 24], "canvasPos": [164, 0]
+					"src": 0, "srcPos": [611, 162], "size": [47, 12], "canvasPos": [184, 12]
 				}],
 				"on": [{
 					"instruction": "drawImage",
-					"src": 1, "srcPos": [159, 41], "size": [47, 24], "canvasPos": [164, 0]
+					"src": 1, "srcPos": [159, 72], "size": [47, 12], "canvasPos": [184, 12]
 				}]
 			}
 		}

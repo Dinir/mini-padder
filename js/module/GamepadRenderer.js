@@ -1965,6 +1965,14 @@ class GamepadRenderer {
       ) {
         if (!srcPos || !size || !canvasPos) { return }
         if (pos === null) { pos = [0, 0] }
+        /*
+         * if the pos is given from a single axis input,
+         * convert it to use on the both axes.
+         */
+        if (typeof pos === 'number') {
+          // convert the range from 0 ~ 1 to -1 ~ 1
+          pos = Array(2).fill((pos - 0.5) * 2)
+        }
     
         const fixedPos = []
         for (let a = 0; a < 2; a++) {

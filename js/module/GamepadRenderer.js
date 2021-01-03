@@ -1604,7 +1604,7 @@ class GamepadRenderer {
       
           this.followInstructions(
             ctx[buttonLayerIndex], src, buttonInst.clear,
-            null, null, null
+            null, alpha.buttons[buttonGroupName][buttonName], null
           )
           this.followInstructions(
             ctx[buttonLayerIndex], src, buttonInst.off,

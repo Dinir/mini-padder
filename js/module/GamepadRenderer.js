@@ -1220,6 +1220,7 @@ class GamepadRenderer {
     } = skinSlot
 
     const forJoystick = properties.indexOf('joystick') !== -1
+    const noStickButton = properties.indexOf('nostickbutton') !== -1
     const dpadInUse = activeState.buttons.dpad && activeState.buttons.dpad.value
     
     if (inst.sticks) {
@@ -1272,7 +1273,10 @@ class GamepadRenderer {
             ctx[stickLayerIndex], src, stickInst.clear,
             null, alpha.sticks[stickName], null
           )
-          if (activeState.sticks[stickName][1]) {
+          if (
+            activeState.sticks[stickName][1] ||
+            (noStickButton && activeState.sticks[stickName][0])
+          ) {
             this.followInstructions(
               ctx[stickLayerIndex], src, stickInst.on || stickInst.off,
               values.value, alpha.sticks[stickName], values.delta

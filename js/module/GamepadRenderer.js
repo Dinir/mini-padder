@@ -920,6 +920,7 @@ class GamepadRenderer {
     skinSlot.activeStateReady = false
     skinSlot.activeState = {}
     skinSlot.lastActive = {}
+    skinSlot.lastInput = {}
     skinSlot.alpha = {}
     skinSlot.assigning = false
     skinSlot.messageDisplayTimeLeft = -1
@@ -1216,6 +1217,7 @@ class GamepadRenderer {
       properties,
       activeState,
       lastActive,
+      lastInput,
       alpha
     } = skinSlot
 
@@ -1241,6 +1243,7 @@ class GamepadRenderer {
         } else if (sticks[stickName]) {
           // change for the stick is confirmed
           const values = sticks[stickName]
+          lastInput.sticks[stickName] = values.value
           let fadingOut = false
           let deltaOpacity = 1
       
@@ -1310,7 +1313,9 @@ class GamepadRenderer {
             )
             this.followInstructions(
               ctx[stickLayerIndex], src, stickInst.off,
-              [0, 0, null], alpha.sticks[stickName], [0, 0, null]
+              lastInput.sticks[stickName],
+              alpha.sticks[stickName],
+              lastInput.sticks[stickName]
             )
           }
         }
@@ -1352,6 +1357,7 @@ class GamepadRenderer {
             if (buttons[buttonGroupName][buttonName]) {
               // change for the button is confirmed
               const value = buttons[buttonGroupName][buttonName].value
+              lastInput.buttons[buttonGroupName][buttonName] = value
           
               this.followInstructions(
                 ctx[buttonLayerIndex], src, buttonInst.clear,
@@ -1510,6 +1516,7 @@ class GamepadRenderer {
       properties,
       activeState,
       lastActive,
+      lastInput,
       alpha
     } = skinSlot
 
@@ -1551,7 +1558,9 @@ class GamepadRenderer {
         )
         this.followInstructions(
           ctx[stickLayerIndex], src, stickInst.off,
-          [0, 0, null], alpha.sticks[stickName], [0, 0, null]
+          lastInput.sticks[stickName],
+          alpha.sticks[stickName],
+          lastInput.sticks[stickName]
         )
       }
     }
@@ -1653,10 +1662,19 @@ class GamepadRenderer {
       instruction: inst,
       activeState,
       lastActive,
+      lastInput,
       alpha
     } = skinSlot
     
-    if (!src || !ctx || !inst || !activeState || !lastActive || !alpha) {
+    if (
+      !src ||
+      !ctx ||
+      !inst ||
+      !activeState ||
+      !lastActive ||
+      !lastInput ||
+      !alpha
+    ) {
       GamepadRenderer.announceMessage(new Error(
         `Tools for skin slot #${gamepadIndex} are missing.`
       ))
@@ -1666,6 +1684,7 @@ class GamepadRenderer {
     if (inst.sticks) {
       activeState.sticks = activeState.sticks || {}
       lastActive.sticks = lastActive.sticks || {}
+      lastInput.sticks = lastInput.sticks || {}
       alpha.sticks = alpha.sticks || {}
     
       const stickLayerIndex = inst.sticks.layer
@@ -1688,6 +1707,7 @@ class GamepadRenderer {
         // for stick movement and stick button
         activeState.sticks[stickName] = [false, false]
         lastActive.sticks[stickName] = timestampAtStart
+        lastInput.sticks[stickName] = [0, 0]
         alpha.sticks[stickName] = 1
       }
     }
@@ -1695,6 +1715,7 @@ class GamepadRenderer {
     if (inst.buttons) {
       activeState.buttons = activeState.buttons || {}
       lastActive.buttons = lastActive.buttons || {}
+      lastInput.buttons = lastInput.buttons || {}
       alpha.buttons = alpha.buttons || {}
     
       const buttonLayerIndexDefault = inst.buttons.layer
@@ -1711,6 +1732,8 @@ class GamepadRenderer {
           activeState.buttons[buttonGroupName] || {}
         lastActive.buttons[buttonGroupName] =
           lastActive.buttons[buttonGroupName] || {}
+        lastInput.buttons[buttonGroupName] =
+          lastInput.buttons[buttonGroupName] || {}
         alpha.buttons[buttonGroupName] =
           alpha.buttons[buttonGroupName] || {}
           
@@ -1733,6 +1756,7 @@ class GamepadRenderer {
           
           activeState.buttons[buttonGroupName][buttonName] = false
           lastActive.buttons[buttonGroupName][buttonName] = timestampAtStart
+          lastInput.buttons[buttonGroupName][buttonName] = 0
           alpha.buttons[buttonGroupName][buttonName] = 1
         }
       }

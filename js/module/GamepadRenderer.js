@@ -1992,19 +1992,30 @@ class GamepadRenderer {
         alpha = 1
       ) {
         if (!srcPos || !size || !canvasPos) { return }
-        if (pos === null) { pos = [0, 0] }
-        /*
-         * if the pos is given from a single axis input,
-         * convert it to use on the both axes.
-         */
-        if (typeof pos === 'number') {
-          // convert the range from 0 ~ 1 to -1 ~ 1
-          pos = Array(2).fill((pos - 0.5) * 2)
-        }
     
         const fixedPos = []
-        for (let a = 0; a < 2; a++) {
-          fixedPos.push(pos[a] * areaSize[a] + canvasPos[a])
+        
+        // first `pos &&` passes `null` to default when pos === null
+        switch (pos && pos.constructor) {
+          case Array:
+            for (let a = 0; a < 2; a++) {
+              fixedPos.push(pos[a] * areaSize[a] + canvasPos[a])
+            }
+            break
+          case Number:
+            // the value is given from a single axis input
+            // convert the range from 0 ~ 1 to -1 ~ 1
+            const posConverted = (pos - 0.5) * 2
+            for (let a = 0; a < 2; a++) {
+              fixedPos.push(posConverted * areaSize[a] + canvasPos[a])
+            }
+            break
+          default:
+            // converted pos = [0, 0]
+            for (let a = 0; a < 2; a++) {
+              fixedPos.push(canvasPos[a])
+            }
+            break
         }
     
         this.drawImage(

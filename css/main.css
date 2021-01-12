@@ -7,7 +7,7 @@ html, body {
 body {
   font-size: 16px;
   font-family: "Fira Code", monospace;
-  background-color: black; }
+  background-color: transparent; }
 
 address {
   position: relative;

@@ -9,8 +9,7 @@ html, body {
 body {
   font-size: $default-font-size;
   font-family: "Fira Code", monospace;
-  // this color will be changed to 'transparent' by default in OBS.
-  background-color: black;
+  background-color: transparent;
 }
 
 address {

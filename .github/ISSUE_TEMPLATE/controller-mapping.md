@@ -7,10 +7,12 @@ assignees: Dinir
 
 ---
 
+**Controller Info and Usages**
+What is this controller made for? If you can't connect it directly to a computer, how do you make it work? Would the mapping be the same regardless of how the controller is connected? Are there games of which it is popular among the players?
+
 **Mapping**
 ```json
-Remove this placeholder text and paste the mapping here.
-It should starts and ends like this:
+Remove this placeholder text and paste the mapping here. It should starts and ends like this:
   "054c09cc": {
     "name": "Wireless Controller",
     "properties": [],
@@ -32,6 +34,3 @@ Type | Axis/Button Indexes
 D-pad | Write_Indexes_Here
 Left Stick | Write_Indexes_Here
 Right Stick | Write_Indexes_Here
-
-**Controller Info and Usages**
-What is this controller made for? If you can't connect it directly to a computer, how do you make it work? Would the mapping be the same regardless of how the controller is connected? Are there games of which it is popular among the players?

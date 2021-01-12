@@ -80,23 +80,23 @@
         }],
         "off": [{
           "instruction": "drawImage",
-          "src": 0, "srcPos": [198, 0], "size": [21, 40], "canvasPos": [0, 0]
+          "src": 0, "srcPos": [198, 1], "size": [21, 40], "canvasPos": [0, 0]
         }],
         "on": [
           {
             "instruction": "drawImageByPos",
             "src": 0, "areaSize": [0, 10],
-            "srcPos": [261, 0], "size": [21, 26], "canvasPos": [0, 10]
+            "srcPos": [261, 1], "size": [21, 26], "canvasPos": [0, 10]
           },
           {
             "instruction": "drawImageByPos",
             "src": 0, "areaSize": [0, -10],
-            "srcPos": [282, 18], "size": [21, 7], "canvasPos": [0, 28]
+            "srcPos": [282, 19], "size": [21, 7], "canvasPos": [0, 28]
           },
           {
             "instruction": "drawImageByPos",
             "src": 0, "areaSize": [0, 10],
-            "srcPos": [240, 0], "size": [21, 26], "canvasPos": [0, 10]
+            "srcPos": [240, 1], "size": [21, 26], "canvasPos": [0, 10]
           },
           {
             "instruction": "clearRect",
@@ -104,7 +104,7 @@
           },
           {
             "instruction": "drawImage",
-            "src": 0, "srcPos": [219, 25], "size": [21, 15], "canvasPos": [0, 25]
+            "src": 0, "srcPos": [219, 26], "size": [21, 15], "canvasPos": [0, 25]
           }
         ]
       }, 
@@ -115,23 +115,23 @@
         }],
         "off": [{
           "instruction": "drawImage",
-          "src": 0, "srcPos": [198, 0], "size": [21, 40], "canvasPos": [91, 0]
+          "src": 0, "srcPos": [198, 1], "size": [21, 40], "canvasPos": [91, 0]
         }],
         "on": [
           {
             "instruction": "drawImageByPos",
             "src": 0, "areaSize": [0, 10],
-            "srcPos": [261, 0], "size": [21, 26], "canvasPos": [91, 10]
+            "srcPos": [261, 1], "size": [21, 26], "canvasPos": [91, 10]
           },
           {
             "instruction": "drawImageByPos",
             "src": 0, "areaSize": [0, -10],
-            "srcPos": [282, 18], "size": [21, 7], "canvasPos": [91, 28]
+            "srcPos": [282, 19], "size": [21, 7], "canvasPos": [91, 28]
           },
           {
             "instruction": "drawImageByPos",
             "src": 0, "areaSize": [0, 10],
-            "srcPos": [240, 0], "size": [21, 26], "canvasPos": [91, 10]
+            "srcPos": [240, 1], "size": [21, 26], "canvasPos": [91, 10]
           },
           {
             "instruction": "clearRect",
@@ -139,7 +139,7 @@
           },
           {
             "instruction": "drawImage",
-            "src": 0, "srcPos": [219, 25], "size": [21, 15], "canvasPos": [91, 25]
+            "src": 0, "srcPos": [219, 26], "size": [21, 15], "canvasPos": [91, 25]
           }
         ]
       }

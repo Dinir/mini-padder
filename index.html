@@ -56,33 +56,8 @@
 </div>
 
 <div id="control-panel" class="control-panel" data-nosnippet>
-  <div class="option half-width" data-name="assignment">
-    <b>Input Assignment</b>
-    <div id="inputAssignment" class="after-margin button-container one-button-each-line">
-      <button class="inactive">Gamepad Name</button>
-      <button class="inactive">Gamepad Name</button>
-      <button class="inactive">Gamepad Name</button>
-      <button class="inactive">Gamepad Name</button>
-    </div>
-    <span class="description">
-      Make an input after pressing the button to start assigning.<br>
-      Click the button again anytime to abort assigning.
-    </span>
-  </div>
-  <div class="option half-width" data-name="deadzone">
-    <b>Update Deadzone</b>
-    <div id="deadzoneUpdate" class="after-margin button-container one-button-each-line">
-      <button class="inactive">0.000</button>
-      <button class="inactive">0.000</button>
-      <button class="inactive">0.000</button>
-      <button class="inactive">0.000</button>
-    </div>
-    <span class="description">
-      New deadzone value at the moment will be assigned on click.
-    </span>
-  </div>
-  <div class="option top-divider" data-name="layout">
-    <b>Gamepad Layout</b>
+  <div class="option" data-name="layout">
+    <b>Gamepad Skin</b>
     <label class="full-width inactive">
       <span>Gamepad Name</span> is
       <select></select><br>
@@ -98,6 +73,26 @@
     <label class="full-width inactive">
       <span>Gamepad Name</span> is
       <select></select>
+    </label>
+    <span class="description">
+      Change skin for each gamepad types.
+    </span>
+  </div>
+  <div class="option" data-name="custom-skin">
+    <label id="customSkinLoadArea">
+      <b>Import Custom Skin</b>
+      <span class="after-margin file-input-container inactive">
+        <input class="visually-hidden"
+               type="file" accept="application/json,image/*" multiple>
+        <button data-name="fileSelect">Choose Files</button>
+        <span id="currentlyLoadedCustomSkin">Nothing</span>
+        <button data-name="remove" class="align-right">X</button>
+      </span>
+      <span class="description">
+        Upload a json and up to 4 images for the custom skin.
+        New files replace old ones.
+        Click anywhere in this area to bring the file select screen.
+      </span>
     </label>
   </div>
   <div class="option half-width" data-name="displayWidth">
@@ -134,12 +129,38 @@
     </label>
     <span class="description">transition time of fade-out effect</span>
   </div>
+  <div></div>
+  <div class="option half-width" data-name="assignment">
+    <b>Input Assignment</b>
+    <div id="inputAssignment" class="after-margin button-container one-button-each-line">
+      <button class="inactive">Gamepad Name</button>
+      <button class="inactive">Gamepad Name</button>
+      <button class="inactive">Gamepad Name</button>
+      <button class="inactive">Gamepad Name</button>
+    </div>
+    <span class="description">
+      Make an input after pressing the button to start assigning.<br>
+      Click the button again anytime to abort assigning.
+    </span>
+  </div>
+  <div class="option half-width" data-name="deadzone">
+    <b>Update Deadzone</b>
+    <div id="deadzoneUpdate" class="after-margin button-container one-button-each-line">
+      <button class="inactive">0.000</button>
+      <button class="inactive">0.000</button>
+      <button class="inactive">0.000</button>
+      <button class="inactive">0.000</button>
+    </div>
+    <span class="description">
+      New deadzone value at the moment will be assigned on click.
+    </span>
+  </div>
   <div class="option top-divider" data-name="management">
     <b>Export & Import</b>
     <div class="after-margin button-container">
-      <button data-name="mappings">Gamepad Mappings</button>
       <button data-name="skinList">Skin List</button>
       <button data-name="customSkin">Custom Skin</button>
+      <button data-name="mappings">Gamepad Mappings</button>
       <button data-name="controlPanel">Control Panel Settings</button>
       <button data-name="errorLog">Error Log</button>
     </div>
@@ -148,23 +169,6 @@
       or paste from such text file and
       store them in the local storage of this web page.
     </span>
-  </div>
-  <div class="option" data-name="custom-skin">
-    <label id="customSkinLoadArea">
-      <b>Import Custom Skin</b>
-      <span class="after-margin file-input-container inactive">
-        <input class="visually-hidden"
-               type="file" accept="application/json,image/*" multiple>
-        <button data-name="fileSelect">Choose Files</button>
-        <span id="currentlyLoadedCustomSkin">Nothing</span>
-        <button data-name="remove" class="align-right">X</button>
-      </span>
-      <span class="description">
-        Upload a json and up to 4 images for the custom skin.
-        New files replace old ones.
-        Click anywhere in this area to bring the file select screen.
-      </span>
-    </label>
   </div>
   <div>
     <div>
@@ -294,55 +298,18 @@
 <!-- control panel -->
 <script>
   const Cp = new ControlPanel({
-    assignment: 'dynamicButtons',
-    deadzone: 'dynamicButtons',
     layout: 'selectFromMap',
+    customSkin: 'uploader',
     displayWidth: 'slider',
     fadeout: 'textArray',
+    assignment: 'dynamicButtons',
+    deadzone: 'dynamicButtons',
     management: 'buttons',
-    customSkin: 'uploader'
   }, [
     'gamepadconnected', 'gamepaddisconnected'
   ], cpDom)
   const cpPanel = Cp.panel
-  
-  cpPanel.assignment.assign(
-    document.getElementById('inputAssignment'),
-    Mapper.startAssignment
-  )
-  
-  cpPanel.deadzone.assign(
-    document.getElementById('deadzoneUpdate'),
-    function (gamepadIndex, name, gamepadId) {
-      if (!Watcher.gamepads[gamepadIndex]) { return false }
-  
-      const rawAxesData = Watcher.gamepads[gamepadIndex].axes
-      const mappedGamepadId = Mapper.getMappedGamepadId(gamepadId)
-      const stickMappings = Mapper.mappings[mappedGamepadId].sticks
-      const changeAxes = []
-      changeAxes[stickMappings.left.x] = { value: rawAxesData[stickMappings.left.x] }
-      changeAxes[stickMappings.left.y] = { value: rawAxesData[stickMappings.left.y] }
-      changeAxes[stickMappings.right.x] = { value: rawAxesData[stickMappings.right.x] }
-      changeAxes[stickMappings.right.y] = { value: rawAxesData[stickMappings.right.y] }
-  
-      const newDeadzoneValue = MappingManager.setDeadzone(stickMappings, changeAxes)
-      if (newDeadzoneValue !== null) { Mapper.store() }
-    }, {
-      makeLabel: function (idObj) {
-        const mappedGamepadId = Mapper.getMappedGamepadId(idObj.gamepadId)
-        const stickMappings = Mapper.mappings[mappedGamepadId].sticks
-        if (stickMappings) {
-          const deadzone = stickMappings.deadzone
-          return deadzone !== 0 && !isNaN(deadzone) ?
-            String(deadzone).padEnd(5, '0') : '0.000'
-        } else {
-          return '0.000'
-        }
-      },
-      updateLabel: true
-    }
-  )
-  
+
   cpPanel.layout.assign(
     cpDom.querySelector('div[data-name="layout"]'),
     cpDom.querySelectorAll('div[data-name="layout"] label span'),
@@ -350,33 +317,6 @@
     Renderer.changeSkinOfSlot,
     Renderer.skinMapping
   )
-
-  cpPanel.displayWidth.assign(
-    cpDom.querySelector('div[data-name="displayWidth"] input'), e => {
-      canvasContainer.dataset.width = e.target.value
-      const cropValue = [
-        document.body.offsetWidth - canvasContainer.offsetWidth,
-        document.body.offsetHeight - canvasContainer.offsetHeight
-      ]
-      const cropValueString =
-        cropValue.map(v => String(v).padStart(3, '\xa0'))
-      cpDomSizeDescriptor.innerHTML =
-        `Right ${cropValueString[0]}, Bottom ${cropValueString[1]}`
-    }
-  )
-  
-  cpPanel.fadeout.assign(
-    cpDom.querySelector('div[data-name="fade"]'),
-    Renderer.setFadeoutOptionFromTextArray
-  )
-  if (!cpPanel.fadeout.panelValue) {
-    cpPanel.fadeout.receivePanelValue(
-      Renderer.getFadeoutOptionAsTextArray()
-    )
-    cpPanel.fadeout.updatePanelValue(
-      cpPanel.fadeout.panelValue
-    )
-  }
 
   const customSkinLocalStorageKey = 'customskin'
   cpPanel.customSkin.assign(
@@ -417,6 +357,70 @@
         // update the layout select list
         cpPanel.layout.updateItems(cpPanel.layout.list)
       }
+    }
+  )
+
+  cpPanel.displayWidth.assign(
+    cpDom.querySelector('div[data-name="displayWidth"] input'), e => {
+      canvasContainer.dataset.width = e.target.value
+      const cropValue = [
+        document.body.offsetWidth - canvasContainer.offsetWidth,
+        document.body.offsetHeight - canvasContainer.offsetHeight
+      ]
+      const cropValueString =
+        cropValue.map(v => String(v).padStart(3, '\xa0'))
+      cpDomSizeDescriptor.innerHTML =
+        `Right ${cropValueString[0]}, Bottom ${cropValueString[1]}`
+    }
+  )
+
+  cpPanel.fadeout.assign(
+    cpDom.querySelector('div[data-name="fade"]'),
+    Renderer.setFadeoutOptionFromTextArray
+  )
+  if (!cpPanel.fadeout.panelValue) {
+    cpPanel.fadeout.receivePanelValue(
+      Renderer.getFadeoutOptionAsTextArray()
+    )
+    cpPanel.fadeout.updatePanelValue(
+      cpPanel.fadeout.panelValue
+    )
+  }
+  
+  cpPanel.assignment.assign(
+    document.getElementById('inputAssignment'),
+    Mapper.startAssignment
+  )
+  
+  cpPanel.deadzone.assign(
+    document.getElementById('deadzoneUpdate'),
+    function (gamepadIndex, name, gamepadId) {
+      if (!Watcher.gamepads[gamepadIndex]) { return false }
+  
+      const rawAxesData = Watcher.gamepads[gamepadIndex].axes
+      const mappedGamepadId = Mapper.getMappedGamepadId(gamepadId)
+      const stickMappings = Mapper.mappings[mappedGamepadId].sticks
+      const changeAxes = []
+      changeAxes[stickMappings.left.x] = { value: rawAxesData[stickMappings.left.x] }
+      changeAxes[stickMappings.left.y] = { value: rawAxesData[stickMappings.left.y] }
+      changeAxes[stickMappings.right.x] = { value: rawAxesData[stickMappings.right.x] }
+      changeAxes[stickMappings.right.y] = { value: rawAxesData[stickMappings.right.y] }
+  
+      const newDeadzoneValue = MappingManager.setDeadzone(stickMappings, changeAxes)
+      if (newDeadzoneValue !== null) { Mapper.store() }
+    }, {
+      makeLabel: function (idObj) {
+        const mappedGamepadId = Mapper.getMappedGamepadId(idObj.gamepadId)
+        const stickMappings = Mapper.mappings[mappedGamepadId].sticks
+        if (stickMappings) {
+          const deadzone = stickMappings.deadzone
+          return deadzone !== 0 && !isNaN(deadzone) ?
+            String(deadzone).padEnd(5, '0') : '0.000'
+        } else {
+          return '0.000'
+        }
+      },
+      updateLabel: true
     }
   )
 

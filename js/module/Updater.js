@@ -101,25 +101,29 @@ class Updater {
   }
   
   patchUpdate () {
-    const majorNumber = this.lastFoundVersion.major
-    const minorNumber = this.lastFoundVersion.minor
-    let patchNumber = this.lastFoundVersion.patch
+    let {
+      major: majorNumber,
+      minor: minorNumber,
+      patch: patchNumber
+    } = this.lastFoundVersion
     
     const allPatchUpdates = this.updateTasks[majorNumber][minorNumber]
     
     const updateIndex = Object.keys(allPatchUpdates)
     
+    patchNumber = parseInt(patchNumber)
     for (let i = 0; i < updateIndex.length; i++) {
-      if (patchNumber >= updateIndex[i]) { continue }
+      const currentUpdateIndex = parseInt(updateIndex[i])
+      if (patchNumber >= parseInt(currentUpdateIndex)) { continue }
       
       try {
-        const updateResult = allPatchUpdates[updateIndex[i]] ?
-          allPatchUpdates[updateIndex[i]]() : true
+        const updateResult = allPatchUpdates[currentUpdateIndex] ?
+          allPatchUpdates[currentUpdateIndex]() : true
         if (updateResult) {
           this.announceUpdateCompletionAndSetLastUpdatedVersion(
-            null, null, updateIndex[i]
+            null, null, currentUpdateIndex
           )
-          patchNumber = updateIndex[i]
+          patchNumber = currentUpdateIndex
         }
       } catch (e) {
         Updater.announceMessage(e)
@@ -132,28 +136,32 @@ class Updater {
   }
   
   minorUpdate () {
-    const majorNumber = this.lastFoundVersion.major
-    let minorNumber = this.lastFoundVersion.minor
-    let patchNumber = this.lastFoundVersion.patch
+    let {
+      major: majorNumber,
+      minor: minorNumber,
+      patch: patchNumber
+    } = this.lastFoundVersion
     
     const allMinorUpdates = this.updateTasks[majorNumber]
     if (!allMinorUpdates) { return false }
     
     const updateIndex = Object.keys(allMinorUpdates)
     
+    minorNumber = parseInt(minorNumber)
     for (let i = 0; i < updateIndex.length; i++) {
-      if (minorNumber > updateIndex[i]) { continue }
+      const currentUpdateIndex = parseInt(updateIndex[i])
+      if (minorNumber > currentUpdateIndex) { continue }
   
-      if (minorNumber < updateIndex[i]) {
+      if (minorNumber < currentUpdateIndex) {
         // minor version up
         try {
-          const updateResult = allMinorUpdates[updateIndex[i]][0] ?
-            allMinorUpdates[updateIndex[i]][0]() : true
+          const updateResult = allMinorUpdates[currentUpdateIndex][0] ?
+            allMinorUpdates[currentUpdateIndex][0]() : true
           if (updateResult) {
             this.announceUpdateCompletionAndSetLastUpdatedVersion(
-              null, updateIndex[i], 0
+              null, currentUpdateIndex, 0
             )
-            minorNumber = updateIndex[i]
+            minorNumber = currentUpdateIndex
             patchNumber = 0
           }
         } catch (e) {
@@ -164,7 +172,7 @@ class Updater {
   
       // put same version case after 'current is older' case
       // so after increasing the version it can still work on lower version changes in the same loop
-      if (minorNumber === updateIndex[i]) {
+      if (minorNumber === currentUpdateIndex) {
         // patches under the minor version
         try {
           const updateResult = this.patchUpdate()
@@ -187,27 +195,31 @@ class Updater {
   }
   
   majorUpdate () {
-    let majorNumber = this.lastFoundVersion.major
-    let minorNumber = this.lastFoundVersion.minor
-    let patchNumber = this.lastFoundVersion.patch
+    let {
+      major: majorNumber,
+      minor: minorNumber,
+      patch: patchNumber
+    } = this.lastFoundVersion
     
     const allUpdates = this.updateTasks
     
     const updateIndex = Object.keys(allUpdates)
     
+    majorNumber = parseInt(majorNumber)
     for (let i = 0; i < updateIndex.length; i++) {
-      if (majorNumber > updateIndex[i]) { continue }
+      const currentUpdateIndex = parseInt(updateIndex[i])
+      if (majorNumber > currentUpdateIndex) { continue }
       
-      if (majorNumber < updateIndex[i]) {
+      if (majorNumber < currentUpdateIndex) {
         // major version up
         try {
-          const updateResult = allUpdates[updateIndex[i]][0][0]?
-            allUpdates[updateIndex[i]][0][0]() : true
+          const updateResult = allUpdates[currentUpdateIndex][0][0]?
+            allUpdates[currentUpdateIndex][0][0]() : true
           if (updateResult) {
             this.announceUpdateCompletionAndSetLastUpdatedVersion(
-              updateIndex[i], 0, 0
+              currentUpdateIndex, 0, 0
             )
-            majorNumber = updateIndex[i]
+            majorNumber = currentUpdateIndex
             minorNumber = 0
             patchNumber = 0
           }
@@ -219,7 +231,7 @@ class Updater {
   
       // put same version case after 'current is older' case
       // so after increasing the version it can still work on lower version changes in the same loop
-      if (majorNumber === updateIndex[i]) {
+      if (majorNumber === currentUpdateIndex) {
         // patches under the major version
         try {
           const updateResult = this.minorUpdate()

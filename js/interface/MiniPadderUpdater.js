@@ -115,7 +115,45 @@ class MiniPadderUpdater extends Updater {
             
             return true
           }
-        } // 3.4
+        },
+        '11': {
+          '2': function () {
+            if (typeof Mapper === 'undefined') {
+              return false
+            }
+            MiniPadderUpdater.announceUpdate(
+              'Adding a new mapping for DualSense.', '3.11.2'
+            )
+            Mapper.addOrUpdate('054c0ce6', {
+              "name": "DualSense",
+              "properties": ["axisdpad"],
+              "sticks": {
+                "deadzone": 0.1,
+                "left": {
+                  "x": 0, "y": 1, "button": 10
+                },
+                "right": {
+                  "x": 2, "y": 5, "button": 11
+                }
+              },
+              "buttons": {
+                "dpad": {
+                  "axis": 9
+                },
+                "face": {
+                  "down": 1, "right": 2, "left": 0, "up": 3,
+                  "select": 8, "start": 9, "l3": 10, "r3": 11,
+                  "home": 12, "touchpad": 13
+                },
+                "shoulder": {
+                  "l1": 4, "r1": 5, "l2": 6, "r2": 7
+                }
+              }
+            })
+            
+            return true
+          } // 3.11.2
+        } // 3.11
       } // 3
     } // end of update tasks
   }

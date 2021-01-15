@@ -125,11 +125,20 @@ sub {
     font-size: 0.8em; }
     .control-panel .description b {
       display: inline; }
-  .control-panel .caution {
-    background-color: #c1c08b;
+  .control-panel div.cpMessage {
+    padding: 0.5em;
     border-radius: 8px; }
-    .control-panel .caution:before {
-      content: '⚠️ '; }
+    .control-panel div.cpMessage:before {
+      font-family: Segoe UI Emoji, monospace;
+      margin-right: 0.2em; }
+    .control-panel div.cpMessage.caution {
+      background-color: #c1c08b; }
+      .control-panel div.cpMessage.caution:before {
+        content: '⚠️ '; }
+    .control-panel div.cpMessage.info {
+      background-color: #8ba8c1; }
+      .control-panel div.cpMessage.info:before {
+        content: 'ℹ️ '; }
   @media (max-height: 599px) and (orientation: landscape) {
     .control-panel {
       height: auto;

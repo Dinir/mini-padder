@@ -303,17 +303,8 @@
     customSkin: 'uploader'
   }, [
     'gamepadconnected', 'gamepaddisconnected'
-  ])
+  ], cpDom)
   const cpPanel = Cp.panel
-  
-  if (Cp.browser !== 'Chrome') {
-    const alertDiv = document.createElement('div')
-    alertDiv.classList.add('vertical-space-but-no-divider', 'caution')
-    alertDiv.innerHTML =
-      'The page is running on a browser that isn\'t Chromium-based. ' +
-      'Even if features work, the overlay may suffer a low framerate.'
-    cpDom.insertBefore(alertDiv, cpDom.firstElementChild)
-  }
   
   cpPanel.assignment.assign(
     document.getElementById('inputAssignment'),
@@ -473,6 +464,24 @@
       }
     }
   )
+</script>
+
+<!-- onload alerts -->
+<script>
+  if (Cp.browser !== 'Chrome') {
+    Cp.insertAlert(
+      'The page is running on a browser that isn\'t Chromium-based. ' +
+      'Even if features work, the overlay may suffer a low framerate.',
+      'caution'
+    )
+  }
+  
+  const inputAwaitAlertDom = Cp.insertAlert(
+    'Make an input from any connected gamepads!'
+  )
+  window.addEventListener('gamepadconnected', () => {
+    Cp.removeAlert(inputAwaitAlertDom)
+  }, {once: true})
 </script>
 
 <!-- updater -->

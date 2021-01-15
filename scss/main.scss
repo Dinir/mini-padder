@@ -179,11 +179,24 @@ sub {
       display: inline;
     }
   }
-  .caution {
-    background-color: #c1c08b;
+  div.cpMessage {
+    padding: 0.5em;
     border-radius: 8px;
     &:before {
-      content: '⚠️ ';
+      font-family: Segoe UI Emoji, monospace;
+      margin-right: 0.2em;
+    }
+    &.caution {
+      background-color: #c1c08b;
+      &:before {
+        content: '⚠️ ';
+      }
+    }
+    &.info {
+      background-color: #8ba8c1;
+      &:before {
+        content: 'ℹ️ ';
+      }
     }
   }
   

@@ -7,11 +7,14 @@ class ControlPanel {
    *
    * @param {Object.<string, string>} typeListingObject
    * @param {string[]} globalEventsToListen
+   * @param {HTMLElement} dom
    */
-  constructor (typeListingObject, globalEventsToListen) {
+  constructor (typeListingObject, globalEventsToListen, dom) {
     this.panel = {}
     this.globalEvents = globalEventsToListen
     this.globalEventCallbacks = []
+    this.dom = dom || null
+    this.alerts = []
     this.panelValues = {}
     this.loadPanelValues()
     
@@ -58,6 +61,42 @@ class ControlPanel {
       elements[i].dataset.index = i.toString()
     }
     return elements
+  }
+  
+  insertAlert (message, typeClassName) {
+    if (!this.dom) {
+      return false
+    }
+    const alertDiv = document.createElement('div')
+    alertDiv.classList.add(
+      'vertical-space-but-no-divider',
+      'cpMessage',
+      typeClassName ? typeClassName : 'info'
+    )
+    alertDiv.innerHTML = message
+    this.dom.insertBefore(alertDiv, this.dom.firstElementChild)
+    this.alerts.push(alertDiv)
+    
+    return alertDiv
+  }
+  removeAlert (alertElement) {
+    if (!this.dom) {
+      return false
+    }
+    switch (alertElement.constructor) {
+      case HTMLDivElement:
+        const alertIndex = this.alerts.findIndex(v => v === alertElement)
+        if (alertIndex === -1) {
+          return false
+        }
+        this.dom.removeChild(alertElement)
+        
+        return true
+      case Number:
+        this.dom.removeChild(this.alerts[alertElement])
+        
+        return this.alerts.splice(alertElement, 1)[0]
+    }
   }
   
   setPanelValue (key, value) {

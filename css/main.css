@@ -108,6 +108,13 @@ sub {
       margin-top: -0.25em; }
     .control-panel .after-margin.button-container {
       margin-bottom: 0.035em; }
+    .control-panel .after-margin.one-button-each-line {
+      line-height: 2em; }
+      .control-panel .after-margin.one-button-each-line button {
+        display: block;
+        margin-bottom: 0.55em; }
+        .control-panel .after-margin.one-button-each-line button.inactive {
+          display: none; }
   .control-panel span.after-margin {
     display: block; }
   .control-panel .full-width {

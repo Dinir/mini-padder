@@ -66,6 +66,9 @@ class Updater {
     }
     console.log(message)
   }
+  static announceUpdate (message, version) {
+    this.announceMessage(`${version}: ${message}`)
+  }
   
   get version () {
     return Updater.getVersionString(this.currentVersion)
@@ -166,7 +169,9 @@ class Updater {
         try {
           const updateResult = this.patchUpdate()
           if (updateResult) {
-            Updater.announceMessage(`Updated all patches under ${majorNumber}.${minorNumber}.`)
+            Updater.announceMessage(
+              `Updated all patches under ${majorNumber}.${minorNumber}.`
+            )
         
           }
         } catch (e) {
@@ -219,7 +224,9 @@ class Updater {
         try {
           const updateResult = this.minorUpdate()
           if (updateResult) {
-            Updater.announceMessage(`Updated all minors under ${majorNumber}.`)
+            Updater.announceMessage(
+              `Updated all minors under ${majorNumber}.`
+            )
           }
         } catch (e) {
           Updater.announceMessage(e)

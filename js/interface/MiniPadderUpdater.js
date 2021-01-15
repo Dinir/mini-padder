@@ -26,14 +26,11 @@ class MiniPadderUpdater extends Updater {
       '2': {
         '1': {
           '0': function () {
-            if (
-              typeof Mapper === 'undefined'
-            ) {
+            if (typeof Mapper === 'undefined') {
               return false
             }
-            const version = '2.1.0'
-            MiniPadderUpdater.announceMessage(
-              version + ': Copying stick button mappings to button mappings.'
+            MiniPadderUpdater.announceUpdate(
+              'Copying stick button mappings to button mappings.', '2.1.0'
             )
             
             if (Mapper.mappings.hasOwnProperty('XInput')) {
@@ -51,14 +48,11 @@ class MiniPadderUpdater extends Updater {
         },
         '2': {
           '0': function () {
-            if (
-              typeof Renderer === 'undefined'
-            ) {
+            if (typeof Renderer === 'undefined') {
               return false
             }
-            const version = '2.2.0'
-            MiniPadderUpdater.announceMessage(
-              version + ': Adding a new skin for 6-button gamepads.'
+            MiniPadderUpdater.announceUpdate(
+              'Adding a new skin for 6-button gamepads.', '2.2.0'
             )
             
             Renderer.addSkinToSkinList('MegaPad')
@@ -75,14 +69,11 @@ class MiniPadderUpdater extends Updater {
         },
         '2': {
           '0': function () {
-            if (
-              typeof Renderer === 'undefined'
-            ) {
+            if (typeof Renderer === 'undefined') {
               return false
             }
-            const version = '3.2.0'
-            MiniPadderUpdater.announceMessage(
-              version + ': Adding a new skin for HBox gamepads.'
+            MiniPadderUpdater.announceUpdate(
+              'Adding a new skin for HBox gamepads.', '3.2.0'
             )
   
             Renderer.addSkinToSkinList('HBox')
@@ -90,14 +81,11 @@ class MiniPadderUpdater extends Updater {
             return true
           },
           '1': function () {
-            if (
-              typeof Mapper === 'undefined'
-            ) {
+            if (typeof Mapper === 'undefined') {
               return false
             }
-            const version = '3.2.1'
-            MiniPadderUpdater.announceMessage(
-              version + ': Changing deadzone values for XInput and DInput to 0.1.'
+            MiniPadderUpdater.announceUpdate(
+              'Changing deadzone values for XInput and DInput to 0.1.', '3.2.1'
             )
   
             if (Mapper.mappings.hasOwnProperty('XInput')) {
@@ -113,14 +101,11 @@ class MiniPadderUpdater extends Updater {
         },
         '4': {
           '0': function () {
-            if (
-              typeof Renderer === 'undefined'
-            ) {
+            if (typeof Renderer === 'undefined') {
               return false
             }
-            const version = '3.4.0'
-            MiniPadderUpdater.announceMessage(
-              version + ': Adding variations for 6-button gamepads.'
+            MiniPadderUpdater.announceUpdate(
+              'Adding variations for 6-button gamepads.', '3.4.0'
             )
             
             Renderer.addSkinsToSkinList(new Map([

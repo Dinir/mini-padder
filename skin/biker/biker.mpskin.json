@@ -11,6 +11,10 @@
       "x": 96, "y": 51, "width": 64, "height": 42
     },
     {
+      "name": "triggers",
+      "x": 72, "y": 52, "width": 112, "height": 40
+    },
+    {
       "name": "button",
       "x": 72, "y": 52, "width": 112, "height": 40
     }
@@ -29,19 +33,6 @@
         }
       ],
       "off": [
-        {
-          "instruction": "drawImageByPos",
-          "src": 0, "areaSize": [-20, 0],
-          "srcPos": [93, 1], "size": [104, 24], "canvasPos": [-20, 9]
-        },
-        {
-          "instruction": "clearPolygon",
-          "path": [0, 12, 8, 12, 3, 17, 3, 25, 8, 30, 0, 30]
-        },
-        {
-          "instruction": "clearPolygon",
-          "path": [56, 12, 61, 17, 61, 25, 56, 30, 64, 30, 64, 12]
-        },
         {
           "instruction": "drawImageByPos",
           "src": 0, "areaSize": [20, 0],
@@ -72,17 +63,70 @@
   },
   "buttons": {
     "layer": 1,
+    "face": {
+      "layer": 2,
+      "down": {
+        "clear": [{
+          "instruction": "clearRect",
+          "x": 91, "y": 0, "width": 21, "height": 40
+        }],
+        "on": [
+          {
+            "instruction": "drawImage",
+            "src": 0, "srcPos": [303, 1], "size": [21, 40], "canvasPos": [91, 0]
+          },
+          {
+            "instruction": "drawImage",
+            "src": 0, "srcPos": [282, 1], "size": [21, 7], "canvasPos": [91, 18]
+          },
+          {
+            "instruction": "drawImage",
+            "src": 0, "srcPos": [219, 26], "size": [21, 15], "canvasPos": [91, 25]
+          }
+        ]
+      },
+      "left": {
+        "clear": [{
+          "instruction": "clearRect",
+          "x": 0, "y": 0, "width": 21, "height": 40
+        }],
+        "on": [
+          {
+            "instruction": "drawImage",
+            "src": 0, "srcPos": [303, 1], "size": [21, 40], "canvasPos": [0, 0]
+          },
+          {
+            "instruction": "drawImage",
+            "src": 0, "srcPos": [282, 1], "size": [21, 7], "canvasPos": [0, 18]
+          },
+          {
+            "instruction": "drawImage",
+            "src": 0, "srcPos": [177, 26], "size": [21, 15], "canvasPos": [0, 25]
+          }
+        ]
+      }
+    },
     "shoulder": {
       "l2": {
         "clear": [{
           "instruction": "clearRect",
           "x": 0, "y": 0, "width": 21, "height": 40
         }],
-        "off": [{
-          "instruction": "drawImage",
-          "src": 0, "srcPos": [198, 1], "size": [21, 40], "canvasPos": [0, 0]
-        }],
+        "off": [
+          {
+            "instruction": "drawImage",
+            "src": 0, "srcPos": [198, 1], "size": [21, 25], "canvasPos": [0, 0]
+          },
+          {
+            "instruction": "drawImage",
+            "src": 0, "srcPos": [156, 26], "size": [21, 15], "canvasPos": [0, 25]
+          }
+        ],
         "on": [
+          {
+            "instruction": "drawImage",
+            "src": 0, "srcPos": [303, 1], "size": [21, 40], "canvasPos": [0, 0]
+          },
           {
             "instruction": "drawImageByPos",
             "src": 0, "areaSize": [0, 10],
@@ -104,7 +148,7 @@
           },
           {
             "instruction": "drawImage",
-            "src": 0, "srcPos": [219, 26], "size": [21, 15], "canvasPos": [0, 25]
+            "src": 0, "srcPos": [177, 26], "size": [21, 15], "canvasPos": [0, 25]
           }
         ]
       }, 
@@ -113,11 +157,21 @@
           "instruction": "clearRect",
           "x": 91, "y": 0, "width": 21, "height": 40
         }],
-        "off": [{
-          "instruction": "drawImage",
-          "src": 0, "srcPos": [198, 1], "size": [21, 40], "canvasPos": [91, 0]
-        }],
+        "off": [
+          {
+            "instruction": "drawImage",
+            "src": 0, "srcPos": [198, 1], "size": [21, 25], "canvasPos": [91, 0]
+          },
+          {
+            "instruction": "drawImage",
+            "src": 0, "srcPos": [198, 26], "size": [21, 15], "canvasPos": [91, 25]
+          }
+        ],
         "on": [
+          {
+            "instruction": "drawImage",
+            "src": 0, "srcPos": [303, 1], "size": [21, 40], "canvasPos": [91, 0]
+          },
           {
             "instruction": "drawImageByPos",
             "src": 0, "areaSize": [0, 10],

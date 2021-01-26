@@ -90,6 +90,7 @@ class ControlPanel {
           return false
         }
         this.dom.removeChild(alertElement)
+        this.alerts.splice(alertIndex, 1)
         
         return true
       case Number:

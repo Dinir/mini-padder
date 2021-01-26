@@ -63,7 +63,7 @@ class ControlPanel {
     return elements
   }
   
-  insertAlert (message, typeClassName) {
+  insertAlert (message, typeClassName, onclickCallback, ...callbackArguments) {
     if (!this.dom) {
       return false
     }
@@ -74,6 +74,14 @@ class ControlPanel {
       typeClassName ? typeClassName : 'info'
     )
     alertDiv.innerHTML = message
+    alertDiv.title = 'Click to dismiss'
+    
+    alertDiv.addEventListener('click', () => {
+      this.removeAlert(alertDiv)
+      if (typeof onclickCallback !== 'undefined') {
+        onclickCallback(...callbackArguments)
+      }
+    }, {once: true})
     this.dom.insertBefore(alertDiv, this.dom.firstElementChild)
     this.alerts.push(alertDiv)
     

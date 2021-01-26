@@ -75,7 +75,7 @@
       <select></select>
     </label>
     <span class="description">
-      Change skin for each gamepad types.
+      Change skin for each gamepad kinds.
     </span>
   </div>
   <div class="option" data-name="custom-skin">
@@ -127,7 +127,8 @@
       <span>Duration: </span>
       <input type="text" placeholder="e.g. 1">
     </label>
-    <span class="description">transition time of fade-out effect</span>
+    <span class="description">transition time of fade-out effect</span><br>
+    <span class="description">If you want to disable the effect, empty the Opacity input.</span>
   </div>
   <div></div>
   <div class="option half-width" data-name="assignment">
@@ -140,7 +141,9 @@
     </div>
     <span class="description">
       Make an input after pressing the button to start assigning.<br>
-      Click the button again anytime to abort assigning.
+      Click the button again anytime to abort assigning.<br>
+      Assignments are saved per gamepad kind
+      and shared with others of the same kind.
     </span>
   </div>
   <div class="option half-width" data-name="deadzone">
@@ -152,7 +155,9 @@
       <button class="inactive">0.000</button>
     </div>
     <span class="description">
-      New deadzone value at the moment will be assigned on click.
+      New deadzone value will be applied at the moment of click.<br>
+      Click again until the sticks are not anymore appearing by their own.<br>
+      If you don't use the fade-out, you might not need this option.
     </span>
   </div>
   <div class="option top-divider" data-name="management">

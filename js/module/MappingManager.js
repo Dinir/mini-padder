@@ -254,67 +254,60 @@ class MappingManager {
   }
   
   /**
-   * set deadzone to the referenced mapping and return the value
+   * set deadzone to the referenced mapping
    *
    * @param {?Object.<string, (number|Object.<string, number>)>} stickMappings
    * @param {?axisChange[]} changeAxes
    *
-   * @returns {?number} deadzone value, `null` if proper stick values were not found
+   * @returns {boolean} `true` if done
    */
   static setDeadzone (stickMappings, changeAxes) {
-    if (!stickMappings) { return 0 }
+    if (!stickMappings) { return false }
     
-    let maximumLSValueOnIdle = 0
-    let maximumRSValueOnIdle = 0
+    const maximumLSValueOnIdle =
+      MappingManager._getMaxIdleValue(stickMappings.left, changeAxes)
+    const maximumRSValueOnIdle =
+      MappingManager._getMaxIdleValue(stickMappings.right, changeAxes)
+    
+    if (stickMappings.left) {
+      stickMappings.left.deadzone =
+        MappingManager._getDeadzoneBasedOnMaxIdleValue(maximumLSValueOnIdle)
+    }
+    if (stickMappings.right) {
+      stickMappings.right.deadzone =
+        MappingManager._getDeadzoneBasedOnMaxIdleValue(maximumRSValueOnIdle)
+    }
+    
+    return true
+  }
+  static _getMaxIdleValue (stickMapping, changeAxes) {
     if (
-      stickMappings.left &&
-      stickMappings.left.x !== null && stickMappings.left.y !== null
+      stickMapping &&
+      stickMapping.x !== null && stickMapping.y !== null
     ) {
-      maximumLSValueOnIdle = Math.max(
-        Math.abs(changeAxes[stickMappings.left.x].value),
-        Math.abs(changeAxes[stickMappings.left.y].value)
+      return Math.max(
+        Math.abs(changeAxes[stickMapping.x].value),
+        Math.abs(changeAxes[stickMapping.y].value)
       )
     }
-    if (
-      stickMappings.right &&
-      stickMappings.right.x !== null && stickMappings.right.y !== null
-    ) {
-      maximumRSValueOnIdle = Math.max(
-        Math.abs(changeAxes[stickMappings.right.x].value),
-        Math.abs(changeAxes[stickMappings.right.y].value)
-      )
-    }
-    
-    const maximumValueOnIdle = Math.max(
-      maximumLSValueOnIdle, maximumRSValueOnIdle
-    )
-    
-    if (isNaN(maximumValueOnIdle)) {
-      MappingManager.announceMessage(
-        new Error(
-          'Couldn\'t find proper stick values. ' +
-          `LS: ${maximumLSValueOnIdle}, RS: ${maximumRSValueOnIdle}`
-        )
-      )
-      return null
-    }
-    
-    // by dividing at 0.04 most idle values will be multiplied into range of 0.07 ~ 0.1
-    // I think this is enough but who knows what wild gamepads exist in this world
-    const multiplier = maximumValueOnIdle > 0.04 ? 1.5 : 2
-    
-    const multipliedMaximumValue =
-      multiplier * Math.min(0.125, maximumValueOnIdle)
-    const firstDigitPosition = multipliedMaximumValue === 0 ?
-      0 : Math.floor(Math.log10(multipliedMaximumValue))
-    // round up from the second valid digit
-    const deadzone =
-      Math.round( multipliedMaximumValue * 10 ** ( -1 * firstDigitPosition) ) *
-      10 ** firstDigitPosition
-    
-    stickMappings.deadzone = deadzone
-    
-    return deadzone
+  
+    return 0
+  }
+  static _getDeadzoneBasedOnMaxIdleValue (maxValue) {
+    const exp = 3 // adjust after this number of digits below decimal point
+    const expShift = 10 ** exp
+    /*
+     * My ds4 is shaking in a range of about 0.04, and I am going with that
+     * as an expected range of a shake in a neutral position.
+     * Since current detection is done on only a single frame,
+     * I'll add 0.05 hoping to cover any value in the range.
+     *
+     * Joysticks may have a very low neutral value like 0.00392 on both axes,
+     * so I'll not add the extra 0.05 if maxValue is smaller than 0.005.
+     */
+    let deadzone = maxValue + ( maxValue < 0.005 ? 0 : 0.05 )
+    deadzone = Math.ceil(deadzone * expShift) / expShift
+    return Math.min(1.00, deadzone)
   }
   static get everyButtonInfo () {
     return [
@@ -1053,7 +1046,6 @@ class MappingManager {
    */
   static processSticks (mappingSticks, changeAxes, changeButtons) {
     const processedChangeSticks = {}
-    const deadzone = mappingSticks.deadzone || 0
     
     for (let i = 0; i < 2; i++) {
       const side = i === 0 ? 'left' : 'right'
@@ -1094,6 +1086,8 @@ class MappingManager {
       let isActive = false
       processedChangeSticks[side].pressed =
         value[2] ? value[2].pressed : null
+      // looks for a stick deadzone or an all-stick deadzone
+      const deadzone = mappingStick.deadzone || mappingSticks.deadzone || 0
       isActive = processedChangeSticks[side].pressed ||
                  (value[0] ? Math.abs(value[0].value) > deadzone : false) ||
                  (value[1] ? Math.abs(value[1].value) > deadzone : false)

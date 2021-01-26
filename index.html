@@ -406,23 +406,60 @@
       const mappedGamepadId = Mapper.getMappedGamepadId(gamepadId)
       const stickMappings = Mapper.mappings[mappedGamepadId].sticks
       const changeAxes = []
-      changeAxes[stickMappings.left.x] = { value: rawAxesData[stickMappings.left.x] }
-      changeAxes[stickMappings.left.y] = { value: rawAxesData[stickMappings.left.y] }
-      changeAxes[stickMappings.right.x] = { value: rawAxesData[stickMappings.right.x] }
-      changeAxes[stickMappings.right.y] = { value: rawAxesData[stickMappings.right.y] }
+      if (stickMappings.left) {
+        changeAxes[stickMappings.left.x] =
+          { value: rawAxesData[stickMappings.left.x] }
+        changeAxes[stickMappings.left.y] =
+          { value: rawAxesData[stickMappings.left.y] }
+      }
+      if (stickMappings.right) {
+        changeAxes[stickMappings.right.x] =
+          { value: rawAxesData[stickMappings.right.x] }
+        changeAxes[stickMappings.right.y] =
+          { value: rawAxesData[stickMappings.right.y] }
+      }
   
-      const newDeadzoneValue = MappingManager.setDeadzone(stickMappings, changeAxes)
-      if (newDeadzoneValue !== null) { Mapper.store() }
+      const updateDone = MappingManager.setDeadzone(stickMappings, changeAxes)
+      if (updateDone) { Mapper.store() }
     }, {
       makeLabel: function (idObj) {
         const mappedGamepadId = Mapper.getMappedGamepadId(idObj.gamepadId)
         const stickMappings = Mapper.mappings[mappedGamepadId].sticks
+        const getDeadzoneValueString = value => {
+          switch (value) {
+            case 0:
+            case 1:
+              return value + '.000'
+            case null:
+              return false
+            default:
+              if (isNaN(value)) {
+                return false
+              }
+              return String(value).padEnd(5, '0')
+          }
+        }
         if (stickMappings) {
-          const deadzone = stickMappings.deadzone
-          return deadzone !== 0 && !isNaN(deadzone) ?
-            String(deadzone).padEnd(5, '0') : '0.000'
+          const deadzoneStringLeft = getDeadzoneValueString(
+            stickMappings.left && stickMappings.left.deadzone
+          )
+          const deadzoneStringRight = getDeadzoneValueString(
+            stickMappings.right && stickMappings.right.deadzone
+          )
+          let label = ''
+          label +=
+            typeof deadzoneStringLeft === 'string' ?
+              deadzoneStringLeft : ''
+          label +=
+            typeof deadzoneStringRight === 'string' ?
+              ( label.length ? ', ' : '' ) + deadzoneStringRight : ''
+          if (label.length === 0) {
+            label = 'N/A'
+          }
+          
+          return label
         } else {
-          return '0.000'
+          return 'N/A'
         }
       },
       updateLabel: true

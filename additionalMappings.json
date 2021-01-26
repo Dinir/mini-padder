@@ -3,9 +3,9 @@
 		"name": "Q4RAF (DInput - PS3.PC)",
 		"properties": ["joystick"],
 		"sticks": {
-			"deadzone": 0.5,
 			"left": {
-				"x": 0, "y": 1, "button": null
+				"x": 0, "y": 1, "button": null,
+				"deadzone": 0.5
 			},
 			"right": null
 		},
@@ -26,12 +26,13 @@
 		"name": "8BitDo SN30 Pro (DInput)",
 		"properties": ["axisdpad"],
 		"sticks": {
-			"deadzone": 0.02,
 			"left": {
-				"x": 0, "y": 1, "button": 13
+				"x": 0, "y": 1, "button": 13,
+				"deadzone": 0.02
 			},
 			"right": {
-				"x": 2, "y": 5, "button": 14
+				"x": 2, "y": 5, "button": 14,
+				"deadzone": 0.02
 			}
 		},
 		"buttons": {
@@ -52,12 +53,13 @@
 		"name": "DualSense",
 		"properties": ["axisdpad"],
 		"sticks": {
-			"deadzone": 0.1,
 			"left": {
-				"x": 0, "y": 1, "button": 10
+				"x": 0, "y": 1, "button": 10,
+				"deadzone": 0.1
 			},
 			"right": {
-				"x": 2, "y": 5, "button": 11
+				"x": 2, "y": 5, "button": 11,
+				"deadzone": 0.1
 			}
 		},
 		"buttons": {

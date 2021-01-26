@@ -161,9 +161,41 @@ class MiniPadderUpdater extends Updater {
             Mapper.store()
   
             return true
-          } // 3.11.2
-        } // 3.11
-      } // 3
+          }
+        }
+      },
+      '4': {
+        '0': {
+          '0': () => {
+            if (typeof Mapper === 'undefined') {
+              return false
+            }
+            MiniPadderUpdater.announceUpdate(
+              'Changing mapping structure for deadzone.', '4.0.0'
+            )
+            for (const m in Mapper.mappings) {
+              const mapping = Mapper.mappings[m]
+              if (!mapping.sticks) { continue }
+              if (mapping.sticks.left) {
+                mapping.sticks.left.deadzone =
+                  mapping.sticks.left.deadzone || mapping.sticks.deadzone
+              }
+              if (mapping.sticks.right) {
+                mapping.sticks.right.deadzone =
+                  mapping.sticks.right.deadzone || mapping.sticks.deadzone
+              }
+              delete mapping.sticks.deadzone
+            }
+            Mapper.store()
+  
+            setLastAlertMessage(
+              'Now deadzone is applied separately for each sticks.'
+            )
+  
+            return true
+          } // 4.0.0
+        } // 4.0
+      } // 4
     } // end of update tasks
   }
 }

@@ -13,12 +13,13 @@ class MappingInterface extends MappingManager {
         "name": "XInput Standard Controller",
         "properties": [],
         "sticks": {
-          "deadzone": 0.08,
           "left": {
-            "x": 0, "y": 1, "button": 10
+            "x": 0, "y": 1, "button": 10,
+            "deadzone": 0.1
           },
           "right": {
-            "x": 2, "y": 3, "button": 11
+            "x": 2, "y": 3, "button": 11,
+            "deadzone": 0.1
           }
         },
         "buttons": {
@@ -39,12 +40,13 @@ class MappingInterface extends MappingManager {
         "name": "DInput Standard Controller",
         "properties": [],
         "sticks": {
-          "deadzone": 0.08,
           "left": {
-            "x": 0, "y": 1, "button": 10
+            "x": 0, "y": 1, "button": 10,
+            "deadzone": 0.1
           },
           "right": {
-            "x": 2, "y": 3, "button": 11
+            "x": 2, "y": 3, "button": 11,
+            "deadzone": 0.1
           }
         },
         "buttons": {
@@ -65,9 +67,9 @@ class MappingInterface extends MappingManager {
         "name": "Qanba Joystick",
         "properties": ["joystick"],
         "sticks": {
-          "deadzone": 0.5,
           "left": {
-            "x": 0, "y": 1, "button": 10
+            "x": 0, "y": 1, "button": 10,
+            "deadzone": 0.5
           },
           "right": null
         },
@@ -88,12 +90,13 @@ class MappingInterface extends MappingManager {
         "name": "Hori Joystick",
         "properties": ["joystick"],
         "sticks": {
-          "deadzone": 0.5,
           "left": {
-            "x": 0, "y": 1, "button": 10
+            "x": 0, "y": 1, "button": 10,
+            "deadzone": 0.5
           },
           "right": {
-            "x": 2, "y": 3, "button": 11
+            "x": 2, "y": 3, "button": 11,
+            "deadzone": 0.5
           }
         },
         "buttons": {
@@ -113,12 +116,13 @@ class MappingInterface extends MappingManager {
         "name": "Mad Catz Joystick",
         "properties": ["joystick"],
         "sticks": {
-          "deadzone": 0.5,
           "left": {
-            "x": 0, "y": 1, "button": 10
+            "x": 0, "y": 1, "button": 10,
+            "deadzone": 0.5
           },
           "right": {
-            "x": 2, "y": 5, "button": 11
+            "x": 2, "y": 5, "button": 11,
+            "deadzone": 0.5
           }
         },
         "buttons": {
@@ -138,12 +142,13 @@ class MappingInterface extends MappingManager {
         "name": "8BitDo Gamepad (DInput)",
         "properties": ["axisdpad"],
         "sticks": {
-          "deadzone": 0.02,
           "left": {
-            "x": 0, "y": 1, "button": 13
+            "x": 0, "y": 1, "button": 13,
+            "deadzone": 0.02
           },
           "right": {
-            "x": 2, "y": 5, "button": 14
+            "x": 2, "y": 5, "button": 14,
+            "deadzone": 0.02
           }
         },
         "buttons": {
@@ -164,12 +169,13 @@ class MappingInterface extends MappingManager {
         "name": "DualSense",
         "properties": ["axisdpad"],
         "sticks": {
-          "deadzone": 0.1,
           "left": {
-            "x": 0, "y": 1, "button": 10
+            "x": 0, "y": 1, "button": 10,
+            "deadzone": 0.1
           },
           "right": {
-            "x": 2, "y": 5, "button": 11
+            "x": 2, "y": 5, "button": 11,
+            "deadzone": 0.1
           }
         },
         "buttons": {

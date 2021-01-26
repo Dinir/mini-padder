@@ -60,7 +60,7 @@ sub {
   height: 288px;
   padding: 8px;
   overflow-y: scroll;
-  background-color: gray;
+  background-color: #838383;
   border-radius: 0 8px 8px;
   transition: opacity 0.2s; }
   .control-panel.inactive {

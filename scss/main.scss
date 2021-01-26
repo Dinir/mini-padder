@@ -77,7 +77,7 @@ sub {
   height: 2 * ( $canvas-height + $canvas-gap ) - $default-font-size;
   padding: 0.5 * $default-font-size;
   overflow-y: scroll;
-  background-color: gray;
+  background-color: #838383;
   border-radius: 0 8px 8px;
   transition: opacity 0.2s;
   

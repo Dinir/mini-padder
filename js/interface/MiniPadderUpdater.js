@@ -125,12 +125,12 @@ class MiniPadderUpdater extends Updater {
           }
         },
         '11': {
-          '2': function () {
+          '4': function () {
             if (typeof Mapper === 'undefined') {
               return false
             }
             MiniPadderUpdater.announceUpdate(
-              'Adding a new mapping for DualSense.', '3.11.2'
+              'Adding a new mapping for DualSense.', '3.11.4'
             )
             Mapper.addOrUpdate('054c0ce6', {
               "name": "DualSense",
@@ -158,7 +158,8 @@ class MiniPadderUpdater extends Updater {
                 }
               }
             })
-            
+            Mapper.store()
+  
             return true
           } // 3.11.2
         } // 3.11

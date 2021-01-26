@@ -496,7 +496,7 @@
 <!-- updater -->
 <script>
   const version = '3.11.3'
-  const MPUpdater = new MiniPadderUpdater(version)
+  const MPUpdater = new MiniPadderUpdater(version, Cp.insertAlert.bind(Cp))
   const versionDoms = document.getElementsByClassName('version')
   Array.from(versionDoms).forEach(v => v.innerHTML = version)
 </script>

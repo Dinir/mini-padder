@@ -1,7 +1,9 @@
 class MiniPadderUpdater extends Updater {
-  constructor (currentVersionString) {
+  constructor (currentVersionString, alertCallback) {
     super(currentVersionString, '2.0.1')
     this.updateTasks = this.loadUpdateTasks()
+    this.alert = alertCallback || (() => false)
+    this.lastAlertMessage = ''
   
     MiniPadderUpdater.announceMessage('Checking for updated changes...')
     if (currentVersionString === Updater.getVersionString(this.lastFoundVersion)) {
@@ -9,6 +11,9 @@ class MiniPadderUpdater extends Updater {
     } else {
       const updateResult = this.majorUpdate()
       if (updateResult) {
+        if (this.lastAlertMessage) {
+          this.alert(`Update ${this.version}: ${this.lastAlertMessage}`)
+        }
         MiniPadderUpdater.announceMessage('Finished updating.')
       } else {
         MiniPadderUpdater.announceMessage(
@@ -21,6 +26,9 @@ class MiniPadderUpdater extends Updater {
   static announceMessage = MPCommon.announceMessageFrom('Updater')
   
   loadUpdateTasks () {
+    const setLastAlertMessage = message => {
+      this.lastAlertMessage = message
+    }
     // only add applications of changes that couldn't be done by updating files
     return {
       '2': {

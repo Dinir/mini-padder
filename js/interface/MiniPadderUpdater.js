@@ -204,7 +204,11 @@ class MiniPadderUpdater extends Updater {
             )
   
             return true
-          } // 4.0.0
+          },
+          '1': function () {
+            setLastAlertMessage()
+            return true
+          } // 4.0.1
         } // 4.0
       } // 4
     } // end of update tasks

@@ -6,13 +6,18 @@ class MiniPadderUpdater extends Updater {
     this.lastAlertMessage = ''
   
     MiniPadderUpdater.announceMessage('Checking for updated changes...')
-    if (currentVersionString === Updater.getVersionString(this.lastFoundVersion)) {
+    const lastFoundVersionString =
+      Updater.getVersionString(this.lastFoundVersion)
+    if (currentVersionString === lastFoundVersionString) {
       MiniPadderUpdater.announceMessage('This is the latest version.')
     } else {
       const updateResult = this.majorUpdate()
       if (updateResult) {
         if (this.lastAlertMessage) {
-          this.alert(`Update ${this.version}: ${this.lastAlertMessage}`)
+          // `Update: message` or `Update x.x.x: message`
+          this.alert(
+            `Update${this.lastAlertMessage}`
+          )
         }
         MiniPadderUpdater.announceMessage('Finished updating.')
       } else {
@@ -26,8 +31,13 @@ class MiniPadderUpdater extends Updater {
   static announceMessage = MPCommon.announceMessageFrom('Updater')
   
   loadUpdateTasks () {
-    const setLastAlertMessage = message => {
-      this.lastAlertMessage = message
+    const setLastAlertMessage = (message, version) => {
+      if (!message) {
+        this.lastAlertMessage = null
+      } else {
+        // `x.x.x: message` or `: message`
+        this.lastAlertMessage = (version ? ` ${version}` : '') + `: ${message}`
+      }
     }
     // only add applications of changes that couldn't be done by updating files
     return {
@@ -189,7 +199,8 @@ class MiniPadderUpdater extends Updater {
             Mapper.store()
   
             setLastAlertMessage(
-              'Now deadzone is applied separately for each sticks.'
+              'Now deadzone is applied separately for each sticks.',
+              '4.0.0'
             )
   
             return true

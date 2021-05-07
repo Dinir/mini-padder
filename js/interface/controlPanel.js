@@ -73,6 +73,7 @@ class ControlPanel {
       'cpMessage',
       typeClassName ? typeClassName : 'info'
     )
+    alertDiv.setAttribute('data-nosnippet', '')
     alertDiv.innerHTML = message
     alertDiv.title = 'Click to dismiss'
     

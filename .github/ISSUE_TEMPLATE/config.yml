@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
   - name: Controller mapping
-    url: ./../../discussions/13
+    url: https://github.com/Dinir/mini-padder/discussions/13
     about: Share the mapping you got for your controller
   - name: Custom skin
-    url: ./../../discussions/14
+    url: https://github.com/Dinir/mini-padder/discussions/14
     about: Share the skin you've made or modified

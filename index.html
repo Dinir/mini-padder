@@ -419,7 +419,9 @@
           { value: rawAxesData[stickMappings.right.y] }
       }
   
-      const updateDone = MappingManager.setDeadzone(stickMappings, changeAxes)
+      const updateDone =
+        MappingManager.setDeadzone(stickMappings.left, changeAxes) &&
+        MappingManager.setDeadzone(stickMappings.right, changeAxes)
       if (updateDone) { Mapper.store() }
     }, {
       makeLabel: function (idObj) {

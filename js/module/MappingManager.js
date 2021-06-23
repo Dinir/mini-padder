@@ -254,29 +254,20 @@ class MappingManager {
   }
   
   /**
-   * set deadzone to the referenced mapping
+   * set deadzone for a single stick to the referenced mapping
    *
-   * @param {?Object.<string, (number|Object.<string, number>)>} stickMappings
+   * @param {?{x: number, y: number, button: number}} stickMapping
    * @param {?axisChange[]} changeAxes
    *
    * @returns {boolean} `true` if done
    */
-  static setDeadzone (stickMappings, changeAxes) {
-    if (!stickMappings) { return false }
+  static setDeadzone (stickMapping, changeAxes) {
+    if (!stickMapping) { return false }
     
-    const maximumLSValueOnIdle =
-      MappingManager._getMaxIdleValue(stickMappings.left, changeAxes)
-    const maximumRSValueOnIdle =
-      MappingManager._getMaxIdleValue(stickMappings.right, changeAxes)
-    
-    if (stickMappings.left) {
-      stickMappings.left.deadzone =
-        MappingManager._getDeadzoneBasedOnMaxIdleValue(maximumLSValueOnIdle)
-    }
-    if (stickMappings.right) {
-      stickMappings.right.deadzone =
-        MappingManager._getDeadzoneBasedOnMaxIdleValue(maximumRSValueOnIdle)
-    }
+    const maximumValueOnIdle =
+      MappingManager._getMaxIdleValue(stickMapping, changeAxes)
+    stickMapping.deadzone =
+      MappingManager._getDeadzoneBasedOnMaxIdleValue(maximumValueOnIdle)
     
     return true
   }

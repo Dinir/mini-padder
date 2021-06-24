@@ -162,12 +162,14 @@ sub {
       button {
         display: block;
         // compensate line-height lost from being block display
-        margin-bottom: 0.55em;
+        // align with `.two-buttons-each-line` vertically
+        margin-top: 0.75em;
+        margin-bottom: -0.225em;
       }
+      margin-bottom: 0.55em;
     }
     &.two-buttons-each-line {
       div {
-        line-height: 0;
         button {
           display: inline-block;
         }

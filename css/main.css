@@ -112,13 +112,14 @@ sub {
       line-height: 2em; }
       .control-panel .after-margin.one-button-each-line button.inactive, .control-panel .after-margin.two-buttons-each-line button.inactive {
         display: none; }
-    .control-panel .after-margin.one-button-each-line button {
-      display: block;
+    .control-panel .after-margin.one-button-each-line {
       margin-bottom: 0.55em; }
-    .control-panel .after-margin.two-buttons-each-line div {
-      line-height: 0; }
-      .control-panel .after-margin.two-buttons-each-line div button {
-        display: inline-block; }
+      .control-panel .after-margin.one-button-each-line button {
+        display: block;
+        margin-top: 0.75em;
+        margin-bottom: -0.225em; }
+    .control-panel .after-margin.two-buttons-each-line div button {
+      display: inline-block; }
   .control-panel span.after-margin {
     display: block; }
   .control-panel .full-width {

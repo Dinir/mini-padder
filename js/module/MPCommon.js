@@ -106,8 +106,8 @@ class MPCommon {
     if (matchResult) {
       return {
         name:
-          idString.substring(0, matchResult.index) ||
-          idString.substring(10),
+          idString.substring(0, matchResult.index).trim() ||
+          idString.substring(10).trim(),
         gamepadId: matchResult[1] + matchResult[2]
       }
       // vender and product aren't found. assume it's a standard gamepad.

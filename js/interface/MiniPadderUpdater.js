@@ -216,8 +216,17 @@ class MiniPadderUpdater extends Updater {
           },
           '1': () => {
             return true
-          } // 4.1.1
-        } // 4.1
+          }
+        },
+        '2': {
+          '0': () => {
+            setLastAlertMessage(
+              'Deadzone can be separately changed for each sticks.',
+              '4.2.0'
+            )
+            return true
+          } // 4.2.0
+        } // 4.2
       } // 4
     } // end of update tasks
   }

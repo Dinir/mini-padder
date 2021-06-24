@@ -148,11 +148,23 @@
   </div>
   <div class="option half-width" data-name="deadzone">
     <b>Update Deadzone</b>
-    <div id="deadzoneUpdate" class="after-margin button-container one-button-each-line">
-      <button class="inactive">0.000</button>
-      <button class="inactive">0.000</button>
-      <button class="inactive">0.000</button>
-      <button class="inactive">0.000</button>
+    <div id="deadzoneUpdate" class="after-margin button-container two-buttons-each-line">
+      <div class="inactive">
+        <button data-position="left">0.000</button>
+        <button data-position="right">0.000</button>
+      </div>
+      <div class="inactive">
+        <button data-position="left">0.000</button>
+        <button data-position="right">0.000</button>
+      </div>
+      <div class="inactive">
+        <button data-position="left">0.000</button>
+        <button data-position="right">0.000</button>
+      </div>
+      <div class="inactive">
+        <button data-position="left">0.000</button>
+        <button data-position="right">0.000</button>
+      </div>
     </div>
     <span class="description">
       New deadzone value will be applied at the moment of click.<br>
@@ -399,31 +411,51 @@
   
   cpPanel.deadzone.assign(
     document.getElementById('deadzoneUpdate'),
-    function (gamepadIndex, name, gamepadId) {
+    function (gamepadIndex, name, gamepadId, side) {
       if (!Watcher.gamepads[gamepadIndex]) { return false }
   
       const rawAxesData = Watcher.gamepads[gamepadIndex].axes
       const mappedGamepadId = Mapper.getMappedGamepadId(gamepadId)
       const stickMappings = Mapper.mappings[mappedGamepadId].sticks
       const changeAxes = []
-      if (stickMappings.left) {
-        changeAxes[stickMappings.left.x] =
-          { value: rawAxesData[stickMappings.left.x] }
-        changeAxes[stickMappings.left.y] =
-          { value: rawAxesData[stickMappings.left.y] }
-      }
-      if (stickMappings.right) {
-        changeAxes[stickMappings.right.x] =
-          { value: rawAxesData[stickMappings.right.x] }
-        changeAxes[stickMappings.right.y] =
-          { value: rawAxesData[stickMappings.right.y] }
+      if (stickMappings[side]) {
+        changeAxes[stickMappings[side].x] =
+          { value: rawAxesData[stickMappings[side].x] }
+        changeAxes[stickMappings[side].y] =
+          { value: rawAxesData[stickMappings[side].y] }
       }
   
       const updateDone =
-        MappingManager.setDeadzone(stickMappings.left, changeAxes) &&
-        MappingManager.setDeadzone(stickMappings.right, changeAxes)
+        MappingManager.setDeadzone(stickMappings[side], changeAxes)
       if (updateDone) { Mapper.store() }
     }, {
+      customButtons: ControlPanel.getIndexedElements(
+        document.getElementById('deadzoneUpdate'), 'div'
+      ),
+      customEventCallback: function (e) {
+        if (e.target.tagName !== 'BUTTON') return
+        
+        const indexedContainer = e.target.parentElement
+        this.callback(
+          indexedContainer.dataset.index,
+          indexedContainer.dataset.name,
+          indexedContainer.dataset.gamepadId,
+          e.target.dataset.position
+        )
+        
+        if (!this.updateLabel) return
+        this.buttons.forEach(v => {
+          if (v.classList.contains('inactive')) return
+          const id = {
+            name: v.dataset.name,
+            gamepadId: v.dataset.gamepadId
+          }
+          const labelPair = this.makeLabel(id)
+          this.changeLabel(
+            v.dataset.index, id, labelPair
+          )
+        })
+      },
       makeLabel: function (idObj) {
         const mappedGamepadId = Mapper.getMappedGamepadId(idObj.gamepadId)
         const stickMappings = Mapper.mappings[mappedGamepadId].sticks
@@ -441,6 +473,8 @@
               return String(value).padEnd(5, '0')
           }
         }
+        const labelPair = Array(2).fill('')
+        
         if (stickMappings) {
           const deadzoneStringLeft = getDeadzoneValueString(
             stickMappings.left && stickMappings.left.deadzone
@@ -448,21 +482,29 @@
           const deadzoneStringRight = getDeadzoneValueString(
             stickMappings.right && stickMappings.right.deadzone
           )
-          let label = ''
-          label +=
+          labelPair[0] +=
             typeof deadzoneStringLeft === 'string' ?
-              deadzoneStringLeft : ''
-          label +=
+              deadzoneStringLeft : 'N/A'
+          labelPair[1] +=
             typeof deadzoneStringRight === 'string' ?
-              ( label.length ? ', ' : '' ) + deadzoneStringRight : ''
-          if (label.length === 0) {
-            label = 'N/A'
-          }
-          
-          return label
+              deadzoneStringRight : 'N/A'
         } else {
-          return 'N/A'
+          labelPair.fill('N/A')
         }
+        
+        return labelPair
+      },
+      changeLabel: function (index, id, newTextPair) {
+        if (
+          newTextPair.constructor !== Array ||
+          !newTextPair.length
+        ) { return }
+        this.buttons[index].dataset.name = id ? id.name : ''
+        this.buttons[index].dataset.gamepadId = id ? id.gamepadId : ''
+        const buttonPair = Array.from(this.buttons[index].children)
+        buttonPair.forEach((b, i) => {
+          b.innerHTML = newTextPair[i]
+        })
       },
       updateLabel: true
     }

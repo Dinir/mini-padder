@@ -151,14 +151,25 @@ sub {
       // compensate bottom margin made from line-height
       margin-bottom: 0.035em;
     }
-    &.one-button-each-line {
+    &.one-button-each-line,
+    &.two-buttons-each-line {
       line-height: 2em;
+      button.inactive {
+        display: none;
+      }
+    }
+    &.one-button-each-line {
       button {
         display: block;
         // compensate line-height lost from being block display
         margin-bottom: 0.55em;
-        &.inactive {
-          display: none;
+      }
+    }
+    &.two-buttons-each-line {
+      div {
+        line-height: 0;
+        button {
+          display: inline-block;
         }
       }
     }

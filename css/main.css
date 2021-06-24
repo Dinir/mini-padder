@@ -108,13 +108,17 @@ sub {
       margin-top: -0.25em; }
     .control-panel .after-margin.button-container {
       margin-bottom: 0.035em; }
-    .control-panel .after-margin.one-button-each-line {
+    .control-panel .after-margin.one-button-each-line, .control-panel .after-margin.two-buttons-each-line {
       line-height: 2em; }
-      .control-panel .after-margin.one-button-each-line button {
-        display: block;
-        margin-bottom: 0.55em; }
-        .control-panel .after-margin.one-button-each-line button.inactive {
-          display: none; }
+      .control-panel .after-margin.one-button-each-line button.inactive, .control-panel .after-margin.two-buttons-each-line button.inactive {
+        display: none; }
+    .control-panel .after-margin.one-button-each-line button {
+      display: block;
+      margin-bottom: 0.55em; }
+    .control-panel .after-margin.two-buttons-each-line div {
+      line-height: 0; }
+      .control-panel .after-margin.two-buttons-each-line div button {
+        display: inline-block; }
   .control-panel span.after-margin {
     display: block; }
   .control-panel .full-width {

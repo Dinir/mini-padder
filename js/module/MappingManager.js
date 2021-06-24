@@ -8,9 +8,10 @@
  *
  * @property {?Object.<string, (number|Object.<string, number>)>} sticks
  *
- * @property {number} sticks.deadzone define the end of a range of value which shouldn't be treated as an actual movement. 0 is at the center, 1 is the end of the axis.
- * @property {{x: number, y: number, button: number}} sticks.left indexes of axes and a button for left thumb stick
- * @property {{x: number, y: number, button: number}} sticks.right numbers of axes and a button for right thumb stick
+ * @property {{x: number, y: number, button: number, deadzone: number}} sticks.left indexes of axes and a button for left thumb stick
+ * @property {{x: number, y: number, button: number, deadzone: number}} sticks.right numbers of axes and a button for right thumb stick
+ * @property {number} sticks.left.deadzone define the end of a range of value which shouldn't be treated as an actual movement. 0 is at the center, 1 is the end of the axis.
+ * @property {number} sticks.right.deadzone define the end of a range of value which shouldn't be treated as an actual movement. 0 is at the center, 1 is the end of the axis.
  *
  * @property {Object.<string, Object.<string, number>>} buttons
  *
@@ -518,7 +519,6 @@ class MappingManager {
         name: name,
         properties: [],
         sticks: {
-          deadzone: 0,
           left: {},
           right: {}
         },

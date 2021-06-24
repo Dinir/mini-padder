@@ -206,15 +206,32 @@ class ControlPanel {
       assign: function (
         buttonContainer,
         customCallback,
-        { makeLabel, updateLabel } = { makeLabel: null, updateLabel: false }
+        {
+          customButtons,
+          customEventCallback,
+          makeLabel,
+          changeLabel,
+          updateLabel
+        } = {
+          customButtons: null,
+          customEventCallback: null,
+          makeLabel: null,
+          changeLabel: null,
+          updateLabel: false
+        }
       ) {
         this.container = buttonContainer
         this.buttons =
+          customButtons ||
           ControlPanel.getIndexedElements(buttonContainer, 'button')
         this.callback = customCallback
-        this.makeLabel = makeLabel || this.makeLabel
+        this.makeLabel =
+          makeLabel ? makeLabel.bind(this) : this.makeLabel
+        this.changeLabel =
+          changeLabel ? changeLabel.bind(this) : this.changeLabel
         this.updateLabel = updateLabel
-        this.container.addEventListener('click', e => {
+        this.eventCallback =
+          customEventCallback ? customEventCallback.bind(this) : (function (e) {
           if (e.target.tagName !== 'BUTTON') return
           this.callback(
             e.target.dataset.index,
@@ -231,7 +248,8 @@ class ControlPanel {
               e.target.dataset.index, id, label
             )
           }
-        })
+        }).bind(this)
+        this.container.addEventListener('click', this.eventCallback)
       },
       globalEventCallback: function (e) {
         if (this.globalEvents.indexOf(e.type) === -1) {

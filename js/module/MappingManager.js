@@ -730,7 +730,9 @@ class MappingManager {
         // input is not found
         if (assignmentState.index > 21) {
           // let's define the deadzone value for sticks
-          MappingManager.setDeadzone(assignmentState.data.mapping.sticks, gamepadChange.axes)
+          const stickMappings = assignmentState.data.mapping.sticks
+          MappingManager.setDeadzone(stickMappings.left, gamepadChange.axes)
+          MappingManager.setDeadzone(stickMappings.right, gamepadChange.axes)
         }
       }
     }

@@ -221,11 +221,8 @@ class GamepadRenderer {
     this.defaultSkins = defaultSkins || new Map([
       ['gamepad-xinput', 'XInput'],
       ['gamepad-dinput', 'DInput'],
-      ['gamepad-disc', 'Gamepad (Disc D-pad)'],
       ['joystick-v', 'Joystick (V Layout)'],
-      ['joystick-a', 'Joystick (A Layout)'],
-      ['megapad', 'Mega Pad'],
-      ['hbox', 'HBox']
+      ['joystick-a', 'Joystick (A Layout)']
     ])
     /** @type {skinInternalName[]} */
     this.fallbackSkins = [

@@ -4,6 +4,7 @@ class MiniPadderUpdater extends Updater {
     this.updateTasks = this.loadUpdateTasks()
     this.alert = alertCallback || (() => false)
     this.lastAlertMessage = ''
+    this.lastAlertType = 'info'
   
     MiniPadderUpdater.announceMessage('Checking for updated changes...')
     const lastFoundVersionString =
@@ -16,7 +17,8 @@ class MiniPadderUpdater extends Updater {
         if (this.lastAlertMessage) {
           // `Update: message` or `Update x.x.x: message`
           this.alert(
-            `Update${this.lastAlertMessage}`
+            `Update${this.lastAlertMessage}`,
+            this.lastAlertType
           )
         }
         MiniPadderUpdater.announceMessage('Finished updating.')
@@ -31,7 +33,8 @@ class MiniPadderUpdater extends Updater {
   static announceMessage = MPCommon.announceMessageFrom('Updater')
   
   loadUpdateTasks () {
-    const setLastAlertMessage = (message, version) => {
+    const setLastAlertMessage = (message, version, type = 'info') => {
+      this.lastAlertType = type
       if (!message) {
         this.lastAlertMessage = null
       } else {

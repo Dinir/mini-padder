@@ -136,14 +136,22 @@ sub {
     .control-panel div.cpMessage:before {
       font-family: Segoe UI Emoji, monospace;
       margin-right: 0.2em; }
+    .control-panel div.cpMessage a {
+      color: #303030; }
+    .control-panel div.cpMessage b {
+      display: inline; }
     .control-panel div.cpMessage.caution {
       background-color: #c1c08b; }
       .control-panel div.cpMessage.caution:before {
         content: '⚠️ '; }
+      .control-panel div.cpMessage.caution a {
+        color: #30301c; }
     .control-panel div.cpMessage.info {
       background-color: #8ba8c1; }
       .control-panel div.cpMessage.info:before {
         content: 'ℹ️ '; }
+      .control-panel div.cpMessage.info a {
+        color: #1c2730; }
   @media (max-height: 599px) and (orientation: landscape) {
     .control-panel {
       height: auto;

@@ -199,16 +199,28 @@ sub {
       font-family: Segoe UI Emoji, monospace;
       margin-right: 0.2em;
     }
+    a {
+      color: #303030;
+    }
+    b {
+      display: inline;
+    }
     &.caution {
       background-color: #c1c08b;
       &:before {
         content: '⚠️ ';
+      }
+      a {
+        color: #30301c;
       }
     }
     &.info {
       background-color: #8ba8c1;
       &:before {
         content: 'ℹ️ ';
+      }
+      a {
+        color: #1c2730;
       }
     }
   }

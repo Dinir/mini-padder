@@ -1,5 +1,5 @@
 {
-	"name": "Mega Pad",
+	"name": "Mega Pad (8BD Layout)",
 	"author": null,
 	"properties": [
 		"joystick"
@@ -213,46 +213,6 @@
 				"clear": [
 					{
 						"instruction": "clearRect",
-						"x": 179, "y": 24, "width": 24, "height": 24
-					}
-				],
-				"off": [
-					{
-						"instruction": "drawImage",
-						"src": 0, "srcPos": [132, 0], "size": [24, 24], "canvasPos": [179, 24]
-					}
-				],
-				"on": [
-					{
-						"instruction": "drawImage",
-						"src": 1, "srcPos": [132, 0], "size": [24, 24], "canvasPos": [179, 24]
-					}
-				]
-			},
-			"r1": {
-				"clear": [
-					{
-						"instruction": "clearRect",
-						"x": 195, "y": 48, "width": 28, "height": 28
-					}
-				],
-				"off": [
-					{
-						"instruction": "drawImage",
-						"src": 0, "srcPos": [56, 0], "size": [28, 28], "canvasPos": [195, 48]
-					}
-				],
-				"on": [
-					{
-						"instruction": "drawImage",
-						"src": 1, "srcPos": [56, 0], "size": [28, 28], "canvasPos": [195, 48]
-					}
-				]
-			},
-			"l2": {
-				"clear": [
-					{
-						"instruction": "clearRect",
 						"x": 11, "y": 0, "width": 49, "height": 20
 					}
 				],
@@ -269,7 +229,27 @@
 					}
 				]
 			},
-			"r2": {
+			"r1": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 179, "y": 24, "width": 24, "height": 24
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "srcPos": [132, 0], "size": [24, 24], "canvasPos": [179, 24]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "srcPos": [132, 0], "size": [24, 24], "canvasPos": [179, 24]
+					}
+				]
+			},
+			"l2": {
 				"clear": [
 					{
 						"instruction": "clearRect",
@@ -286,6 +266,26 @@
 					{
 						"instruction": "drawImage",
 						"src": 1, "srcPos": [205, 0], "size": [49, 20], "canvasPos": [164, 0]
+					}
+				]
+			},
+			"r2": {
+				"clear": [
+					{
+						"instruction": "clearRect",
+						"x": 195, "y": 48, "width": 28, "height": 28
+					}
+				],
+				"off": [
+					{
+						"instruction": "drawImage",
+						"src": 0, "srcPos": [56, 0], "size": [28, 28], "canvasPos": [195, 48]
+					}
+				],
+				"on": [
+					{
+						"instruction": "drawImage",
+						"src": 1, "srcPos": [56, 0], "size": [28, 28], "canvasPos": [195, 48]
 					}
 				]
 			}

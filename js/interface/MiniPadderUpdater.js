@@ -231,9 +231,23 @@ class MiniPadderUpdater extends Updater {
           },
           '1': () => {
             return true
-          } // 4.2.1
-        } // 4.2
-      } // 4
+          }
+        }
+      },
+      '5': {
+        '0': {
+          '0': () => {
+            setLastAlertMessage(
+              '<b>MegaPad changed its layout</b> to accept default XInput mappings ' +
+              'from Retro-Bit and 8BitDo gamepads. ' +
+              'Check out the <a href="https://github.com/Dinir/mini-padder/releases/tag/4.2.2" target="_blank">repository\'s release page</a> to read more.',
+              '5.0.0',
+              'caution'
+            )
+            return true
+          }
+        } // 5.0
+      } // 5
     } // end of update tasks
   }
 }

@@ -245,7 +245,18 @@ class MiniPadderUpdater extends Updater {
               'caution'
             )
             return true
-          }
+          },
+          '1': () => {
+            MiniPadderUpdater.announceUpdate(
+              'Removing the discontinued Mega Pad variations from the skin list.', '5.0.1'
+            )
+            
+            Renderer.removeSkinFromSkinList('megapad')
+            Renderer.removeSkinFromSkinList('megapad-x')
+            Renderer.removeSkinFromSkinList('megapad-d')
+            
+            return true
+          } // 5.0.1
         } // 5.0
       } // 5
     } // end of update tasks

@@ -620,6 +620,19 @@ class GamepadRenderer {
     
     return true
   }
+  /**
+   * Build the skin from the obtained config data,
+   * and update the display name in the skin list.
+   *
+   * @param {skinInternalName} internalName
+   * @param {SkinData} skin
+   * @param {SkinConfig} data
+   * @param {?string} path
+   */
+  processConfigData (internalName, skin, data, path = null) {
+    GamepadRenderer._buildSkinFromConfig(skin, data, path)
+    this.updateDisplayNameInSkinList(internalName, data.name)
+  }
   
   /**
    * Add multiple SkinList items at once.
@@ -813,8 +826,7 @@ class GamepadRenderer {
       const customSkinConfig =
         JSON.parse(window.localStorage.getItem(this.customSkinLocalStorageKey))
       try {
-        GamepadRenderer._buildSkinFromConfig(skin, customSkinConfig)
-        this.updateDisplayNameInSkinList(internalName, customSkinConfig.name)
+        this.processConfigData(internalName, skin, customSkinConfig)
       } catch (e) {
         GamepadRenderer.announceMessage(
           'Custom skin is not found or invalid, unloading the entry.'
@@ -829,8 +841,7 @@ class GamepadRenderer {
       fetch(configPath).then(response =>
         response.json()
       ).then(data => {
-        GamepadRenderer._buildSkinFromConfig(skin, data, path)
-        this.updateDisplayNameInSkinList(internalName, data.name)
+        this.processConfigData(internalName, skin, data, path)
       }).catch(e => {
         this.unloadSkin(internalName)
         GamepadRenderer.announceMessage(new Error(e))

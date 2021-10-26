@@ -8,7 +8,5 @@
 
 **Skin File**
 
-- Archive: 
-<!--Put an archive of `.mpskin.json` and spritesheets here.-->
-- Single File:
-<!--And/or you can also upload a compressed single json file here with its extension changed to `txt`: After loading the custom skin on the app, save the text found in the control panel on `Export & Import` -> `Custom Skin`.-->
+- Archive: <!--Put an archive of the config file(s) and spritesheets here.-->
+- Single File: <!--And upload the single file here.-->

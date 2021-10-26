@@ -709,7 +709,7 @@ class ControlPanel {
         }, {
           typeCheckFunction, indicatorUpdateCallback, customCallback
         }) {
-        this.maxFileAmount = 5
+        this.maxFileAmount = 16
         
         this.input = input
         this.dropArea = dropArea

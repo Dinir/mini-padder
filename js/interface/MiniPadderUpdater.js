@@ -256,8 +256,17 @@ class MiniPadderUpdater extends Updater {
             Renderer.removeSkinFromSkinList('megapad-d')
             
             return true
-          } // 5.0.1
-        } // 5.0
+          }
+        },
+        '1': {
+          '0': () => {
+            setLastAlertMessage(
+              'Custom skin now supports `.json` and `.txt`.',
+              '5.1.0'
+            )
+            return true
+          }
+        } // 5.1
       } // 5
     } // end of update tasks
   }

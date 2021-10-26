@@ -823,6 +823,7 @@ class ControlPanel {
           const dataPromise = new Promise((resolve, reject) => {
             const reader = new FileReader()
             switch (type) {
+              case 'text':
               case 'json': reader.readAsText(file); break
               case 'image': reader.readAsDataURL(file); break
               default:

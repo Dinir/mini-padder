@@ -83,7 +83,7 @@
       <b>Import Custom Skin</b>
       <span class="after-margin file-input-container inactive">
         <input class="visually-hidden"
-               type="file" accept="application/json,image/*" multiple>
+               type="file" accept="text/plain,application/json,image/*" multiple>
         <button data-name="fileSelect">Choose Files</button>
         <span id="currentlyLoadedCustomSkin">Nothing</span>
         <button data-name="remove" class="align-right">X</button>
@@ -344,7 +344,9 @@
       removeButton: cpDomSkinUploader.removeButton
     }, {
       typeCheckFunction: typeString =>
-        typeString === 'application/json' ? 'json' :
+        typeString ===
+          'text/plain' ? 'text' :
+          'application/json' ? 'json' :
           typeString.startsWith('image/') ? 'image' : null
       , indicatorUpdateCallback: text => {
         cpDomSkinUploader.indicator.innerHTML = text
@@ -576,7 +578,7 @@
 
 <!-- updater -->
 <script>
-  const version = '5.0.1'
+  const version = '5.1.0'
   const MPUpdater = new MiniPadderUpdater(version, Cp.insertAlert.bind(Cp))
   const versionDoms = document.getElementsByClassName('version')
   Array.from(versionDoms).forEach(v => v.innerHTML = version)

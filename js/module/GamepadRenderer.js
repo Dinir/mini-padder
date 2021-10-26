@@ -275,8 +275,17 @@ class GamepadRenderer {
       this.setFadeoutOptionFromTextArray.bind(this)
   }
   
+  /**
+   * Check these extensions whenever loading a skin config.
+   * Each entry starts with a dot.
+   * @type {string[]}
+   *
+   * @see GamepadRenderer.fetchConfigData
+   */
+  static skinConfigExtension = [
+    '.json', '.txt', '.mpskin.json'
+  ]
   static announceMessage = MPCommon.announceMessageFrom('Gamepad Renderer')
-  
   /**
    * Return an array of unique values with no duplicates.
    * If an object is given, values of the objects will be used.
@@ -295,7 +304,6 @@ class GamepadRenderer {
         false : (itemSeen[item] = true)
     })
   }
-  
   /**
    * Checks the validity of the given skinInternalName.
    * Sends an error then return false if the given value is found invalid.
@@ -345,6 +353,55 @@ class GamepadRenderer {
     skinSlot.alpha.sticks.left = 1
   }
   
+  /**
+   * Fetch config data from an external file,
+   * and tries known extensions for the file.
+   * separately made into a function to work recursively with
+   * {@link GamepadRenderer._retryFetchWithDifferentExtension `_retryFetchWithDifferentExtension`}.
+   *
+   * @see GamepadRenderer.skinConfigExtension
+   * @see GamepadRenderer._retryFetchWithDifferentExtension
+   *
+   * @param {string} pathWithoutExtension
+   * path of the config file without the extension
+   * @param {?number} [attempt=0]
+   * counts which index of the extension candidates to try
+   *
+   * @returns {Promise<Response>}
+   */
+  static fetchConfigData (pathWithoutExtension, attempt = 0) {
+    return fetch(
+      pathWithoutExtension + GamepadRenderer.skinConfigExtension[attempt]
+    ).then(response => {
+      if (!response.ok) { throw response }
+      return response
+    }).catch(e => GamepadRenderer._retryFetchWithDifferentExtension(
+      pathWithoutExtension, attempt, e
+    ))
+  }
+  /**
+   * Call {@link GamepadRenderer.fetchConfigData `fetchConfigData`}
+   * with an increased attempt number.
+   * Separately made into a function to work recursively with it.
+   *
+   * @see GamepadRenderer.fetchConfigData
+   *
+   * @param {string} pathWithoutExtension
+   * path of the config file without the extension
+   * @param {number} attempt
+   * counts which index of the extension candidates to try
+   * @param {Response} e
+   * thrown from previous recursion that has been failed
+   * @returns {Promise<Response>}
+   * @throws {Response} the last thrown Response in the recursive chain
+   */
+  static _retryFetchWithDifferentExtension (pathWithoutExtension, attempt, e) {
+    if (++attempt >= GamepadRenderer.skinConfigExtension.length) { throw e }
+    
+    return GamepadRenderer.fetchConfigData(
+      pathWithoutExtension, attempt
+    )
+  }
   /**
    * build SkinData from the config object, parsed from `config.json`.
    * built SkinData is stored at where `skinData` property refers to.
@@ -620,6 +677,7 @@ class GamepadRenderer {
     
     return true
   }
+  
   /**
    * Build the skin from the obtained config data,
    * and update the display name in the skin list.
@@ -837,14 +895,21 @@ class GamepadRenderer {
       // load from the hosted space
       const pathParts = internalName.split('-')
       const path = `./skin/${pathParts[0]}`
-      const configPath = path + `/${pathParts[1] || pathParts[0]}.mpskin.json`
-      fetch(configPath).then(response =>
-        response.json()
+      const configPathWithoutExtension =
+        `${path}/${pathParts[1] || pathParts[0]}`
+      
+      GamepadRenderer.fetchConfigData(
+        configPathWithoutExtension
+      ).then(
+        response => response.json()
       ).then(data => {
         this.processConfigData(internalName, skin, data, path)
       }).catch(e => {
         this.unloadSkin(internalName)
-        GamepadRenderer.announceMessage(new Error(e))
+        // `e` is expected to be a Response but it can be something different
+        GamepadRenderer.announceMessage(new Error(
+          `\`${internalName}\` ${e.statusText || e}`
+        ))
       })
     }
   }

@@ -265,6 +265,10 @@ class MiniPadderUpdater extends Updater {
               '5.1.0'
             )
             return true
+          },
+          '1': () => {
+            setLastAlertMessage()
+            return true
           }
         } // 5.1
       } // 5

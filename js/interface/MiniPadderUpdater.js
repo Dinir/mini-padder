@@ -270,7 +270,13 @@ class MiniPadderUpdater extends Updater {
             setLastAlertMessage()
             return true
           }
-        } // 5.1
+        },
+        '2': {
+          '0': () => {
+            setLastAlertMessage()
+            return true
+          }
+        } // 5.2
       } // 5
     } // end of update tasks
   }

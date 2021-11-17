@@ -30,12 +30,12 @@
 			],
 			"off": [{
 				"instruction": "drawImageByPos",
-				"src": 1, "areaSize": [12, 12],
+				"src": 1, "areaSize": [11, 11],
 				"srcPos": [333, 42], "size": [22, 22], "canvasPos": [26, 26]
 			}],
 			"on": [{
 				"instruction": "drawImageByPos",
-				"src": 1, "areaSize": [12, 12],
+				"src": 1, "areaSize": [11, 11],
 				"srcPos": [333, 65], "size": [22, 22], "canvasPos": [26, 26]
 			}]
 		}

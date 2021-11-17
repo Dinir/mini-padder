@@ -7,6 +7,10 @@
 	],
 	"layer": [
 		{
+			"name": "stick-bg",
+			"x": 11, "y": 57, "width": 74, "height": 74
+		},
+		{
 			"name": "button",
 			"x": 11, "y": 12, "width": 229, "height": 121
 		},
@@ -16,15 +20,19 @@
 		}
 	],
 	"sticks": {
-		"layer": 1,
+		"layer": 2,
 		"left": {
 			"clear": [
+				{
+					"instruction": "clearRect", "layer": 0,
+					"x": 0, "y": 0, "width": 74, "height": 74
+				},
 				{
 					"instruction": "clearRect",
 					"x": 0, "y": 0, "width": 74, "height": 74
 				},
 				{
-					"instruction": "drawImage",
+					"instruction": "drawImage", "layer": 0,
 					"src": 0, "srcPos": [148, 41], "size": [74, 74], "canvasPos": [0, 0]
 				}
 			],
@@ -41,7 +49,7 @@
 		}
 	},
 	"buttons": {
-		"layer": 0,
+		"layer": 1,
 		"dpad": {
 			"value": {
 				"clear": [

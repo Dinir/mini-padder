@@ -1376,21 +1376,24 @@ class GamepadRenderer {
           }
       
           this.followInstructions(
-            ctx[stickLayerIndex], src, stickInst.clear,
-            null, alpha.sticks[stickName], null
+            ctx, stickLayerIndex, src,
+            stickInst.clear, null,
+            alpha.sticks[stickName], null
           )
           if (
             activeState.sticks[stickName][1] ||
             (noStickButton && activeState.sticks[stickName][0])
           ) {
             this.followInstructions(
-              ctx[stickLayerIndex], src, stickInst.on || stickInst.off,
-              values.value, alpha.sticks[stickName], values.delta
+              ctx, stickLayerIndex, src,
+              stickInst.on || stickInst.off, values.value,
+              alpha.sticks[stickName], values.delta
             )
           } else {
             this.followInstructions(
-              ctx[stickLayerIndex], src, stickInst.off,
-              values.value, alpha.sticks[stickName], values.delta
+              ctx, stickLayerIndex, src,
+              stickInst.off, values.value,
+              alpha.sticks[stickName], values.delta
             )
           }
         } else if (useFadeout) {
@@ -1412,14 +1415,14 @@ class GamepadRenderer {
             )
         
             this.followInstructions(
-              ctx[stickLayerIndex], src, stickInst.clear,
-              null, alpha.sticks[stickName], null
+              ctx, stickLayerIndex, src,
+              stickInst.clear, null,
+              alpha.sticks[stickName], null
             )
             this.followInstructions(
-              ctx[stickLayerIndex], src, stickInst.off,
-              lastInput.sticks[stickName],
-              alpha.sticks[stickName],
-              lastInput.sticks[stickName]
+              ctx, stickLayerIndex, src,
+              stickInst.off, lastInput.sticks[stickName],
+              alpha.sticks[stickName], lastInput.sticks[stickName]
             )
           }
         }
@@ -1465,8 +1468,9 @@ class GamepadRenderer {
               lastInput.buttons[buttonGroupName][buttonName] = value
           
               this.followInstructions(
-                ctx[buttonLayerIndex], src, buttonInst.clear,
-                null, null, null
+                ctx, buttonLayerIndex, src,
+                buttonInst.clear, null,
+                null, null
               )
           
               // dpad.value is [x-axis, y-axis], other button values are number
@@ -1475,8 +1479,9 @@ class GamepadRenderer {
                 value === 0
               if (valueIsOff) {
                 this.followInstructions(
-                  ctx[buttonLayerIndex], src, buttonInst.off,
-                  null, null, null
+                  ctx, buttonLayerIndex, src,
+                  buttonInst.off, null,
+                  null, null
                 )
                 if (forJoystick && bg === 0 && b === 0) {
                   activeState.sticks.left[0] = false
@@ -1484,8 +1489,9 @@ class GamepadRenderer {
                 activeState.buttons[buttonGroupName][buttonName] = false
               } else {
                 this.followInstructions(
-                  ctx[buttonLayerIndex], src, buttonInst.on,
-                  value, null, null
+                  ctx, buttonLayerIndex, src,
+                  buttonInst.on, value,
+                  null, null
                 )
                 if (forJoystick && bg === 0 && b === 0) {
                   GamepadRenderer.updateLeftStickActiveStatesOnDpadInput(
@@ -1522,12 +1528,14 @@ class GamepadRenderer {
                 )
             
                 this.followInstructions(
-                  ctx[buttonLayerIndex], src, buttonInst.clear,
-                  null, alpha.buttons[buttonGroupName][buttonName], null
+                  ctx, buttonLayerIndex, src,
+                  buttonInst.clear, null,
+                  alpha.buttons[buttonGroupName][buttonName], null
                 )
                 this.followInstructions(
-                  ctx[buttonLayerIndex], src, buttonInst.off,
-                  null, alpha.buttons[buttonGroupName][buttonName], null
+                  ctx, buttonLayerIndex, src,
+                  buttonInst.off, null,
+                  alpha.buttons[buttonGroupName][buttonName], null
                 )
               }
             }
@@ -1563,12 +1571,14 @@ class GamepadRenderer {
               )
           
               this.followInstructions(
-                ctx[buttonLayerIndex], src, buttonInst.clear,
-                null, null, null
+                ctx, buttonLayerIndex, src,
+                buttonInst.clear, null,
+                null, null
               )
               this.followInstructions(
-                ctx[buttonLayerIndex], src, buttonInst.off,
-                null, alpha.buttons[buttonGroupName][buttonName], null
+                ctx, buttonLayerIndex, src,
+                buttonInst.off, null,
+                alpha.buttons[buttonGroupName][buttonName], null
               )
             }
           }
@@ -1658,14 +1668,14 @@ class GamepadRenderer {
         )
     
         this.followInstructions(
-          ctx[stickLayerIndex], src, stickInst.clear,
-          null, alpha.sticks[stickName], null
+          ctx, stickLayerIndex, src,
+          stickInst.clear, null,
+          alpha.sticks[stickName], null
         )
         this.followInstructions(
-          ctx[stickLayerIndex], src, stickInst.off,
-          lastInput.sticks[stickName],
-          alpha.sticks[stickName],
-          lastInput.sticks[stickName]
+          ctx, stickLayerIndex, src,
+          stickInst.off, lastInput.sticks[stickName],
+          alpha.sticks[stickName], lastInput.sticks[stickName]
         )
       }
     }
@@ -1717,12 +1727,14 @@ class GamepadRenderer {
           )
       
           this.followInstructions(
-            ctx[buttonLayerIndex], src, buttonInst.clear,
-            null, alpha.buttons[buttonGroupName][buttonName], null
+            ctx, buttonLayerIndex, src,
+            buttonInst.clear, null,
+            alpha.buttons[buttonGroupName][buttonName], null
           )
           this.followInstructions(
-            ctx[buttonLayerIndex], src, buttonInst.off,
-            null, alpha.buttons[buttonGroupName][buttonName], null
+            ctx, buttonLayerIndex, src,
+            buttonInst.off, null,
+            alpha.buttons[buttonGroupName][buttonName], null
           )
         }
       }
@@ -1734,7 +1746,8 @@ class GamepadRenderer {
     if (skinSlot.messageDisplayTimeLeft !== -1 && !skinSlot.assigning) {
       if (skinSlot.messageDisplayTimeLeft === 0) {
         this.followInstructions(
-          ctx[infoLayerIndex], null, infoInst.clear, null
+          ctx, infoLayerIndex, null,
+          infoInst.clear, null
         )
       }
       skinSlot.messageDisplayTimeLeft--
@@ -1801,12 +1814,14 @@ class GamepadRenderer {
         if (!stickInst || stickInst.constructor !== Object) { continue }
         
         this.followInstructions(
-          ctx[stickLayerIndex], src, stickInst.clear,
-          null, null, null
+          ctx, stickLayerIndex, src,
+          stickInst.clear, null,
+          null, null
         )
         this.followInstructions(
-          ctx[stickLayerIndex], src, stickInst.off,
-          [0, 0, null], null, [0, 0, null]
+          ctx, stickLayerIndex, src,
+          stickInst.off, [0, 0, null],
+          null, [0, 0, null]
         )
         
         // for stick movement and stick button
@@ -1851,12 +1866,14 @@ class GamepadRenderer {
           if (!buttonInst || buttonInst.constructor !== Object) { continue }
           
           this.followInstructions(
-            ctx[buttonLayerIndex], src, buttonInst.clear,
-            null, null, null
+            ctx, buttonLayerIndex, src,
+            buttonInst.clear, null,
+            null, null
           )
           this.followInstructions(
-            ctx[buttonLayerIndex], src, buttonInst.off,
-            null, null, null
+            ctx, buttonLayerIndex, src,
+            buttonInst.off, null,
+            null, null
           )
           
           activeState.buttons[buttonGroupName][buttonName] = false
@@ -1915,7 +1932,11 @@ class GamepadRenderer {
     const alpha = (!timeLeft || timeLeft >= fadeOutFrames) ?
       null : timeLeft / fadeOutFrames
     this.clearInfoLayer(infoCtx, infoInst.clear)
-    this.followInstructions(infoCtx, null, infoInst.show, message, alpha)
+    this.followInstructions(
+      infoCtx, null, null,
+      infoInst.show, message,
+      alpha
+    )
   }
   /**
    * Clear the info layer.
@@ -1923,14 +1944,18 @@ class GamepadRenderer {
    * @param {Object} clearInst instructions for clearing the info layer
    */
   clearInfoLayer (infoCtx, clearInst) {
-    this.followInstructions(infoCtx, null, clearInst, null)
+    this.followInstructions(
+      infoCtx, null, null,
+      clearInst, null
+    )
   }
   
   /**
    * Arrange the received arguments into the order of instructions,
    * then call the instruction to make changes on the canvas.
    *
-   * @param {CanvasRenderingContext2D} ctx
+   * @param {CanvasRenderingContext2D[]} ctx
+   * @param {number} ctxDefaultIndex
    * @param {HTMLImageElement[]} src
    * @param {renderInstruction[]} inst
    * @param {number[]|number} value
@@ -1940,18 +1965,28 @@ class GamepadRenderer {
    * @param {any} additionalValue
    * @returns {boolean}
    */
-  followInstructions (ctx, src, inst, value, alpha, additionalValue) {
+  followInstructions (
+    ctx, ctxDefaultIndex, src,
+    inst, value,
+    alpha, additionalValue
+  ) {
     // `this` is bound as `GamepadRenderer` instance in the constructor
     if (!inst) { return false }
     
     for (let i = 0; i < inst.length; i++) {
       const instName = inst[i].instruction
+      // if `layer` property is given for the instruction,
+      // run the instruction on that layer instead.
+      // `layer` can be 0 and valid, avoid comparing inside the index bracket.
+      const instCtx =
+        ctx.constructor === CanvasRenderingContext2D ?
+          ctx : ctx[inst[i].layer] || ctx[ctxDefaultIndex]
       const instArgs = []
       for (let a = 0; a < this.instructionParameters[instName].length; a++) {
         const parameterName = this.instructionParameters[instName][a]
         switch (parameterName) {
           case 'ctx':
-            instArgs.push(ctx)
+            instArgs.push(instCtx)
             break
           case 'src':
             instArgs.push(src[inst[i].src])

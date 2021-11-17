@@ -109,7 +109,8 @@
  * @property {boolean} active Indicates if the stick is out of its deadzone, or the button is pressed.
  */
 /**
- * @typedef {{value: number}} basicButtonChange Contains value change made on a single button of a gamepad.
+ * @typedef {Object} basicButtonChange Contains value change made on a single button of a gamepad.
+ * @property {number} value {@link buttonChange.value}
  */
 
 /**

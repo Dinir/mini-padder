@@ -46,6 +46,10 @@
  * Contains timestamp the last time a stick or a button is active.
  * The structure follows that of the skin config.
  *
+ * @property {Object} lastInput
+ * Contains last received input value of a stick or a button.
+ * The structure follows that of the skin config.
+ *
  * @property {Object} alpha
  * Contains alpha values for sticks and buttons.
  * The structure follows that of the skin config.
@@ -85,6 +89,13 @@
  *
  * @property {Number} duration Transition time of fade-out effect in milliseconds.
  * It's in milliseconds to compare with DOMHighResTimestamp values.
+ *
+ * @property {number[]} deltaOpacity
+ * Opacity change rate for transition to the next level to its index,
+ * for each frames in the transition duration.
+ *
+ * @property {Number} totalTime Milliseconds required to finish last transition.
+ * Time for last level + duration.
  */
 
 /**
@@ -478,6 +489,7 @@ class GamepadRenderer {
     I'll try to reduce the fadeout speed to compensate.
      */
     const fadeoutFps = this.fadeoutFps
+    /** @type {number[]} */
     const deltaOpacity = []
     for (let i = 0; i < opacityOrder.length; i++) {
       if (opacityOrder[i] >= 1) {
@@ -565,6 +577,12 @@ class GamepadRenderer {
     this.setFadeoutOption(fadeOutOption || this.fadeout || {})
   }
   
+  /**
+   *
+   * @param {number} timeInactive milliseconds passed since last active frame
+   * @returns {[boolean, number]}
+   * `boolean`: if fade should be happening, `number`: {@link fadeoutOption.deltaOpacity}
+   */
   getFadeoutState (timeInactive) {
     let fadingOut = false
     let inactivityLevel = -1
@@ -619,6 +637,17 @@ class GamepadRenderer {
     
     return [fadingOut, deltaOpacity]
   }
+  
+  /**
+   * Apply `deltaOpacity` to alpha to make the alpha value for the next frame,
+   * then cut out digits below certain decimal points
+   * given by `fadeoutOpacityPrecision`.
+   *
+   * @param {number} alpha existing alpha value
+   * @param {number} deltaOpacity change rate to apply to existing value
+   * @returns {number} updated alpha value for next frame,
+   * with digits behind given decimal points trimmed
+   */
   getMultipliedAlpha (alpha, deltaOpacity) {
     if (alpha === 0) return alpha
     return Math.floor(
@@ -1315,6 +1344,7 @@ class GamepadRenderer {
           // skip rendering sticks because dpad is active
         } else if (sticks[stickName]) {
           // change for the stick is confirmed
+          /** @type {stickChange} */
           const values = sticks[stickName]
           lastInput.sticks[stickName] = values.value
           let fadingOut = false
@@ -1374,6 +1404,7 @@ class GamepadRenderer {
           } else if (this.timingForFps(this.fadeoutFps)) {
             const timeInactive =
               timestampAtStart - lastActive.sticks[stickName]
+            /** @type {number} */
             let deltaOpacity = this.getFadeoutState(timeInactive)[1]
         
             alpha.sticks[stickName] = this.getMultipliedAlpha(
@@ -1429,6 +1460,7 @@ class GamepadRenderer {
         
             if (buttons[buttonGroupName][buttonName]) {
               // change for the button is confirmed
+              /** @type {number} */
               const value = buttons[buttonGroupName][buttonName].value
               lastInput.buttons[buttonGroupName][buttonName] = value
           
@@ -1894,6 +1926,20 @@ class GamepadRenderer {
     this.followInstructions(infoCtx, null, clearInst, null)
   }
   
+  /**
+   * Arrange the received arguments into the order of instructions,
+   * then call the instruction to make changes on the canvas.
+   *
+   * @param {CanvasRenderingContext2D} ctx
+   * @param {HTMLImageElement[]} src
+   * @param {renderInstruction[]} inst
+   * @param {number[]|number} value
+   * `number[]` if {@link stickChange.value},
+   * `number` if {@link buttonChange.value}
+   * @param {number} alpha
+   * @param {any} additionalValue
+   * @returns {boolean}
+   */
   followInstructions (ctx, src, inst, value, alpha, additionalValue) {
     // `this` is bound as `GamepadRenderer` instance in the constructor
     if (!inst) { return false }

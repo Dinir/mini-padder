@@ -108,7 +108,7 @@ class GamepadWatcher {
     /** @type {?DOMHighResTimeStamp} */
     this._lastTimestamp = null
     
-    this.browser = GamepadWatcher.detectBrowser()
+    this.browser = MPCommon.detectBrowser()
     
     if (GamepadWatcher.hasEvents) {
       window.addEventListener('gamepadconnected', e => {
@@ -143,16 +143,6 @@ class GamepadWatcher {
   }
   
   static announceMessage = MPCommon.announceMessageFrom('Gamepad Watcher')
-  
-  /**
-   * detects if it's Firefox or Chrome.
-   * @return {string}
-   */
-  static detectBrowser () {
-    // can't believe `!!window.chrome` doesn't work on OBS browser
-    if (/Chrome\/\d+/.test(navigator.userAgent)) { return 'Chrome' }
-    if (typeof InstallTrigger !== 'undefined') { return 'Firefox' }
-  }
   
   get connectionAmount () {
     return Object.keys(this.gamepads).length

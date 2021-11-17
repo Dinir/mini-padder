@@ -22,6 +22,21 @@ class MPCommon {
   static maxGamepads = 4
   
   /**
+   * detects if it's Firefox or a Chromium-based one.
+   * @return {string}
+   */
+  static detectBrowser () {
+    if (navigator.userAgentData) {
+      if (navigator.userAgentData.brands.some(b => b.brand === 'Chromium')) {
+        return 'Chromium'
+      }
+    } else { // might be deprecated starting in Chrome 101
+      if (/Chrome\/\d+/.test(navigator.userAgent)) { return 'Chromium' }
+    }
+    if (typeof InstallTrigger !== 'undefined') { return 'Firefox' }
+  }
+  
+  /**
    * Take an Error instance or string and dispatch a custom event with it.
    * @param {string} className the class this method will be used in
    * @returns {function(Error|string, ?string)} method for the class to use to announce messages

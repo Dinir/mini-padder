@@ -18,7 +18,7 @@ class ControlPanel {
     this.panelValues = {}
     this.loadPanelValues()
     
-    this.browser = ControlPanel.detectBrowser()
+    this.browser = MPCommon.detectBrowser()
     
     for (const item in typeListingObject) {
       if (!typeListingObject.hasOwnProperty(item)) continue
@@ -43,16 +43,6 @@ class ControlPanel {
     return [
       'dynamicButtons', 'selectFromList', 'selectFromMap', 'slider', 'textArray', 'buttons', 'uploader'
     ]
-  }
-  
-  /**
-   * detects if it's Firefox or Chrome.
-   * @return {string}
-   */
-  static detectBrowser () {
-    // can't believe `!!window.chrome` doesn't work on OBS browser
-    if (/Chrome\/\d+/.test(navigator.userAgent)) { return 'Chrome' }
-    if (typeof InstallTrigger !== 'undefined') { return 'Firefox' }
   }
   
   static getIndexedElements (elementContainer, elementType) {

@@ -191,6 +191,33 @@ class MappingInterface extends MappingManager {
             "l1": 4, "r1": 5, "l2": 6, "r2": 7
           }
         }
+      },
+      "057e2009": {
+        "name": "Switch Pro Controller",
+        "properties": [],
+        "sticks": {
+          "left": {
+            "x": 0, "y": 1, "button": 10,
+            "deadzone": 0.1
+          },
+          "right": {
+            "x": 2, "y": 3, "button": 11,
+            "deadzone": 0.1
+          }
+        },
+        "buttons": {
+          "dpad": {
+            "up": 12, "down": 13, "left": 14, "right": 15
+          },
+          "face": {
+            "down": 0, "right": 1, "left": 2, "up": 3,
+            "select": 8, "start": 9, "l3": 10, "r3": 11,
+            "home": 16, "touchpad": 17
+          },
+          "shoulder": {
+            "l1": 4, "r1": 5, "l2": 6, "r2": 7
+          }
+        }
       }
     }
     this.store()

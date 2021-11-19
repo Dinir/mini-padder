@@ -7,6 +7,10 @@
 	],
 	"layer": [
 		{
+			"name": "dpad-bg",
+			"x": 11, "y": 51, "width": 74, "height": 74
+		},
+		{
 			"name": "stick",
 			"x": 0, "y": 40, "width": 256, "height": 96
 		},
@@ -16,7 +20,7 @@
 		}
 	],
 	"sticks": {
-		"layer": 0,
+		"layer": 1,
 		"left": {
 			"clear": [
 				{
@@ -63,7 +67,7 @@
 		}
 	},
 	"buttons": {
-		"layer": 1,
+		"layer": 2,
 		"dpad": {
 			"value": {
 				"clear": [
@@ -72,8 +76,12 @@
 						"x": 11, "y": 43, "width": 74, "height": 74
 					},
 					{
-						"instruction": "drawImage",
-						"src": 0, "srcPos": [370, 0], "size": [74, 74], "canvasPos": [11, 43]
+						"instruction": "clearRect", "layer": 0,
+						"x": 0, "y": 0, "width": 74, "height": 74
+					},
+					{
+						"instruction": "drawImage", "layer": 0,
+						"src": 0, "srcPos": [370, 0], "size": [74, 74], "canvasPos": [0, 0]
 					}
 				],
 				"off": [{

@@ -1,7 +1,7 @@
 @import 'common';
 
 #text-editor-wrapper {
-  background: rgba(127,127,127,0.8);
+  background: $panel-textarea-background-color;
   overflow: hidden;
   
   h1.title {
@@ -18,9 +18,14 @@
     width: 98.83%;
     height: 80%;
     resize: none;
+    background-color: $panel-textarea-background-color;
+    color: $panel-text-color-brightest;
+    border-color: $panel-text-color-darkest;
+    border-radius: $panel-interaction-border-radius;
   }
   div#notify-area {
-    background: rgba(127,127,127,0.8);
+    background: $panel-background-color-brighter;
+    color: $panel-text-color-brighter;
     position: absolute;
     bottom: -12%;
     width: 97%;

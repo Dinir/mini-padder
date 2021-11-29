@@ -276,7 +276,16 @@ class MiniPadderUpdater extends Updater {
             setLastAlertMessage()
             return true
           }
-        } // 5.2
+        },
+        '3': {
+          '0': () => {
+            setLastAlertMessage(
+              'New skins for F Commander, and dark control panel.',
+              '5.3.0'
+            )
+            return true
+          }
+        } // 5.3
       } // 5
     } // end of update tasks
   }

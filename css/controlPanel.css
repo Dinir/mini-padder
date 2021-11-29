@@ -17,11 +17,13 @@
   width: 100%;
   position: relative; }
   #control-panel div.option.half-width > label span {
-    vertical-align: middle; }
+    vertical-align: sub; }
   #control-panel div.option.half-width > label input[type=text] {
-    width: 60%;
+    width: 70%;
     position: absolute;
-    right: 0; }
+    top: 1px;
+    right: 0;
+    padding: 2px 4px; }
 
 #control-panel div.option[data-name="custom-skin"] .file-input-container {
   position: relative; }
@@ -39,6 +41,7 @@
     display: none; }
   #control-panel div.option[data-name="custom-skin"] #currentlyLoadedCustomSkin:before {
     content: 'Currently Loaded: ';
-    font-size: 0.75em; }
+    font-size: 0.75em;
+    vertical-align: 1px; }
 
 /*# sourceMappingURL=controlPanel.css.map */

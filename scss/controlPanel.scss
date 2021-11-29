@@ -25,12 +25,15 @@
         // put this relative so input elements can be aligned to the right
         position: relative;
         span {
-          vertical-align: middle;
+          // middle works for monospace, sub works for sans-serif
+          vertical-align: sub;
         }
         input[type=text] {
-          width: 60%;
+          width: 70%;
           position: absolute;
+          top: 1px;
           right: 0;
+          padding: 2px 4px;
         }
       }
     }
@@ -56,6 +59,7 @@
         &:before {
           content: 'Currently Loaded: ';
           font-size: 0.75em;
+          vertical-align: 1px;
         }
       }
     }

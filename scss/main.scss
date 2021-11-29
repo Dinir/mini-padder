@@ -8,8 +8,8 @@ html, body {
 
 body {
   font-size: $default-font-size;
-  font-family: "Fira Code", monospace;
-  background-color: transparent;
+  font-family: sans-serif;
+  background-color: black;
 }
 
 address {
@@ -35,6 +35,16 @@ sub {
   vertical-align: baseline;
   font-size: x-small;
 }
+button, select, input[type="text"] {
+  background-color: $panel-interaction-text-color;
+  color: $panel-interaction-background-color;
+  border-radius: $panel-interaction-border-radius;
+  border-color: $panel-interaction-border-color;
+  border-width: 1px;
+}
+input[type="text"]::placeholder {
+  color: #707070;
+}
 
 .visually-hidden {
   position: absolute !important;
@@ -48,6 +58,9 @@ sub {
 }
 .normal-font-size {
   font-size: 1em;
+}
+.monospace {
+  font-family: monospace;
 }
 .align-right {
   position: absolute;
@@ -77,8 +90,9 @@ sub {
   height: 2 * ( $canvas-height + $canvas-gap ) - $default-font-size;
   padding: 0.5 * $default-font-size;
   overflow-y: scroll;
-  background-color: #838383;
-  border-radius: 0 8px 8px;
+  background-color: $panel-background-color;
+  color: $panel-text-color;
+  border-radius: 0 $panel-border-radius $panel-border-radius;
   transition: opacity 0.2s;
   
   // negative z-index can't be interacted in OBS interact window
@@ -94,7 +108,7 @@ sub {
   & > div {
     padding-bottom: 0.5em;
     margin-bottom: 0.5em;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid $panel-text-color;
     &:last-of-type, &.half-width, &.no-divider {
       padding-bottom: 0;
       margin-bottom: 0;
@@ -111,7 +125,7 @@ sub {
     &.top-divider {
       padding-top: 0.5em;
       margin-top: 0.5em;
-      border-top: 1px solid black;
+      border-top: 1px solid $panel-text-color;
     }
     &.va-top, &.half-width {
       vertical-align: top;
@@ -134,8 +148,10 @@ sub {
     display: inline-block;
   }
   address {
+    font-size: 0.8em;
+    margin-top: 0.25em;
     a {
-      color: #171717;
+      color: $panel-text-color-brightest;
     }
   }
   
@@ -163,7 +179,7 @@ sub {
         display: block;
         // compensate line-height lost from being block display
         // align with `.two-buttons-each-line` vertically
-        margin-top: 0.75em;
+        margin-top: 0.9em;
         margin-bottom: -0.225em;
       }
       margin-bottom: 0.55em;
@@ -195,32 +211,33 @@ sub {
   div.cpMessage {
     padding: 0.5em;
     border-radius: 8px;
+    color: $panel-text-color-brightest;
     &:before {
       font-family: Segoe UI Emoji, monospace;
       margin-right: 0.2em;
     }
     a {
-      color: #303030;
+      color: $panel-text-color-brightester;
     }
     b {
       display: inline;
     }
     &.caution {
-      background-color: #c1c08b;
+      background-color: #5e5c37;
       &:before {
         content: '⚠️ ';
       }
       a {
-        color: #30301c;
+        color: #cac89d;
       }
     }
     &.info {
-      background-color: #8ba8c1;
+      background-color: #374c5e;
       &:before {
         content: 'ℹ️ ';
       }
       a {
-        color: #1c2730;
+        color: #9db5ca;
       }
     }
   }

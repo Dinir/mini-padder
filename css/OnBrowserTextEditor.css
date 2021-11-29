@@ -1,5 +1,5 @@
 #text-editor-wrapper {
-  background: rgba(127, 127, 127, 0.8);
+  background: rgba(48, 48, 48, 0.8);
   overflow: hidden; }
   #text-editor-wrapper h1.title:before {
     content: 'Current Item: '; }
@@ -10,9 +10,14 @@
   #text-editor-wrapper textarea {
     width: 98.83%;
     height: 80%;
-    resize: none; }
+    resize: none;
+    background-color: rgba(48, 48, 48, 0.8);
+    color: #c1c1c1;
+    border-color: #5e5e5e;
+    border-radius: 4px; }
   #text-editor-wrapper div#notify-area {
-    background: rgba(127, 127, 127, 0.8);
+    background: #5e5e5e;
+    color: #b4b4b4;
     position: absolute;
     bottom: -12%;
     width: 97%;

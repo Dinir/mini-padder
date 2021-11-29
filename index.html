@@ -79,7 +79,7 @@
     </span>
   </div>
   <div class="option" data-name="custom-skin">
-    <label id="customSkinLoadArea">
+    <label id="customSkinLoadArea" class="full-width">
       <b>Import Custom Skin</b>
       <span class="after-margin file-input-container inactive">
         <input class="visually-hidden"
@@ -90,7 +90,7 @@
       </span>
       <span class="description">
         Upload a json and up to 4 images for the custom skin.
-        New files replace old ones.
+        New files replace old ones.<br>
         Click anywhere in this area to bring the file select screen.
       </span>
     </label>
@@ -107,8 +107,8 @@
     </div>
     <span class="description">
       <b>Crop Values</b><br>
-      <span>Right 792, Bottom 456</span> (one pad)<br>
-      <span id="displaySizeDescriptor"></span> (all pads)
+      <span class="monospace">Right 792, Bottom 456</span> (one pad)<br>
+      <span class="monospace" id="displaySizeDescriptor"></span> (all pads)
     </span>
   </div>
   <div class="option half-width" data-name="fade">
@@ -140,7 +140,7 @@
       <button class="inactive">Gamepad Name</button>
     </div>
     <span class="description">
-      Make an input after pressing the button to start assigning.<br>
+      Make an input after pressing the button to start assigning.
       Click the button again anytime to abort assigning.<br>
       Assignments are saved per gamepad kind
       and shared with others of the same kind.
@@ -167,7 +167,7 @@
       </div>
     </div>
     <span class="description">
-      New deadzone value will be applied at the moment of click.<br>
+      New deadzone value will be applied at the moment of click.
       Click again until the sticks are not anymore appearing by their own.<br>
       If you don't use the fade-out, you might not need this option.
     </span>
@@ -587,7 +587,7 @@
 
 <!-- updater -->
 <script>
-  const version = '5.2.0'
+  const version = '5.3.0'
   const MPUpdater = new MiniPadderUpdater(version, Cp.insertAlert.bind(Cp))
   const versionDoms = document.getElementsByClassName('version')
   Array.from(versionDoms).forEach(v => v.innerHTML = version)

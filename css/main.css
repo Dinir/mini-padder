@@ -6,8 +6,8 @@ html, body {
 
 body {
   font-size: 16px;
-  font-family: "Fira Code", monospace;
-  background-color: transparent; }
+  font-family: sans-serif;
+  background-color: black; }
 
 address {
   position: relative;
@@ -25,6 +25,16 @@ sub {
   vertical-align: baseline;
   font-size: x-small; }
 
+button, select, input[type="text"] {
+  background-color: #1f1f1f;
+  color: #b4b4b4;
+  border-radius: 4px;
+  border-color: #9f9f9f;
+  border-width: 1px; }
+
+input[type="text"]::placeholder {
+  color: #707070; }
+
 .visually-hidden {
   position: absolute !important;
   height: 1px;
@@ -37,6 +47,9 @@ sub {
 
 .normal-font-size {
   font-size: 1em; }
+
+.monospace {
+  font-family: monospace; }
 
 .align-right {
   position: absolute;
@@ -60,7 +73,8 @@ sub {
   height: 288px;
   padding: 8px;
   overflow-y: scroll;
-  background-color: #838383;
+  background-color: #303030;
+  color: #9f9f9f;
   border-radius: 0 8px 8px;
   transition: opacity 0.2s; }
   .control-panel.inactive {
@@ -72,7 +86,7 @@ sub {
   .control-panel > div {
     padding-bottom: 0.5em;
     margin-bottom: 0.5em;
-    border-bottom: 1px solid black; }
+    border-bottom: 1px solid #9f9f9f; }
     .control-panel > div:last-of-type, .control-panel > div.half-width, .control-panel > div.no-divider {
       padding-bottom: 0;
       margin-bottom: 0;
@@ -86,7 +100,7 @@ sub {
     .control-panel > div.top-divider {
       padding-top: 0.5em;
       margin-top: 0.5em;
-      border-top: 1px solid black; }
+      border-top: 1px solid #9f9f9f; }
     .control-panel > div.va-top, .control-panel > div.half-width {
       vertical-align: top; }
     .control-panel > div.half-width {
@@ -99,8 +113,11 @@ sub {
       display: inline; }
   .control-panel label {
     display: inline-block; }
-  .control-panel address a {
-    color: #171717; }
+  .control-panel address {
+    font-size: 0.8em;
+    margin-top: 0.25em; }
+    .control-panel address a {
+      color: #c1c1c1; }
   .control-panel .after-margin {
     margin-bottom: 0.25em; }
     .control-panel .after-margin.button-container, .control-panel .after-margin.multiline-button-container {
@@ -116,7 +133,7 @@ sub {
       margin-bottom: 0.55em; }
       .control-panel .after-margin.one-button-each-line button {
         display: block;
-        margin-top: 0.75em;
+        margin-top: 0.9em;
         margin-bottom: -0.225em; }
     .control-panel .after-margin.two-buttons-each-line div button {
       display: inline-block; }
@@ -132,26 +149,27 @@ sub {
       display: inline; }
   .control-panel div.cpMessage {
     padding: 0.5em;
-    border-radius: 8px; }
+    border-radius: 8px;
+    color: #c1c1c1; }
     .control-panel div.cpMessage:before {
       font-family: Segoe UI Emoji, monospace;
       margin-right: 0.2em; }
     .control-panel div.cpMessage a {
-      color: #303030; }
+      color: #cacaca; }
     .control-panel div.cpMessage b {
       display: inline; }
     .control-panel div.cpMessage.caution {
-      background-color: #c1c08b; }
+      background-color: #5e5c37; }
       .control-panel div.cpMessage.caution:before {
         content: '⚠️ '; }
       .control-panel div.cpMessage.caution a {
-        color: #30301c; }
+        color: #cac89d; }
     .control-panel div.cpMessage.info {
-      background-color: #8ba8c1; }
+      background-color: #374c5e; }
       .control-panel div.cpMessage.info:before {
         content: 'ℹ️ '; }
       .control-panel div.cpMessage.info a {
-        color: #1c2730; }
+        color: #9db5ca; }
   @media (max-height: 599px) and (orientation: landscape) {
     .control-panel {
       height: auto;

@@ -9,7 +9,7 @@ html, body {
 body {
   font-size: $default-font-size;
   font-family: sans-serif;
-  background-color: black;
+  background-color: $body-background-color;
 }
 
 address {
@@ -35,15 +35,33 @@ sub {
   vertical-align: baseline;
   font-size: x-small;
 }
+
+::-webkit-scrollbar {
+  width: 16px;
+}
+::-webkit-scrollbar-thumb {
+  border: ($panel-border-radius / 2) solid $body-background-color;
+  background-color: $panel-text-color-darker;
+  border-radius: $panel-border-radius;
+}
+::-webkit-scrollbar-corner {
+   background-color: transparent;
+}
+
 button, select, input[type="text"] {
-  background-color: $panel-interaction-text-color;
-  color: $panel-interaction-background-color;
+  background-color: $panel-interaction-background-color;
+  color: $panel-interaction-text-color;
   border-radius: $panel-interaction-border-radius;
   border-color: $panel-interaction-border-color;
   border-width: 1px;
 }
 input[type="text"]::placeholder {
   color: #707070;
+}
+select::-webkit-scrollbar-thumb {
+  border-color: $panel-interaction-background-color;
+  // dropdown list can't have a round border so match the scrollbar to that
+  border-radius: 0;
 }
 
 .visually-hidden {
@@ -94,6 +112,9 @@ input[type="text"]::placeholder {
   color: $panel-text-color;
   border-radius: 0 $panel-border-radius $panel-border-radius;
   transition: opacity 0.2s;
+  &::-webkit-scrollbar-thumb {
+    border-color: $panel-background-color;
+  }
   
   // negative z-index can't be interacted in OBS interact window
   &.inactive {

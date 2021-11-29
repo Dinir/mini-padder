@@ -22,6 +22,11 @@
     color: $panel-text-color-brightest;
     border-color: $panel-text-color-darkest;
     border-radius: $panel-interaction-border-radius;
+    &::-webkit-scrollbar-thumb {
+      // multiplying by 1.5 makes a round border that fits to the area
+      border-radius: $panel-interaction-border-radius * 1.5;
+      border-color: $panel-background-color;
+    }
   }
   div#notify-area {
     background: $panel-background-color-brighter;

@@ -15,6 +15,9 @@
     color: #c1c1c1;
     border-color: #5e5e5e;
     border-radius: 4px; }
+    #text-editor-wrapper textarea::-webkit-scrollbar-thumb {
+      border-radius: 6px;
+      border-color: #303030; }
   #text-editor-wrapper div#notify-area {
     background: #5e5e5e;
     color: #b4b4b4;

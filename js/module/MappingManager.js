@@ -641,25 +641,25 @@ class MappingManager {
           // 'skip' input received
           // update index
           switch (assignmentState.index) {
-            case buttonIndex.dpad.down: // dpad-down
+            case buttonIndex.dpad.down:
               buttonInfo.nullInput(assignmentState.data.mapping)
               // fallthrough
-            case buttonIndex.dpad.left: // dpad-left
-            case buttonIndex.dpad.up: // dpad-up
-            case buttonIndex.dpad.right: // dpad-right
+            case buttonIndex.dpad.left:
+            case buttonIndex.dpad.up:
+            case buttonIndex.dpad.right:
               assignmentState.index = buttonIndex.dpad.right + 1
               break
-            case buttonIndex.l1: // lb/l1
+            case buttonIndex.l1:
               buttonInfo.nullInput(assignmentState.data.mapping)
               // fallthrough
-            case buttonIndex.l2: // lt/l2
+            case buttonIndex.l2:
               assignmentState.index = buttonIndex.r2 + 1
               break
-            case buttonIndex.stick.left.x: // stick-left-x
+            case buttonIndex.stick.left.x:
               buttonInfo.nullInput(assignmentState.data.mapping)
               assignmentState.index = buttonIndex.stick.left.button
               break
-            case buttonIndex.stick.right.x: // stick-right-x
+            case buttonIndex.stick.right.x:
               buttonInfo.nullInput(assignmentState.data.mapping)
               assignmentState.index = buttonIndex.stick.right.button
               break

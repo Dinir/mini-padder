@@ -821,11 +821,15 @@ class MappingManager {
       MappingManager.announceMessage(
         `Loaded the mapping for ${mappingObj.name}.`
       )
+      
+      return true
     } else {
       MappingManager.announceMessage(new Error(
         'There\'s a problem in the new mapping.\n' +
         JSON.stringify(mappingObj, null, 2)
       ))
+      
+      return false
     }
   }
   remove (gamepadId) {

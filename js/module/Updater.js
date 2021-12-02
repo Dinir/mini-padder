@@ -63,8 +63,9 @@ class Updater {
   static announceMessage (message) {
     if (message instanceof Error) {
       console.error(message)
+    } else {
+      console.log(message)
     }
-    console.log(message)
   }
   static announceUpdate (message, version) {
     this.announceMessage(`${version}: ${message}`)

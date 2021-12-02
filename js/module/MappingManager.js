@@ -499,6 +499,24 @@ class MappingManager {
       }
     ]
   }
+  static get everyButtonIndex () {
+    return {
+      'face': { 'down': 0, 'right': 1, 'up': 2, 'left': 3 },
+      'dpad': { 'down': 4, 'left': 5, 'up': 6, 'right': 7 },
+      'select': 8,
+      'start': 9,
+      'home': 10,
+      'touchpad': 11,
+      'l1': 12,
+      'r1': 13,
+      'l2': 14,
+      'r2': 15,
+      'stick': {
+        'left': { 'x': 16, 'y': 17, 'button': 18 },
+        'right': { 'x': 19, 'y': 20, 'button': 21 }
+      }
+    }
+  }
   
   startAssignment (gamepadIndex, name, gamepadId) {
     if (this.assignmentState[gamepadIndex].ongoing) {
@@ -580,7 +598,10 @@ class MappingManager {
     
     // assigning is in progress
     let buttonInfo
+    // the process will ask if it's a joystick when they're all mapped.
+    // so this should point at an exact number, not 'greater than' range.
     const allButtonMapped = assignmentState.index === MappingManager.everyButtonInfo.length
+    const buttonIndex = MappingManager.everyButtonIndex
     
     if (assignmentState.index === -1) {
       // initiating the routine for the first time
@@ -620,27 +641,27 @@ class MappingManager {
           // 'skip' input received
           // update index
           switch (assignmentState.index) {
-            case 4: // dpad-down
+            case buttonIndex.dpad.down: // dpad-down
               buttonInfo.nullInput(assignmentState.data.mapping)
               // fallthrough
-            case 5: // dpad-left
-            case 6: // dpad-up
-            case 7: // dpad-right
-              assignmentState.index = 8
+            case buttonIndex.dpad.left: // dpad-left
+            case buttonIndex.dpad.up: // dpad-up
+            case buttonIndex.dpad.right: // dpad-right
+              assignmentState.index = buttonIndex.dpad.right + 1
               break
-            case 12: // lb/l1
+            case buttonIndex.l1: // lb/l1
               buttonInfo.nullInput(assignmentState.data.mapping)
               // fallthrough
-            case 14: // lt/l2
-              assignmentState.index = 16
+            case buttonIndex.l2: // lt/l2
+              assignmentState.index = buttonIndex.r2 + 1
               break
-            case 16: // stick-left-x
+            case buttonIndex.stick.left.x: // stick-left-x
               buttonInfo.nullInput(assignmentState.data.mapping)
-              assignmentState.index = 18
+              assignmentState.index = buttonIndex.stick.left.button
               break
-            case 19: // stick-right-x
+            case buttonIndex.stick.right.x: // stick-right-x
               buttonInfo.nullInput(assignmentState.data.mapping)
-              assignmentState.index = 21
+              assignmentState.index = buttonIndex.stick.right.button
               break
             default:
               buttonInfo.mapInput(assignmentState.data.mapping, null)
@@ -652,7 +673,7 @@ class MappingManager {
             MappingManager.everyButtonInfo[assignmentState.index]
         } else {
           // no 'abort' or 'skip' interruption received
-          if (assignmentState.index === 4) {
+          if (assignmentState.index === buttonIndex.dpad.down) {
             // own routine for dpad - the index is for dpad-down
             if (
               foundIndexes[0] !== -1 &&
@@ -729,7 +750,7 @@ class MappingManager {
         }
       } else {
         // input is not found
-        if (assignmentState.index > 21) {
+        if (assignmentState.index >= MappingManager.everyButtonInfo.length) {
           // let's define the deadzone value for sticks
           const stickMappings = assignmentState.data.mapping.sticks
           MappingManager.setDeadzone(stickMappings.left, gamepadChange.axes)
@@ -738,6 +759,8 @@ class MappingManager {
       }
     }
     
+    // the process will ask if it's a joystick when the index is at the length.
+    // so this should point at range that's 'greater than' the length.
     if (assignmentState.index > MappingManager.everyButtonInfo.length) {
       // assigning is done
       assignmentState.result = true
@@ -751,25 +774,31 @@ class MappingManager {
     } else if (!inputFound) {
       // make the guide message for next input
       let message = []
-      if (assignmentState.index <= 15) {
-        // all buttons
-        message.push(`Press button for ${buttonInfo.label}.`)
-      } else if (assignmentState.index === 18 || assignmentState.index === 21) {
-        // stick buttons
-        message.push(`Press the ${buttonInfo.label}.`)
-      } else if (allButtonMapped) {
+      if (allButtonMapped) {
         message.push('Is this a joystick?')
         message.push(`A/× - Gamepad   B/○ - Joystick  `)
+      } else if (
+        assignmentState.index === buttonIndex.stick.left.button ||
+        assignmentState.index === buttonIndex.stick.right.button
+      ) {
+        // stick buttons
+        message.push(`Press the ${buttonInfo.label}.`)
+      } else if (
+        assignmentState.index < buttonIndex.stick.left.x ||
+        assignmentState.index > buttonIndex.stick.right.button
+      ) {
+        // all buttons
+        message.push(`Press button for ${buttonInfo.label}.`)
       } else {
         // sticks
         message.push(`Push ${buttonInfo.label}.`)
       }
       
       if (
-        assignmentState.index > 1 &&
+        assignmentState.index > buttonIndex.face.right &&
         assignmentState.index < MappingManager.everyButtonInfo.length
       ) {
-        // after assigning first two buttons,
+        // after assigning first two buttons, face-down and face-right,
         // use them as a control on the assignment process
         message.push(`A/× - Skip      B/○ - Abort     `)
       }

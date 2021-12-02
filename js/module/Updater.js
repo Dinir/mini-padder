@@ -125,6 +125,13 @@ class Updater {
             null, null, currentUpdateIndex
           )
           patchNumber = currentUpdateIndex
+        } else {
+          const targetVersionString =
+            Updater.getVersionString(this.currentVersion)
+          Updater.announceMessage(new Error(
+            `Can't apply the update patch ${targetVersionString}.`
+          ))
+          return false
         }
       } catch (e) {
         Updater.announceMessage(e)
@@ -164,6 +171,8 @@ class Updater {
             )
             minorNumber = currentUpdateIndex
             patchNumber = 0
+          } else {
+            return false
           }
         } catch (e) {
           Updater.announceMessage(e)
@@ -181,7 +190,8 @@ class Updater {
             Updater.announceMessage(
               `Updated all patches under ${majorNumber}.${minorNumber}.`
             )
-        
+          } else {
+            return false
           }
         } catch (e) {
           Updater.announceMessage(e)
@@ -223,6 +233,8 @@ class Updater {
             majorNumber = currentUpdateIndex
             minorNumber = 0
             patchNumber = 0
+          } else {
+            return false
           }
         } catch (e) {
           Update.announceMessage(e)
@@ -240,6 +252,8 @@ class Updater {
             Updater.announceMessage(
               `Updated all minors under ${majorNumber}.`
             )
+          } else {
+            return false
           }
         } catch (e) {
           Updater.announceMessage(e)

@@ -284,6 +284,67 @@ class MiniPadderUpdater extends Updater {
               '5.3.0'
             )
             return true
+          },
+          '1': () => {
+            if (typeof Mapper === 'undefined') {
+              return false
+            }
+            
+            MiniPadderUpdater.announceUpdate(
+              'Adding a fallback mapping for \'Unknown Gamepad\'.',
+              '5.3.1'
+            )
+            setLastAlertMessage(
+              'Changed the assignment order to avoid axis assignments from ' +
+              'being adjacent. Now the order is ' +
+              'face - dpad - <i>shoulders</i> - <i>options</i> - sticks. ' +
+              'Added a fallback mapping for \'Unknown Gamepad\'.',
+              '5.3.1'
+            )
+            
+            if (!Mapper.mappings.hasOwnProperty('00000000')) {
+              if (
+                Mapper.addOrUpdate('00000000', {
+                  "name": "Unknown Gamepad",
+                  "properties": [
+                    "axisdpad"
+                  ],
+                  "sticks": {
+                    "left": {
+                      "x": 0, "y": 1, "button": 10,
+                      "deadzone": 0.1
+                    },
+                    "right": {
+                      "x": 2, "y": 5, "button": 11,
+                      "deadzone": 0.1
+                    }
+                  },
+                  "buttons": {
+                    "dpad": {
+                      "axis": 9
+                    },
+                    "face": {
+                      "down": 1, "right": 2, "up": 3, "left": 0,
+                      "select": 8, "start": 9, "home": 12, "touchpad": 13,
+                      "l3": 10, "r3": 11
+                    },
+                    "shoulder": {
+                      "l1": 4, "r1": 5, "l2": 6, "r2": 7
+                    }
+                  }
+                })
+              ) {
+                return Mapper.store()
+              }
+              
+              return false
+            } else {
+              MiniPadderUpdater.announceMessage(
+                'Found an existing mapping for the gamepad. Skipping.'
+              )
+              
+              return true
+            }
           }
         } // 5.3
       } // 5

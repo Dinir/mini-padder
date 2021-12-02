@@ -63,6 +63,35 @@ class MappingInterface extends MappingManager {
           }
         }
       },
+      "00000000": {
+        "name": "Unknown Gamepad",
+        "properties": [
+          "axisdpad"
+        ],
+        "sticks": {
+          "left": {
+            "x": 0, "y": 1, "button": 10,
+            "deadzone": 0.1
+          },
+          "right": {
+            "x": 2, "y": 5, "button": 11,
+            "deadzone": 0.1
+          }
+        },
+        "buttons": {
+          "dpad": {
+            "axis": 9
+          },
+          "face": {
+            "down": 1, "right": 2, "up": 3, "left": 0,
+            "select": 8, "start": 9, "home": 12, "touchpad": 13,
+            "l3": 10, "r3": 11
+          },
+          "shoulder": {
+            "l1": 4, "r1": 5, "l2": 6, "r2": 7
+          }
+        }
+      },
       "0f30": {
         "name": "Qanba Joystick",
         "properties": ["joystick"],

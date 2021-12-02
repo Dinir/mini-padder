@@ -355,6 +355,31 @@ class MappingManager {
         mapInput: (m, i) => {m.buttons.dpad.right = i}
       },
       {
+        label: 'lb/l1',
+        group: 'buttons',
+        virtualInput: { "shoulder": { "l1": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.shoulder.l1 = i},
+        nullInput: m => {m.buttons.shoulder = null}
+      },
+      {
+        label: 'rb/r1',
+        group: 'buttons',
+        virtualInput:  { "shoulder": { "r1": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.shoulder.r1 = i}
+      },
+      {
+        label: 'lt/l2',
+        group: 'buttons',
+        virtualInput: { "shoulder": { "l2": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.shoulder.l2 = i}
+      },
+      {
+        label: 'rt/r2',
+        group: 'buttons',
+        virtualInput: { "shoulder": { "r2": { "value": 1 } } },
+        mapInput: (m, i) => {m.buttons.shoulder.r2 = i}
+      },
+      {
         label: 'select',
         group: 'buttons',
         virtualInput: { "face": { "select": { "value": 1 } } },
@@ -377,31 +402,6 @@ class MappingManager {
         group: 'buttons',
         virtualInput: { "face": { "touchpad": { "value": 1 } } },
         mapInput: (m, i) => {m.buttons.face.touchpad = i}
-      },
-      {
-        label: 'lb/l1',
-        group: 'buttons',
-        virtualInput: { "shoulder": { "l1": { "value": 1 } } },
-        mapInput: (m, i) => {m.buttons.shoulder.l1 = i},
-        nullInput: m => {m.buttons.shoulder = null}
-      }, 
-      {
-        label: 'rb/r1',
-        group: 'buttons',
-        virtualInput:  { "shoulder": { "r1": { "value": 1 } } },
-        mapInput: (m, i) => {m.buttons.shoulder.r1 = i}
-      }, 
-      {
-        label: 'lt/l2',
-        group: 'buttons',
-        virtualInput: { "shoulder": { "l2": { "value": 1 } } },
-        mapInput: (m, i) => {m.buttons.shoulder.l2 = i}
-      }, 
-      {
-        label: 'rt/r2',
-        group: 'buttons',
-        virtualInput: { "shoulder": { "r2": { "value": 1 } } },
-        mapInput: (m, i) => {m.buttons.shoulder.r2 = i}
       },
       {
         label: 'left stick to right',
@@ -503,14 +503,14 @@ class MappingManager {
     return {
       'face': { 'down': 0, 'right': 1, 'up': 2, 'left': 3 },
       'dpad': { 'down': 4, 'left': 5, 'up': 6, 'right': 7 },
-      'select': 8,
-      'start': 9,
-      'home': 10,
-      'touchpad': 11,
-      'l1': 12,
-      'r1': 13,
-      'l2': 14,
-      'r2': 15,
+      'l1': 8,
+      'r1': 9,
+      'l2': 10,
+      'r2': 11,
+      'select': 12,
+      'start': 13,
+      'home': 14,
+      'touchpad': 15,
       'stick': {
         'left': { 'x': 16, 'y': 17, 'button': 18 },
         'right': { 'x': 19, 'y': 20, 'button': 21 }

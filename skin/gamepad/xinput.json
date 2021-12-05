@@ -88,8 +88,7 @@
 					"instruction": "drawImage",
 					"src": 0, "srcPos": [390, 45], "size": [24, 26], "canvasPos": [36, 91]
 				}],
-				"on": [
-					{
+				"on": [{
 					"instruction": "drawImage",
 					"src": 1, "srcPos": [483, 51], "size": [24, 26], "canvasPos": [36, 91]
 				}]

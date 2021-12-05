@@ -88,11 +88,10 @@
 					"instruction": "drawImage",
 					"src": 0, "srcPos": [390, 155], "size": [24, 26], "canvasPos": [36, 91]
 				}],
-				"on": [
-					{
-						"instruction": "drawImage",
-						"src": 1, "srcPos": [453, 200], "size": [24, 26], "canvasPos": [36, 91]
-					}]
+				"on": [{
+					"instruction": "drawImage",
+					"src": 1, "srcPos": [453, 200], "size": [24, 26], "canvasPos": [36, 91]
+				}]
 			},
 			"left": {
 				"clear": [{

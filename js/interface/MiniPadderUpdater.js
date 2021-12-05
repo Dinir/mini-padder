@@ -346,7 +346,18 @@ class MiniPadderUpdater extends Updater {
               return true
             }
           }
-        } // 5.3
+        },
+        '4': {
+          '0': () => {
+            setLastAlertMessage(
+              'Shoulder button background in default gamepad skins are ' +
+              'now darker. Half of coloured gamepad skins ' +
+              'now use yellow dpad active sprites.',
+              '5.4.0'
+            )
+            return true
+          }
+        } // 5.4
       } // 5
     } // end of update tasks
   }

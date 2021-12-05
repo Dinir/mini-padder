@@ -76,7 +76,7 @@
 				}],
 				"on": [{
 					"instruction": "drawImage",
-					"src": 1, "srcPos": [459, 51], "size": [24, 26], "canvasPos": [36, 43]
+					"src": 1, "srcPos": [429, 200], "size": [24, 26], "canvasPos": [36, 43]
 				}]
 			},
 			"down": {
@@ -90,7 +90,7 @@
 				}],
 				"on": [{
 					"instruction": "drawImage",
-					"src": 1, "srcPos": [483, 51], "size": [24, 26], "canvasPos": [36, 91]
+					"src": 1, "srcPos": [453, 200], "size": [24, 26], "canvasPos": [36, 91]
 				}]
 			},
 			"left": {
@@ -104,7 +104,7 @@
 				}],
 				"on": [{
 					"instruction": "drawImage",
-					"src": 1, "srcPos": [507, 51], "size": [26, 24], "canvasPos": [11, 68]
+					"src": 1, "srcPos": [477, 200], "size": [26, 24], "canvasPos": [11, 68]
 				}]
 			},
 			"right": {
@@ -118,7 +118,7 @@
 				}],
 				"on": [{
 					"instruction": "drawImage",
-					"src": 1, "srcPos": [533, 51], "size": [26, 24], "canvasPos": [59, 68]
+					"src": 1, "srcPos": [503, 200], "size": [26, 24], "canvasPos": [59, 68]
 				}]
 			},
 			"value": {
@@ -144,10 +144,10 @@
 					"instruction": "drawDifferentImageInNinePos",
 					"src": 1,
 					"allCoords": {
-						"upleft":    [[459, 91], [16, 16], [17, 49]],
-						"downleft":  [[475, 91], [16, 16], [17, 95]],
-						"upright":   [[491, 91], [16, 16], [63, 49]],
-						"downright": [[507, 91], [16, 16], [63, 95]]
+						"upleft":    [[541, 161], [16, 16], [17, 49]],
+						"downleft":  [[557, 161], [16, 16], [17, 95]],
+						"upright":   [[573, 161], [16, 16], [63, 49]],
+						"downright": [[589, 161], [16, 16], [63, 95]]
 					}
 				}]
 			}

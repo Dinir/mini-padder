@@ -1,108 +1,144 @@
 {
-	"name": "F Commander (D Toggled)",
+	"name": "F Commander (D Toggled) (LS)",
 	"author": null,
-	"properties": [],
+	"properties": [
+		"joystick"
+	],
 	"src": [
 		"frame-fcommander.png", "active-fcommander.png"
 	],
 	"layer": [
 		{
-			"name": "button",
-			"x": 13, "y": 10, "width": 230, "height": 124
+			"name": "stick",
+			"x": 13, "y": 47, "width": 74, "height": 74
 		},
 		{
-			"name": "dpad-horizontal",
+			"name": "stick-horizontal",
 			"x": 13, "y": 72, "width": 74, "height": 24
+		},
+		{
+			"name": "button",
+			"x": 13, "y": 10, "width": 230, "height": 124
 		}
 	],
-	"buttons": {
+	"sticks": {
 		"layer": 0,
+		"left": {
+			"clear": [
+				{
+					"instruction": "clearRect",
+					"x": 0, "y": 0, "width": 74, "height": 74
+				},
+				{
+					"instruction": "clearRect", "layer": 1,
+					"x": 0, "y": 0, "width": 74, "height": 24
+				},
+				{
+					"instruction": "drawImage",
+					"src": 0, "srcPos": [200, 41], "size": [24, 74], "canvasPos": [25, 0]
+				},
+				{
+					"instruction": "drawImage", "layer": 1,
+					"src": 0, "srcPos": [48, 185], "size": [74, 24], "canvasPos": [0, 0]
+				}
+			],
+			"off": [
+				{
+					"instruction": "drawDifferentImageInNinePos",
+					"src": 1,
+					"allCoords": {
+						"up":        [[0, 185], [24, 37], [25, 0]],
+						"down":      [[24, 185], [24, 37], [25, 37]],
+						"upleft":    [[0, 185], [24, 37], [25, 0]],
+						"downleft":  [[24, 185], [24, 37], [25, 37]],
+						"upright":   [[0, 185], [24, 37], [25, 0]],
+						"downright": [[24, 185], [24, 37], [25, 37]]
+					}
+				},
+				{
+					"instruction": "drawDifferentImageInNinePos", "layer": 1,
+					"src": 1,
+					"allCoords": {
+						"left":      [[48, 185], [37, 24], [0, 0]],
+						"right":     [[85, 185], [37, 24], [37, 0]],
+						"upleft":    [[48, 185], [37, 24], [0, 0]],
+						"downleft":  [[48, 185], [37, 24], [0, 0]],
+						"upright":   [[85, 185], [37, 24], [37, 0]],
+						"downright": [[85, 185], [37, 24], [37, 0]]
+					}
+				},
+				{
+					"instruction": "drawDifferentImageInNinePos",
+					"src": 1,
+					"allCoords": {
+						"upleft":    [[122, 185], [16, 16], [6, 6]],
+						"downleft":  [[138, 185], [16, 16], [6, 52]],
+						"upright":   [[154, 185], [16, 16], [52, 6]],
+						"downright": [[170, 185], [16, 16], [52, 52]]
+					}
+				}
+			]
+		}
+	},
+	"buttons": {
+		"layer": 2,
 		"dpad": {
-			"up": {
-				"clear": [{
-					"instruction": "clearRect",
-					"x": 25, "y": 37, "width": 24, "height": 37
-				}],
-				"off": [{
-					"instruction": "drawImage",
-					"src": 0, "srcPos": [0, 185], "size": [24, 37], "canvasPos": [25, 37]
-				}],
-				"on": [{
-					"instruction": "drawImage",
-					"src": 1, "srcPos": [0, 185], "size": [24, 37], "canvasPos": [25, 37]
-				}]
-			},
-			"down": {
-				"clear": [{
-					"instruction": "clearRect",
-					"x": 25, "y": 74, "width": 24, "height": 37
-				}],
-				"off": [{
-					"instruction": "drawImage",
-					"src": 0, "srcPos": [24, 185], "size": [24, 37], "canvasPos": [25, 74]
-				}],
-				"on": [{
-					"instruction": "drawImage",
-					"src": 1, "srcPos": [24, 185], "size": [24, 37], "canvasPos": [25, 74]
-				}]
-			},
-			"left": {
-				"clear": [{
-					"instruction": "clearRect", "layer": 1,
-					"x": 0, "y": 0, "width": 37, "height": 27
-				}],
-				"off": [{
-					"instruction": "drawImage", "layer": 1,
-					"src": 0, "srcPos": [48, 185], "size": [37, 24], "canvasPos": [0, 0]
-				}],
-				"on": [{
-					"instruction": "drawImage", "layer": 1,
-					"src": 1, "srcPos": [48, 185], "size": [37, 24], "canvasPos": [0, 0]
-				}]
-			},
-			"right": {
-				"clear": [{
-					"instruction": "clearRect", "layer": 1,
-					"x": 37, "y": 0, "width": 37, "height": 27
-				}],
-				"off": [{
-					"instruction": "drawImage", "layer": 1,
-					"src": 0, "srcPos": [85, 185], "size": [37, 24], "canvasPos": [37, 0]
-				}],
-				"on": [{
-					"instruction": "drawImage", "layer": 1,
-					"src": 1, "srcPos": [85, 185], "size": [37, 24], "canvasPos": [37, 0]
-				}]
-			},
+			"layer": 0,
 			"value": {
 				"clear": [
 					{
 						"instruction": "clearRect",
-						"x": 6, "y": 43, "width": 16, "height": 16
+						"x": 0, "y": 0, "width": 74, "height": 74
 					},
 					{
-						"instruction": "clearRect",
-						"x": 6, "y": 89, "width": 16, "height": 16
+						"instruction": "clearRect", "layer": 1,
+						"x": 0, "y": 0, "width": 74, "height": 24
 					},
 					{
-						"instruction": "clearRect",
-						"x": 52, "y": 43, "width": 16, "height": 16
+						"instruction": "drawImage",
+						"src": 0, "srcPos": [200, 41], "size": [24, 74], "canvasPos": [25, 0]
 					},
 					{
-						"instruction": "clearRect",
-						"x": 52, "y": 89, "width": 16, "height": 16
+						"instruction": "drawImage", "layer": 1,
+						"src": 0, "srcPos": [48, 185], "size": [74, 24], "canvasPos": [0, 0]
 					}
 				],
-				"on": [{
-					"instruction": "drawDifferentImageInNinePos",
-					"src": 1,
-					"allCoords": {
-						"upleft":    [[122, 185], [16, 16], [6, 43]],
-						"downleft":  [[138, 185], [16, 16], [6, 89]],
-						"upright":   [[154, 185], [16, 16], [52, 43]],
-						"downright": [[170, 185], [16, 16], [52, 89]]
+				"on": [
+					{
+						"instruction": "drawDifferentImageInNinePos",
+						"src": 1,
+						"allCoords": {
+							"up":        [[0, 185], [24, 37], [25, 0]],
+							"down":      [[24, 185], [24, 37], [25, 37]],
+							"upleft":    [[0, 185], [24, 37], [25, 0]],
+							"downleft":  [[24, 185], [24, 37], [25, 37]],
+							"upright":   [[0, 185], [24, 37], [25, 0]],
+							"downright": [[24, 185], [24, 37], [25, 37]]
+						}
+					},
+					{
+						"instruction": "drawDifferentImageInNinePos", "layer": 1,
+						"src": 1,
+						"allCoords": {
+							"left":      [[48, 185], [37, 24], [0, 0]],
+							"right":     [[85, 185], [37, 24], [37, 0]],
+							"upleft":    [[48, 185], [37, 24], [0, 0]],
+							"downleft":  [[48, 185], [37, 24], [0, 0]],
+							"upright":   [[85, 185], [37, 24], [37, 0]],
+							"downright": [[85, 185], [37, 24], [37, 0]]
+						}
+					},
+					{
+						"instruction": "drawDifferentImageInNinePos",
+						"src": 1,
+						"allCoords": {
+							"upleft":    [[122, 185], [16, 16], [6, 6]],
+							"downleft":  [[138, 185], [16, 16], [6, 52]],
+							"upright":   [[154, 185], [16, 16], [52, 6]],
+							"downright": [[170, 185], [16, 16], [52, 52]]
+						}
 					}
-				}]
+				]
 			}
 		},
 		"face": {

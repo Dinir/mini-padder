@@ -356,6 +356,16 @@ class MiniPadderUpdater extends Updater {
               '5.4.0'
             )
             return true
+          },
+          '1': () => {
+            setLastAlertMessage(
+              'Skins for gamepads focused on the dpad are divided into ' +
+              'two variations: ones accepting dpad with ' +
+              'individual buttons fading, and the other ones accepting ' +
+              'left stick and dpad with the whole pad fading.',
+              '5.4.1'
+            )
+            return true
           }
         } // 5.4
       } // 5

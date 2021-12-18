@@ -1,105 +1,148 @@
 {
-	"name": "Super Pad",
+	"name": "Super Pad (LS)",
 	"author": null,
-	"properties": [],
+	"properties": [
+		"joystick"
+	],
 	"src": [
 		"frame-disc.png", "active-disc.png"
 	],
 	"layer": [
 		{
+			"name": "stick",
+			"x": 12, "y": 52, "width": 72, "height": 72
+		},
+		{
 			"name": "button",
 			"x": 0, "y": 8, "width": 256, "height": 128
 		}
 	],
-	"buttons": {
+	"sticks": {
 		"layer": 0,
-		"dpad": {
-			"up": {
-				"clear": [{
-					"instruction": "clearPolygon",
-					"path": [36, 44, 60, 44, 60, 68, 48, 80, 36, 68]
-				}],
-				"off": [{
+		"left": {
+			"clear": [
+				{
+					"instruction": "clearRect",
+					"x": 0, "y": 0, "width": 72, "height": 72
+				},
+				{
 					"instruction": "drawImage",
-					"src": 0, "srcPos": [722, 0], "size": [24, 31], "canvasPos": [36, 44]
-				}],
-				"on": [{
+					"src": 0, "srcPos": [722, 0], "size": [24, 31], "canvasPos": [24, 0]
+				},
+				{
 					"instruction": "drawImage",
+					"src": 0, "srcPos": [746, 0], "size": [24, 31], "canvasPos": [24, 41]
+				},
+				{
+					"instruction": "drawImage",
+					"src": 0, "srcPos": [722, 38], "size": [31, 24], "canvasPos": [0, 24]
+				},
+				{
+					"instruction": "drawImage",
+					"src": 0, "srcPos": [722, 62], "size": [31, 24], "canvasPos": [41, 24]
+				}
+			],
+			"off": [
+				{
+					"instruction": "drawDifferentImageInNinePos",
 					"src": 1,
-					"srcPos": [515, 0], "size": [24, 31], "canvasPos": [36, 44]
-				}]
-			},
-			"down": {
-				"clear": [{
-					"instruction": "clearPolygon",
-					"path": [36, 92, 48, 80, 60, 92, 60, 116, 36, 116]
-				}],
-				"off": [{
-					"instruction": "drawImage",
-					"src": 0, "srcPos": [746, 0], "size": [24, 31], "canvasPos": [36, 85]
-				}],
-				"on": [{
-					"instruction": "drawImage",
-					"src": 1, "srcPos": [539, 0], "size": [24, 31], "canvasPos": [36, 85]
-				}]
-			},
-			"left": {
-				"clear": [{
-					"instruction": "clearPolygon",
-					"path": [12, 68, 36, 68, 48, 80, 36, 92, 12, 92]
-				}],
-				"off": [{
-					"instruction": "drawImage",
-					"src": 0, "srcPos": [722, 38], "size": [31, 24], "canvasPos": [12, 68]
-				}],
-				"on": [{
-					"instruction": "drawImage",
-					"src": 1, "srcPos": [563, 0], "size": [31, 24], "canvasPos": [12, 68]
-				}]
-			},
-			"right": {
-				"clear": [{
-					"instruction": "clearPolygon",
-					"path": [48, 80, 60, 68, 84, 68, 84, 92, 60, 92]
-				}],
-				"off": [{
-					"instruction": "drawImage",
-					"src": 0, "srcPos": [722, 62], "size": [31, 24], "canvasPos": [53, 68]
-				}],
-				"on": [{
-					"instruction": "drawImage",
-					"src": 1, "srcPos": [594, 0], "size": [31, 24], "canvasPos": [53, 68]
-				}]
-			},
+					"allCoords": {
+						"upleft":    [[515, 0], [24, 31], [24, 0]],
+						"downleft":  [[539, 0], [24, 31], [24, 41]],
+						"upright":   [[515, 0], [24, 31], [24, 0]],
+						"downright": [[539, 0], [24, 31], [24, 41]]
+					}
+				},
+				{
+					"instruction": "drawDifferentImageInNinePos",
+					"src": 1,
+					"allCoords": {
+						"upleft":    [[563, 0], [31, 24], [0, 24]],
+						"downleft":  [[563, 0], [31, 24], [0, 24]],
+						"upright":   [[594, 0], [31, 24], [41, 24]],
+						"downright": [[594, 0], [31, 24], [41, 24]]
+					}
+				},
+				{
+					"instruction": "drawDifferentImageInNinePos",
+					"src": 1,
+					"allCoords": {
+						"up":        [[515, 0], [24, 31], [24, 0]],
+						"down":      [[539, 0], [24, 31], [24, 41]],
+						"left":      [[563, 0], [31, 24], [0, 24]],
+						"right":     [[594, 0], [31, 24], [41, 24]],
+						"upleft":    [[522, 119], [16, 16], [5, 5]],
+						"downleft":  [[538, 119], [16, 16], [5, 51]],
+						"upright":   [[554, 119], [16, 16], [51, 5]],
+						"downright": [[570, 119], [16, 16], [51, 51]]
+					}
+				}
+			]
+		}
+	},
+	"buttons": {
+		"layer": 1,
+		"dpad": {
+			"layer": 0,
 			"value": {
 				"clear": [
 					{
 						"instruction": "clearRect",
-						"x": 17, "y": 49, "width": 16, "height": 16
+						"x": 0, "y": 0, "width": 72, "height": 72
 					},
 					{
-						"instruction": "clearRect",
-						"x": 17, "y": 95, "width": 16, "height": 16
+						"instruction": "drawImage",
+						"src": 0, "srcPos": [722, 0], "size": [24, 31], "canvasPos": [24, 0]
 					},
 					{
-						"instruction": "clearRect",
-						"x": 63, "y": 49, "width": 16, "height": 16
+						"instruction": "drawImage",
+						"src": 0, "srcPos": [746, 0], "size": [24, 31], "canvasPos": [24, 41]
 					},
 					{
-						"instruction": "clearRect",
-						"x": 63, "y": 95, "width": 16, "height": 16
+						"instruction": "drawImage",
+						"src": 0, "srcPos": [722, 38], "size": [31, 24], "canvasPos": [0, 24]
+					},
+					{
+						"instruction": "drawImage",
+						"src": 0, "srcPos": [722, 62], "size": [31, 24], "canvasPos": [41, 24]
 					}
 				],
-				"on": [{
-					"instruction": "drawDifferentImageInNinePos",
-					"src": 1,
-					"allCoords": {
-						"upleft":    [[522, 119], [16, 16], [17, 49]],
-						"downleft":  [[538, 119], [16, 16], [17, 95]],
-						"upright":   [[554, 119], [16, 16], [63, 49]],
-						"downright": [[570, 119], [16, 16], [63, 95]]
+				"on": [
+					{
+						"instruction": "drawDifferentImageInNinePos",
+						"src": 1,
+						"allCoords": {
+							"upleft":    [[515, 0], [24, 31], [24, 0]],
+							"downleft":  [[539, 0], [24, 31], [24, 41]],
+							"upright":   [[515, 0], [24, 31], [24, 0]],
+							"downright": [[539, 0], [24, 31], [24, 41]]
+						}
+					},
+					{
+						"instruction": "drawDifferentImageInNinePos",
+						"src": 1,
+						"allCoords": {
+							"upleft":    [[563, 0], [31, 24], [0, 24]],
+							"downleft":  [[563, 0], [31, 24], [0, 24]],
+							"upright":   [[594, 0], [31, 24], [41, 24]],
+							"downright": [[594, 0], [31, 24], [41, 24]]
+						}
+					},
+					{
+						"instruction": "drawDifferentImageInNinePos",
+						"src": 1,
+						"allCoords": {
+							"up":        [[515, 0], [24, 31], [24, 0]],
+							"down":      [[539, 0], [24, 31], [24, 41]],
+							"left":      [[563, 0], [31, 24], [0, 24]],
+							"right":     [[594, 0], [31, 24], [41, 24]],
+							"upleft":    [[522, 119], [16, 16], [5, 5]],
+							"downleft":  [[538, 119], [16, 16], [5, 51]],
+							"upright":   [[554, 119], [16, 16], [51, 5]],
+							"downright": [[570, 119], [16, 16], [51, 51]]
+						}
 					}
-				}]
+				]
 			}
 		},
 		"face": {

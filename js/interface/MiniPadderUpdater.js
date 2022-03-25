@@ -366,6 +366,18 @@ class MiniPadderUpdater extends Updater {
               '5.4.1'
             )
             return true
+          },
+          '2': () => {
+            setLastAlertMessage(
+              'Dpad of Super Pad skins has background fill now. <br>' +
+              'The maintenance of Mini Padder is ceased: ' +
+              'if nothing changes, the domain will expire at 4 June 2023. ' +
+              'You can still use it with the address `' +
+              '<b>https://dinir.github.io/mini-padder</b>`. ' +
+              'Thank you for using Mini Padder.',
+              '5.4.2'
+            )
+            return true
           }
         } // 5.4
       } // 5

@@ -38,11 +38,7 @@ A web page can't read files from the client computer before the user allows it, 
 
 ---
 
-I tried to make this application to prove to myself that I can make and *complete* making a thing. Also that I can use it for my streams.
-
-If you find Mini Padder useful, please consider a [donation][Donation Link]. 
-
-Thank you for reading to the end! 😁
+I tried to make this application to prove to myself that I can make and *complete* making a thing.
 
 
 
@@ -60,5 +56,3 @@ Thank you for reading to the end! 😁
 [the hosted webpage]: https://dinir.github.io/mini-padder/
 [wiki: how to use]: https://github.com/Dinir/mini-padder/wiki/How-to-Use
 [wiki: making a skin]: https://github.com/Dinir/mini-padder/wiki/Making-a-Skin
-
-[Donation Link]: https://ko-fi.com/dinir

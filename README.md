@@ -1,7 +1,6 @@
 # Mini Padder
 
 [![OBS Forum][badge: obs forum]][OBS Tool Page]
-[![Trello][badge: trello]][Trello]
 [![JavaScript Style Guide][badge: standard style]][standard style]
 [![stargazers][badge: stargazers]][stargazers]
 
@@ -46,8 +45,6 @@ I tried to make this application to prove to myself that I can make and *complet
 
 [badge: obs forum]: https://img.shields.io/static/v1?label=&message=Forum&color=302e31&logo=obs-studio
 [OBS Tool Page]: https://obsproject.com/forum/resources/mini-padder.944/
-[badge: trello]: https://img.shields.io/static/v1?label=&message=Board&color=0079bf&logo=trello
-[Trello]: https://trello.com/b/JvScNymb/mini-padder
 [badge: standard style]: https://img.shields.io/badge/code_style-standard-brightgreen.svg
 [standard style]: https://standardjs.com
 [badge: stargazers]: https://img.shields.io/github/stars/Dinir/mini-padder?style=social&link=https://github.com/Dinir/mini-padder&link=https://github.com/Dinir/mini-padder/stargazers

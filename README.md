@@ -39,6 +39,8 @@ A web page can't read files from the client computer before the user allows it, 
 
 I tried to make this application to prove to myself that I can make and *complete* making a thing.
 
+If you find Mini Padder useful, please consider a [donation][Donation Link]. I am keeping this link up as a way to display people who supported me as a person, to show them my gratitude.
+
 
 
 [Default Skins]: ./image/open-graph-image-0_5x.png 'All default skins'
@@ -53,3 +55,5 @@ I tried to make this application to prove to myself that I can make and *complet
 [the hosted webpage]: https://dinir.github.io/mini-padder/
 [wiki: how to use]: https://github.com/Dinir/mini-padder/wiki/How-to-Use
 [wiki: making a skin]: https://github.com/Dinir/mini-padder/wiki/Making-a-Skin
+
+[Donation Link]: https://ko-fi.com/dinir

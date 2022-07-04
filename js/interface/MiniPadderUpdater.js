@@ -378,7 +378,8 @@ class MiniPadderUpdater extends Updater {
               '5.4.2'
             )
             return true
-          }
+          },
+          '3': () => true
         } // 5.4
       } // 5
     } // end of update tasks

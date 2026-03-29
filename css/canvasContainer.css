@@ -1,28 +1,52 @@
-#canvas-container[data-width='1'] {
-  width: 256px;
-  height: 600px; }
-
-#canvas-container[data-width='2'] {
-  width: 520px;
-  height: 296px; }
-
-#canvas-container[data-width='3'] {
+#canvas-container[data-width="1"] {
+  width: 277px;
+  height: 704px;
+}
+#canvas-container[data-width="2"] {
+  width: 534px;
+  height: 414px;
+}
+#canvas-container[data-width="3"] {
   width: 1048px;
-  height: 144px; }
-
+  height: 269px;
+}
 #canvas-container > div {
   display: inline-block;
   position: relative;
   width: 256px;
   height: 144px;
-  z-index: 1; }
-  #canvas-container > div div, #canvas-container > div canvas {
-    position: absolute; }
-  #canvas-container > div div {
-    top: 0;
-    left: 0;
-    width: 256px;
-    height: 144px;
-    background-repeat: no-repeat; }
+  margin: 0 4px 4px 0;
+  z-index: 1;
+}
+#canvas-container > div div, #canvas-container > div canvas {
+  position: absolute;
+}
+#canvas-container > div div {
+  top: 0;
+  left: 0;
+  width: 256px;
+  height: 144px;
+  background-repeat: no-repeat;
+}
+
+#canvas-container[data-width="2"] > div:nth-child(2n-1) {
+  margin-right: 4px;
+}
+
+#canvas-container[data-width="2"] > div:nth-child(2n) {
+  margin-right: -1px;
+}
+
+#canvas-container[data-width="3"] > div {
+  margin-right: 4px;
+}
+
+#canvas-container[data-width="3"] > div:nth-child(2) {
+  margin-right: 3px;
+}
+
+#canvas-container[data-width="3"] > div:last-child {
+  margin-right: -1px;
+}
 
 /*# sourceMappingURL=canvasContainer.css.map */

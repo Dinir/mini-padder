@@ -379,7 +379,13 @@ class MiniPadderUpdater extends Updater {
             )
             return true
           },
-          '3': () => true
+          '3': () => true,
+          '4': () => {
+            setLastAlertMessage(
+            'the gap between gamepad areas is now consistently 8px.'
+            )
+            return true;
+          }
         } // 5.4
       } // 5
     } // end of update tasks
